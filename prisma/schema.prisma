@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  password String // Hashed password
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  tech        String   // Comma-separated or JSON string
+  link        String?
+  github      String?
+  category    String   // e.g., "Web Development", "Data Analysis"
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Certificate {
+  id        String   @id @default(cuid())
+  title     String
+  issuer    String
+  date      String
+  link      String?
+  createdAt DateTime @default(now())
+}
+
+model TechStack {
+  id       String @id @default(cuid())
+  name     String
+  category String // "Web", "Data", "Design", "Video"
+  icon     String // e.g., lucide icon name or image url
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
