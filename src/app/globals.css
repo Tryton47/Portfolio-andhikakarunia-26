@@ -1,27 +1,158 @@
 @import "tailwindcss";
 
+/* ============================================
+   TECH-LUXURY CYBERPUNK DESIGN SYSTEM
+   ============================================ */
+
 @theme {
-  --color-brand-red: #ff4d4d;
-  --color-brand-dark: #120a0a;
-  --color-brand-card: #1c1111;
-  --color-brand-border: #332020;
-  --font-mono: var(--font-orbitron);
-  --font-sans: var(--font-space-grotesk);
+  /* Core Palette */
+  --color-obsidian: #0B0B0F;
+  --color-charcoal: #121217;
+  --color-card: #16161C;
+  --color-card-hover: #1C1C24;
+  --color-border: #1E1E28;
+  --color-border-hover: #2A2A38;
+
+  /* Accent */
+  --color-neon-red: #FF2A43;
+  --color-neon-red-dim: rgba(255, 42, 67, 0.15);
+  --color-neon-cyan: #00F0FF;
+  --color-neon-cyan-dim: rgba(0, 240, 255, 0.15);
+
+  /* Text */
+  --color-text-primary: #FFFFFF;
+  --color-text-body: #E2E8F0;
+  --color-text-muted: #94A3B8;
+  --color-text-dim: #475569;
+
+  /* Fonts */
+  --font-heading: var(--font-syncopate);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
 }
 
 @layer base {
-  body {
-    @apply bg-brand-dark text-gray-300 font-sans overflow-x-hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  html {
+    scroll-behavior: smooth;
   }
-  
+
+  body {
+    @apply bg-obsidian text-text-body font-body overflow-x-hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-neon-red) var(--color-charcoal);
+  }
+
   body::-webkit-scrollbar {
-    display: none;
+    width: 6px;
+  }
+  body::-webkit-scrollbar-track {
+    background: var(--color-charcoal);
+  }
+  body::-webkit-scrollbar-thumb {
+    background: var(--color-neon-red);
+    border-radius: 3px;
+  }
+
+  ::selection {
+    background: var(--color-neon-red);
+    color: #fff;
   }
 }
 
-::selection {
-  background: var(--color-brand-red);
-  color: #fff;
+/* ============================================
+   TYPOGRAPHY UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Heading Style: Syncopate */
+  .text-heading {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+  }
+
+  /* System Label Style: JetBrains Mono */
+  .text-system {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 500;
+    font-size: 0.75rem;
+  }
+
+  /* Neon Glow Effects */
+  .text-neon-red {
+    color: var(--color-neon-red);
+    text-shadow: 0 0 4px rgba(255, 42, 67, 0.4),
+                 0 0 12px rgba(255, 42, 67, 0.15);
+  }
+
+  .text-neon-cyan {
+    color: var(--color-neon-cyan);
+    text-shadow: 0 0 4px rgba(0, 240, 255, 0.4);
+  }
+
+  .border-glow-red {
+    border-color: var(--color-neon-red);
+    box-shadow: 0 0 8px rgba(255, 42, 67, 0.2),
+                inset 0 0 8px rgba(255, 42, 67, 0.05);
+  }
+
+  .border-glow-cyan {
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.2),
+                inset 0 0 8px rgba(0, 240, 255, 0.05);
+  }
+
+  /* Glass Panel */
+  .glass-panel {
+    background: rgba(22, 22, 28, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Subtle Grid Background */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(255, 42, 67, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 42, 67, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Pulse animation for status indicators */
+  .pulse-neon {
+    animation: pulseNeon 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulseNeon {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes typeWriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes lightSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
