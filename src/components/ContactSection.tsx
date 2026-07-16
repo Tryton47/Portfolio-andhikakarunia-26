@@ -119,7 +119,6 @@ export default function ContactSection() {
             <form onSubmit={handleContactSubmit} className="flex flex-col gap-5">
               {/* Name */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-system text-text-dim">Nama Anda</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -130,7 +129,7 @@ export default function ContactSection() {
                   className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors ${
                     errors.name ? 'border-neon-red' : 'border-border focus:border-neon-red/50'
                   }`}
-                  placeholder="Enter your name"
+                  placeholder="Nama Anda"
                 />
                 {errors.name && (
                   <span className="text-neon-red text-xs">{errors.name}</span>
@@ -139,7 +138,6 @@ export default function ContactSection() {
 
               {/* Email */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-system text-text-dim">Email Anda</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -150,7 +148,7 @@ export default function ContactSection() {
                   className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors ${
                     errors.email ? 'border-neon-red' : 'border-border focus:border-neon-red/50'
                   }`}
-                  placeholder="Enter your email"
+                  placeholder="Email Anda"
                 />
                 {errors.email && (
                   <span className="text-neon-red text-xs">{errors.email}</span>
@@ -159,7 +157,6 @@ export default function ContactSection() {
 
               {/* Message */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-system text-text-dim">Pesan Anda</label>
                 <textarea
                   rows={4}
                   value={formData.message}
@@ -170,7 +167,7 @@ export default function ContactSection() {
                   className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors resize-none ${
                     errors.message ? 'border-neon-red' : 'border-border focus:border-neon-red/50'
                   }`}
-                  placeholder="Write your message..."
+                  placeholder="Tulis pesan Anda disini..."
                 />
                 {errors.message && (
                   <span className="text-neon-red text-xs">{errors.message}</span>
@@ -194,7 +191,7 @@ export default function ContactSection() {
             {/* Social Links */}
             <div>
               <h3 className="text-system text-text-dim mb-4">Connect With Me</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <a
                   href="https://www.linkedin.com/in/andhika-karunia-545166292"
                   target="_blank"
@@ -215,15 +212,6 @@ export default function ContactSection() {
                   <Globe size={18} className="text-text-dim group-hover:text-neon-red transition-colors" />
                   <span className="text-text-muted text-xs group-hover:text-text-primary transition-colors">
                     Instagram
-                  </span>
-                </a>
-                <a
-                  href="#"
-                  className="glass-panel border border-border rounded-lg p-4 flex items-center gap-3 hover:border-neon-red/30 transition-colors group"
-                >
-                  <Video size={18} className="text-text-dim group-hover:text-neon-red transition-colors" />
-                  <span className="text-text-muted text-xs group-hover:text-text-primary transition-colors">
-                    YouTube
                   </span>
                 </a>
               </div>

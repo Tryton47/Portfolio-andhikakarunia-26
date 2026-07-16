@@ -128,7 +128,8 @@ export default function AboutSection() {
             {/* CTAs */}
             <div className="flex gap-4">
               <a
-                href="#"
+                href="/CV_ATS_Andhika_Karunia_Rizqi_2026.pdf"
+                download="CV_ATS_Andhika_Karunia_Rizqi_2026.pdf"
                 className="px-6 py-3 bg-neon-red text-white text-system rounded-md hover:bg-[#e0243b] transition-colors shadow-[0_0_15px_rgba(255,42,67,0.3)]"
               >
                 Download CV

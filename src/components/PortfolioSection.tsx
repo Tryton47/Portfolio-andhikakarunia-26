@@ -138,8 +138,8 @@ function MatrixCanvas() {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
 }
 
-/* ─── AMBIENT CANVAS: Node Network ─── */
-function NodeCanvas() {
+/* ─── AMBIENT CANVAS: Data Analyst (Charts + Scatter) ─── */
+function DataAnalystCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -148,44 +148,194 @@ function NodeCanvas() {
     if (!ctx) return;
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
+    const W = canvas.width;
+    const H = canvas.height;
 
-    const nodes = Array.from({ length: 30 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
+    // Static bar chart data
+    const bars = [0.4, 0.7, 0.55, 0.85, 0.6, 0.9, 0.5, 0.75, 0.65, 0.8];
+    // Scatter points
+    const scatter = Array.from({ length: 40 }, () => ({
+      x: Math.random() * W * 0.6 + W * 0.3,
+      y: Math.random() * H * 0.5 + H * 0.1,
+      r: Math.random() * 2.5 + 1,
+      pulse: Math.random() * Math.PI * 2,
     }));
+    // Line chart data
+    const lineData = [0.4, 0.55, 0.45, 0.7, 0.6, 0.8, 0.65, 0.9, 0.75, 0.85, 0.7, 0.95];
 
+    let t = 0;
     let animId: number;
+
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      nodes.forEach((n) => {
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
-        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
-      });
-      // Lines
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-          if (d < 150) {
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(0, 240, 255, ${0.12 * (1 - d / 150)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
+      ctx.clearRect(0, 0, W, H);
+
+      // ── Grid lines ──
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 8; i++) {
+        const y = H * (i / 7);
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
       }
-      // Dots
-      nodes.forEach((n) => {
+
+      // ── Bar chart (left side) ──
+      const barW = 16;
+      const barGap = 10;
+      const barBaseY = H * 0.85;
+      bars.forEach((v, i) => {
+        const x = 20 + i * (barW + barGap);
+        const barH = v * H * 0.55;
+        // Bar fill with gradient
+        const grad = ctx.createLinearGradient(x, barBaseY - barH, x, barBaseY);
+        grad.addColorStop(0, `rgba(0, 240, 255, ${0.3 + Math.sin(t * 0.02 + i) * 0.1})`);
+        grad.addColorStop(1, 'rgba(0, 240, 255, 0.03)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, barBaseY - barH, barW, barH);
+        // Top highlight
+        ctx.fillStyle = `rgba(0, 240, 255, ${0.6 + Math.sin(t * 0.02 + i) * 0.2})`;
+        ctx.fillRect(x, barBaseY - barH, barW, 2);
+      });
+
+      // ── Animated line chart (top right area) ──
+      const lineStartX = W * 0.45;
+      const lineEndX = W * 0.98;
+      const lineBaseY = H * 0.7;
+      ctx.beginPath();
+      lineData.forEach((v, i) => {
+        const x = lineStartX + (i / (lineData.length - 1)) * (lineEndX - lineStartX);
+        const y = lineBaseY - v * H * 0.5 + Math.sin(t * 0.03 + i * 0.5) * 4;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // Fill under line
+      ctx.lineTo(lineEndX, lineBaseY);
+      ctx.lineTo(lineStartX, lineBaseY);
+      ctx.closePath();
+      const lineGrad = ctx.createLinearGradient(0, lineBaseY - H * 0.5, 0, lineBaseY);
+      lineGrad.addColorStop(0, 'rgba(255, 42, 67, 0.1)');
+      lineGrad.addColorStop(1, 'rgba(255, 42, 67, 0)');
+      ctx.fillStyle = lineGrad;
+      ctx.fill();
+
+      // ── Scatter dots (right area) ──
+      scatter.forEach((p) => {
+        const pulse = Math.sin(t * 0.04 + p.pulse);
+        const alpha = 0.15 + pulse * 0.1;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 240, 255, 0.12)';
+        ctx.arc(p.x, p.y, p.r + pulse * 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 240, 255, ${alpha})`;
         ctx.fill();
       });
+
+      // ── Floating metric labels ──
+      ctx.font = '9px JetBrains Mono, monospace';
+      const metrics = ['AVG: 72.4%', 'R²: 0.94', 'n=1,240', 'σ: 3.2'];
+      metrics.forEach((m, i) => {
+        ctx.fillStyle = `rgba(0, 240, 255, ${0.2 + Math.sin(t * 0.02 + i) * 0.05})`;
+        ctx.fillText(m, W * 0.5 + i * 70, H * 0.15 + Math.sin(t * 0.01 + i) * 4);
+      });
+
+      t++;
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => cancelAnimationFrame(animId);
+  }, []);
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
+}
+
+/* ─── AMBIENT CANVAS: Video Editing (Film Strip + Waveform) ─── */
+function VideoCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    const W = canvas.width;
+    const H = canvas.height;
+
+    let t = 0;
+    let animId: number;
+
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+
+      // ── Timeline track (horizontal bar) ──
+      const trackY = H * 0.55;
+      const trackH = 28;
+      ctx.fillStyle = 'rgba(255, 42, 67, 0.05)';
+      ctx.fillRect(0, trackY, W, trackH);
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.15)';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(0, trackY, W, trackH);
+
+      // ── Film frames on timeline ──
+      const frameW = 40;
+      const numFrames = Math.ceil(W / frameW) + 1;
+      const offset = (t * 0.8) % frameW;
+      for (let i = -1; i < numFrames; i++) {
+        const fx = i * frameW - offset;
+        ctx.strokeStyle = 'rgba(255, 42, 67, 0.25)';
+        ctx.strokeRect(fx, trackY + 2, frameW - 2, trackH - 4);
+        // Film perfs top/bottom
+        for (let p = 0; p < 3; p++) {
+          ctx.fillStyle = 'rgba(255, 42, 67, 0.15)';
+          ctx.fillRect(fx + 4 + p * 11, trackY + 4, 7, 4);
+          ctx.fillRect(fx + 4 + p * 11, trackY + trackH - 8, 7, 4);
+        }
+      }
+
+      // ── Playhead ──
+      const playX = W * 0.4 + Math.sin(t * 0.02) * 20;
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(playX, trackY - 12); ctx.lineTo(playX, trackY + trackH + 12); ctx.stroke();
+      ctx.fillStyle = 'rgba(255, 42, 67, 0.8)';
+      ctx.beginPath();
+      ctx.moveTo(playX - 6, trackY - 12);
+      ctx.lineTo(playX + 6, trackY - 12);
+      ctx.lineTo(playX, trackY - 4);
+      ctx.fill();
+
+      // ── Audio waveform ──
+      const waveY = H * 0.75;
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = 0; x < W; x++) {
+        const amp = (Math.sin(x * 0.05 + t * 0.06) * 0.6 +
+          Math.sin(x * 0.13 + t * 0.04) * 0.3 +
+          Math.sin(x * 0.03 - t * 0.05) * 0.1) * 18;
+        if (x === 0) ctx.moveTo(x, waveY + amp);
+        else ctx.lineTo(x, waveY + amp);
+      }
+      ctx.stroke();
+
+      // ── Floating time codes ──
+      ctx.font = '9px JetBrains Mono, monospace';
+      const times = ['00:00:12:14', '00:00:24:08', '00:01:03:22'];
+      times.forEach((tc, i) => {
+        ctx.fillStyle = `rgba(255, 42, 67, ${0.15 + Math.sin(t * 0.02 + i) * 0.05})`;
+        ctx.fillText(tc, (W / 4) * i + 20, H * 0.3 + Math.sin(t * 0.015 + i) * 5);
+      });
+
+      // ── Lens flares / light streaks ──
+      for (let i = 0; i < 3; i++) {
+        const lx = (W * (i + 1)) / 4 + Math.sin(t * 0.01 + i * 2) * 30;
+        const ly = H * 0.2 + Math.cos(t * 0.012 + i) * 20;
+        const grad = ctx.createRadialGradient(lx, ly, 0, lx, ly, 30);
+        grad.addColorStop(0, `rgba(255, 200, 100, ${0.06 + Math.sin(t * 0.02 + i) * 0.03})`);
+        grad.addColorStop(1, 'rgba(255, 200, 100, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(lx, ly, 30, 0, Math.PI * 2); ctx.fill();
+      }
+
+      t++;
       animId = requestAnimationFrame(draw);
     };
     draw();
@@ -353,8 +503,9 @@ export default function PortfolioSection() {
     if (rootTab !== 'projects') return null;
     switch (subFilter) {
       case 'Web Dev': return <MatrixCanvas />;
-      case 'Data Analysis': return <NodeCanvas />;
+      case 'Data Analysis': return <DataAnalystCanvas />;
       case 'Graphic Design': return <BezierCanvas />;
+      case 'Video Editing': return <VideoCanvas />;
       default: return null;
     }
   }, [rootTab, subFilter]);
