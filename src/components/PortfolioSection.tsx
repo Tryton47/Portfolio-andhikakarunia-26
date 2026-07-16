@@ -7,56 +7,77 @@ import { ExternalLink, Code2, X, ChevronDown, ChevronUp } from 'lucide-react';
 const projects = [
   {
     id: 1,
+    title: 'Cinevix Works',
+    desc: 'Cinematic production and creative works portfolio.',
+    features: ['Responsive UI', 'Media Showcase', 'Modern Aesthetic'],
+    tech: ['React', 'Next.js', 'Tailwind'],
+    category: 'Web Dev',
+    link: 'https://cinevix-works.vercel.app/',
+    github: '',
+  },
+  {
+    id: 2,
     title: 'E-Commerce Recommendation Engine',
     desc: 'Full-stack ML-powered recommendation system trained on 240K+ products. Hybrid algorithm with 0.35s inference time.',
     features: ['Hybrid ML Algorithm', '240K+ Product Dataset', 'Real-time Inference', 'REST API Backend'],
     tech: ['Python', 'FastAPI', 'React', 'TypeScript', 'scikit-learn'],
     category: 'Data Analysis',
-    link: 'https://e-commerce-recommendation-engine.vercel.app',
+    link: 'https://e-commerce-recommendation-engine.vercel.app/',
     github: '',
   },
   {
-    id: 2,
+    id: 3,
     title: 'Sales Marketing Web',
     desc: 'Full-stack sales and marketing web application for Alpha Marketing with database-connected backend.',
     features: ['CRUD Operations', 'Database Integration', 'Responsive Design', 'Admin Dashboard'],
     tech: ['PHP', 'MySQL', 'JavaScript', 'HTML', 'CSS'],
     category: 'Web Dev',
-    link: '',
-    github: 'https://github.com/Tryton47/sales-marketing-web',
-  },
-  {
-    id: 3,
-    title: 'Employee Turnover Prediction',
-    desc: 'Predictive analysis project applying data preprocessing, feature engineering, and classification modeling.',
-    features: ['Feature Engineering', 'Classification Models', 'Data Visualization', 'Predictive Analytics'],
-    tech: ['Python', 'pandas', 'scikit-learn'],
-    category: 'Data Analysis',
-    link: '',
-    github: 'https://github.com/Tryton47/employee-turnover-prediction',
+    link: 'https://sales-marketing-web-u5e1.vercel.app/',
+    github: '',
   },
   {
     id: 4,
+    title: 'Event Ease',
+    desc: 'Event management platform for seamless planning and ticketing.',
+    features: ['Ticket Booking', 'Event Dashboard', 'Payment Gateway'],
+    tech: ['React', 'Next.js', 'Node.js'],
+    category: 'Web Dev',
+    link: 'https://event-ease-mauve.vercel.app/',
+    github: '',
+  },
+  {
+    id: 5,
+    title: 'Organik Pandanrejo',
+    desc: 'E-commerce and information portal for organic village products.',
+    features: ['Product Catalog', 'Article CMS', 'Shopping Cart'],
+    tech: ['Next.js', 'Tailwind', 'Prisma'],
+    category: 'Web Dev',
+    link: 'https://organik-pandanrejo.vercel.app/',
+    github: '',
+  },
+  {
+    id: 6,
+    title: 'Hoaks Detector',
+    desc: 'AI-based news verification tool to detect hoaxes in real-time.',
+    features: ['NLP Algorithm', 'Real-time Analysis', 'News Scraping'],
+    tech: ['Python', 'Flask', 'React'],
+    category: 'Data Analysis',
+    link: 'https://hoaks-detector.vercel.app/',
+    github: '',
+  },
+  {
+    id: 7,
     title: 'Wargaverse',
-    desc: 'Collaborative full-stack project (3-person team) for community management.',
+    desc: 'Collaborative full-stack project for community management.',
     features: ['Team Collaboration', 'MVC Architecture', 'Community System', 'User Management'],
     tech: ['Laravel', 'Blade', 'PHP'],
     category: 'Web Dev',
     link: '',
     github: 'https://github.com/JustFarzz/wargaverse',
+    isMaintenance: true,
   },
   {
-    id: 5,
-    title: 'UI/UX Poster Design',
-    desc: 'Creative poster design for marketing campaigns and community events.',
-    features: ['Brand Identity', 'Print Design', 'Digital Assets', 'Campaign Materials'],
-    tech: ['Figma', 'Canva'],
-    category: 'Graphic Design',
-    link: '',
-    github: '',
-  },
-  {
-    id: 6,
+    id: 8,
     title: 'SINEDEK Short Movie',
     desc: 'Cinematic short film production and post-production editing.',
     features: ['Cinematography', 'Color Grading', 'Sound Design', 'Post-Production'],
@@ -64,17 +85,60 @@ const projects = [
     category: 'Video Editing',
     link: '',
     github: '',
+    isMaintenance: true,
   },
 ];
 
 const certificates = [
-  { title: 'Data Analytics with Python', issuer: 'DQLab', date: '2025' },
-  { title: 'Belajar Dasar Pemrograman Web', issuer: 'Dicoding', date: '2024' },
-  { title: 'SQL for Data Analysis', issuer: 'Coursera', date: '2025' },
-  { title: 'Microsoft Office Specialist', issuer: 'Certiport', date: '2024' },
-  { title: 'TOEFL ITP Score 500+', issuer: 'ETS', date: '2025' },
-  { title: 'UI/UX Design Fundamentals', issuer: 'Coursera', date: '2025' },
-  { title: 'Google Data Analytics', issuer: 'Google', date: '2025' },
+  { 
+    title: 'Data Analytics with Python', 
+    issuer: 'DQLab', 
+    date: '2025',
+    image: '/E-Sertif/data_analytics_python.png',
+    desc: 'Sertifikasi kompetensi analisis data menggunakan bahasa pemrograman Python, meliputi library Pandas, NumPy, dan visualisasi data dasar.'
+  },
+  { 
+    title: 'Belajar Dasar Pemrograman Web', 
+    issuer: 'Dicoding', 
+    date: '2024',
+    image: '/E-Sertif/dasar_web.png',
+    desc: 'Sertifikasi penguasaan dasar-dasar pengembangan web, termasuk HTML, CSS, dan layouting responsif yang memenuhi standar industri.'
+  },
+  { 
+    title: 'SQL for Data Analysis', 
+    issuer: 'Coursera', 
+    date: '2025',
+    image: '/E-Sertif/sql_data_analysis.png',
+    desc: 'Pemahaman mendalam mengenai query SQL untuk ekstraksi data, manipulasi, dan analisis data berukuran besar menggunakan relational database.'
+  },
+  { 
+    title: 'Microsoft Office Specialist', 
+    issuer: 'Certiport', 
+    date: '2024',
+    image: '/E-Sertif/mos.png',
+    desc: 'Kredensial resmi dari Microsoft untuk penguasaan perangkat lunak produktivitas, khususnya Excel tingkat mahir dalam analisis data.'
+  },
+  { 
+    title: 'TOEFL ITP Score 500+', 
+    issuer: 'ETS', 
+    date: '2025',
+    image: '/E-Sertif/toefl.png',
+    desc: 'Sertifikasi kemahiran berbahasa Inggris dengan skor di atas rata-rata, mencakup kemampuan listening, structure, dan reading comprehension.'
+  },
+  { 
+    title: 'UI/UX Design Fundamentals', 
+    issuer: 'Coursera', 
+    date: '2025',
+    image: '/E-Sertif/ui_ux.png',
+    desc: 'Pemahaman prinsip desain antarmuka, user experience, wireframing, dan pembuatan prototipe interaktif.'
+  },
+  { 
+    title: 'Google Data Analytics', 
+    issuer: 'Google', 
+    date: '2025',
+    image: '/E-Sertif/google_data.png',
+    desc: 'Sertifikasi profesional dari Google mencakup seluruh siklus analisis data mulai dari pengumpulan, pembersihan, hingga visualisasi akhir.'
+  },
 ];
 
 const techStack = [
@@ -486,12 +550,69 @@ function ProjectModal({
   );
 }
 
+/* ─── CERTIFICATE DETAIL MODAL ─── */
+function CertModal({
+  cert,
+  onClose,
+}: {
+  cert: (typeof certificates)[0];
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[200] bg-obsidian/95 backdrop-blur-md flex items-start justify-center overflow-y-auto pt-8 pb-12 px-4">
+      <div className="w-full max-w-3xl glass-panel border border-border rounded-xl overflow-hidden">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-charcoal">
+          <button
+            onClick={onClose}
+            className="text-system text-neon-red hover:text-text-primary transition-colors flex items-center gap-2"
+          >
+            ← Back
+          </button>
+          <span className="text-system text-text-dim">Certificate</span>
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-col md:flex-row">
+          {/* Left: Info */}
+          <div className="w-full md:w-1/2 p-8 flex flex-col">
+            <h3 className="text-heading text-xl text-text-primary mb-2">
+              {cert.title}
+            </h3>
+            <p className="text-system text-neon-cyan mb-6">{cert.issuer} — {cert.date}</p>
+            <p className="text-text-body text-sm leading-relaxed mb-6">
+              {cert.desc}
+            </p>
+          </div>
+
+          {/* Right: Image Preview */}
+          <div className="w-full md:w-1/2 bg-charcoal flex items-center justify-center p-8">
+            <div className="w-full relative aspect-[4/3] rounded-lg overflow-hidden border border-border bg-obsidian flex items-center justify-center">
+              {cert.image ? (
+                <img src={cert.image} alt={cert.title} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-system text-text-dim">No Image Available</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── PORTFOLIO SECTION ─── */
 export default function PortfolioSection() {
   const [rootTab, setRootTab] = useState<'projects' | 'certificates' | 'techstack'>('projects');
   const [subFilter, setSubFilter] = useState('Web Dev');
   const [showMore, setShowMore] = useState(false);
   const [selectedProject, setSelectedProject] = useState<(typeof projects)[0] | null>(null);
+  const [selectedCert, setSelectedCert] = useState<(typeof certificates)[0] | null>(null);
 
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => p.category === subFilter);
@@ -579,9 +700,19 @@ export default function PortfolioSection() {
                   {/* Card Image Area */}
                   <div className="w-full h-44 bg-obsidian flex items-center justify-center relative overflow-hidden">
                     <span className="text-system text-text-dim">{project.category}</span>
+                    
+                    {/* Maintenance Overlay */}
+                    {project.isMaintenance && (
+                      <div className="absolute inset-0 bg-obsidian/60 flex items-center justify-center backdrop-blur-sm z-10">
+                        <span className="text-system text-neon-red border border-neon-red px-3 py-1 rounded bg-obsidian/80">
+                          Maintenance
+                        </span>
+                      </div>
+                    )}
+
                     {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-obsidian/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4">
-                      {(project.link || project.github) && (
+                    <div className="absolute inset-0 bg-obsidian/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4 z-20">
+                      {(project.link || project.github) && !project.isMaintenance && (
                         <a
                           href={project.link || project.github || '#'}
                           target="_blank"
@@ -652,14 +783,22 @@ export default function PortfolioSection() {
             {certificates.map((cert, idx) => (
               <div
                 key={idx}
-                className="glass-panel border border-border rounded-xl p-6 hover:border-neon-cyan/30 transition-all duration-300"
+                onClick={() => setSelectedCert(cert)}
+                className="group relative glass-panel border border-border rounded-xl p-6 hover:border-neon-cyan/30 transition-all duration-300 cursor-pointer overflow-hidden"
                 style={{ animation: `fadeInUp 0.5s ease-out ${idx * 0.08}s both` }}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-text-primary text-sm font-bold">{cert.title}</h3>
+                <div className="relative z-10 flex items-start justify-between mb-3">
+                  <h3 className="text-text-primary text-sm font-bold group-hover:text-neon-cyan transition-colors">{cert.title}</h3>
                   <span className="text-system text-neon-cyan text-[10px]">{cert.date}</span>
                 </div>
-                <p className="text-text-muted text-xs">{cert.issuer}</p>
+                <p className="relative z-10 text-text-muted text-xs">{cert.issuer}</p>
+
+                {/* Hover Image Preview Overlay */}
+                {cert.image && (
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 z-0">
+                    <img src={cert.image} alt="" className="w-full h-full object-cover grayscale" />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -699,6 +838,14 @@ export default function PortfolioSection() {
         <ProjectModal
           project={selectedProject}
           onClose={() => setSelectedProject(null)}
+        />
+      )}
+
+      {/* Certificate Detail Modal */}
+      {selectedCert && (
+        <CertModal
+          cert={selectedCert}
+          onClose={() => setSelectedCert(null)}
         />
       )}
     </section>
