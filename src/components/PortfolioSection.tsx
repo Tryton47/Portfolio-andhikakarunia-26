@@ -833,28 +833,29 @@ export default function PortfolioSection() {
               <div
                 key={idx}
                 onClick={() => setSelectedCert(cert)}
-                className="group relative glass-panel border border-border rounded-xl p-6 transition-all duration-500 cursor-pointer overflow-hidden hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,255,255,0.15)] hover:border-neon-cyan/50"
+                className="group relative bg-obsidian/40 backdrop-blur-md border border-white/5 rounded-xl p-6 transition-all duration-500 cursor-pointer overflow-hidden hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(0,0,0,0.6)] hover:border-white/20 hover:bg-obsidian/60"
                 style={{ animation: `fadeInUp 0.5s ease-out ${idx * 0.08}s both` }}
               >
-                {/* Layer 1: Holographic Glow on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/20 to-neon-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
+                {/* Layer 1: Elegant Soft Glow on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-0" />
 
-                <div className="relative z-10 flex items-start justify-between mb-3">
-                  <h3 className="text-text-primary text-sm font-bold group-hover:text-neon-cyan transition-colors">{cert.title}</h3>
-                  <span className="text-system text-neon-cyan text-[10px] tracking-widest bg-neon-cyan/10 px-2 py-1 rounded border border-neon-cyan/20 backdrop-blur-md">VERIFIED</span>
+                <div className="relative z-10 flex items-start justify-between mb-4">
+                  <h3 className="text-text-primary text-sm font-semibold group-hover:text-white transition-colors tracking-wide">{cert.title}</h3>
+                  <span className="text-[10px] tracking-[0.2em] text-white/50 bg-white/5 px-2 py-1 rounded-sm border border-white/10 backdrop-blur-md">VERIFIED</span>
                 </div>
-                <p className="relative z-10 text-text-muted text-xs group-hover:text-text-primary transition-colors">{cert.issuer}</p>
+                <p className="relative z-10 text-text-muted text-xs group-hover:text-white/80 transition-colors">{cert.issuer}</p>
 
-                {/* Layer 2: The Document (PDF) Hologram */}
+                {/* Layer 2: The Document (PDF) Preview - Clean, Monochrome */}
                 {cert.file && (
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 pointer-events-none transition-all duration-500 z-0 overflow-hidden mix-blend-screen scale-95 group-hover:scale-100">
-                    <iframe src={`${cert.file}#view=FitH&toolbar=0&navpanes=0`} className="w-[300%] h-[300%] origin-top-left scale-[0.33] pointer-events-none" tabIndex={-1} />
-                    <div className="absolute inset-0 bg-neon-cyan/40 mix-blend-color z-10" />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-15 pointer-events-none transition-all duration-700 z-0 overflow-hidden scale-95 group-hover:scale-100">
+                    <iframe src={`${cert.file}#view=FitH&toolbar=0&navpanes=0`} className="w-[300%] h-[300%] origin-top-left scale-[0.33] pointer-events-none grayscale" tabIndex={-1} />
+                    {/* Fade overlay so the PDF doesn't look too sharp/messy */}
+                    <div className="absolute inset-0 bg-obsidian/30 backdrop-blur-[2px] z-10" />
                   </div>
                 )}
                 
-                {/* Border glowing line at bottom */}
-                <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-neon-cyan group-hover:w-full transition-all duration-500 z-10" />
+                {/* Subtle border glowing line at bottom */}
+                <div className="absolute bottom-0 left-0 h-[1px] w-0 bg-white/40 group-hover:w-full transition-all duration-700 ease-out z-10" />
               </div>
             ))}
           </div>
