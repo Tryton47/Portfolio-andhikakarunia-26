@@ -633,7 +633,7 @@ function CertModal({
             <h3 className="text-heading text-xl text-text-primary mb-2">
               {cert.title}
             </h3>
-            <p className="text-system text-neon-cyan mb-6">{cert.issuer} — {cert.date}</p>
+            <p className="text-system text-neon-cyan mb-6">{cert.issuer}</p>
             <p className="text-text-body text-sm leading-relaxed mb-6">
               {cert.desc}
             </p>
@@ -833,21 +833,28 @@ export default function PortfolioSection() {
               <div
                 key={idx}
                 onClick={() => setSelectedCert(cert)}
-                className="group relative glass-panel border border-border rounded-xl p-6 hover:border-neon-cyan/30 transition-all duration-300 cursor-pointer overflow-hidden"
+                className="group relative glass-panel border border-border rounded-xl p-6 transition-all duration-500 cursor-pointer overflow-hidden hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,255,255,0.15)] hover:border-neon-cyan/50"
                 style={{ animation: `fadeInUp 0.5s ease-out ${idx * 0.08}s both` }}
               >
+                {/* Layer 1: Holographic Glow on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/20 to-neon-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
+
                 <div className="relative z-10 flex items-start justify-between mb-3">
                   <h3 className="text-text-primary text-sm font-bold group-hover:text-neon-cyan transition-colors">{cert.title}</h3>
-                  <span className="text-system text-neon-cyan text-[10px]">{cert.date}</span>
+                  <span className="text-system text-neon-cyan text-[10px] tracking-widest bg-neon-cyan/10 px-2 py-1 rounded border border-neon-cyan/20 backdrop-blur-md">VERIFIED</span>
                 </div>
-                <p className="relative z-10 text-text-muted text-xs">{cert.issuer}</p>
+                <p className="relative z-10 text-text-muted text-xs group-hover:text-text-primary transition-colors">{cert.issuer}</p>
 
-                {/* Hover PDF Preview Overlay */}
+                {/* Layer 2: The Document (PDF) Hologram */}
                 {cert.file && (
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-300 z-0 overflow-hidden">
-                    <iframe src={`${cert.file}#view=FitH&toolbar=0&navpanes=0`} className="w-[300%] h-[300%] origin-top-left scale-[0.33] grayscale opacity-50 pointer-events-none" tabIndex={-1} />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 pointer-events-none transition-all duration-500 z-0 overflow-hidden mix-blend-screen scale-95 group-hover:scale-100">
+                    <iframe src={`${cert.file}#view=FitH&toolbar=0&navpanes=0`} className="w-[300%] h-[300%] origin-top-left scale-[0.33] pointer-events-none" tabIndex={-1} />
+                    <div className="absolute inset-0 bg-neon-cyan/40 mix-blend-color z-10" />
                   </div>
                 )}
+                
+                {/* Border glowing line at bottom */}
+                <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-neon-cyan group-hover:w-full transition-all duration-500 z-10" />
               </div>
             ))}
           </div>
