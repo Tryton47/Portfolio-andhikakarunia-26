@@ -91,53 +91,102 @@ const projects = [
 
 const certificates = [
   { 
-    title: 'Data Analytics with Python', 
-    issuer: 'DQLab', 
-    date: '2025',
-    image: '/E-Sertif/data_analytics_python.png',
-    desc: 'Sertifikasi kompetensi analisis data menggunakan bahasa pemrograman Python, meliputi library Pandas, NumPy, dan visualisasi data dasar.'
-  },
-  { 
-    title: 'Belajar Dasar Pemrograman Web', 
-    issuer: 'Dicoding', 
-    date: '2024',
-    image: '/E-Sertif/dasar_web.png',
-    desc: 'Sertifikasi penguasaan dasar-dasar pengembangan web, termasuk HTML, CSS, dan layouting responsif yang memenuhi standar industri.'
-  },
-  { 
-    title: 'SQL for Data Analysis', 
+    title: 'Data Analyst Capstone', 
     issuer: 'Coursera', 
-    date: '2025',
-    image: '/E-Sertif/sql_data_analysis.png',
-    desc: 'Pemahaman mendalam mengenai query SQL untuk ekstraksi data, manipulasi, dan analisis data berukuran besar menggunakan relational database.'
+    date: '2023',
+    file: '/E-Sertif/Coursera_Data_Analyst.pdf',
+    desc: 'Sertifikasi kompetensi analisis data Google Capstone dari Coursera.'
   },
   { 
-    title: 'Microsoft Office Specialist', 
-    issuer: 'Certiport', 
+    title: 'Data Analyst Batch 6', 
+    issuer: 'Karirnex', 
+    date: '2023',
+    file: '/E-Sertif/Karirnex_Data_Analyst.pdf',
+    desc: 'Program intensif penguasaan analisis data komprehensif.'
+  },
+  { 
+    title: 'Sertifikat Excel Batch 8', 
+    issuer: 'Karirnex', 
+    date: '2023',
+    file: '/E-Sertif/Excel_Batch_8.pdf',
+    desc: 'Penguasaan pemrosesan data menggunakan Microsoft Excel pada tingkat mahir.'
+  },
+  { 
+    title: 'Rekomendasi Keahlian Excel', 
+    issuer: 'Karirnex', 
+    date: '2023',
+    file: '/E-Sertif/Karirnex_Excel.pdf',
+    desc: 'Surat rekomendasi keahlian Excel yang diakui oleh Karirnex.'
+  },
+  { 
+    title: 'AI Fundamental', 
+    issuer: 'NVIDIA', 
     date: '2024',
-    image: '/E-Sertif/mos.png',
-    desc: 'Kredensial resmi dari Microsoft untuk penguasaan perangkat lunak produktivitas, khususnya Excel tingkat mahir dalam analisis data.'
+    file: '/E-Sertif/NVIDIA_Sertif.pdf',
+    desc: 'Sertifikasi pengenalan Artificial Intelligence.'
   },
   { 
-    title: 'TOEFL ITP Score 500+', 
-    issuer: 'ETS', 
-    date: '2025',
-    image: '/E-Sertif/toefl.png',
-    desc: 'Sertifikasi kemahiran berbahasa Inggris dengan skor di atas rata-rata, mencakup kemampuan listening, structure, dan reading comprehension.'
+    title: 'Huawei Certificate', 
+    issuer: 'Huawei', 
+    date: '2024',
+    file: '/E-Sertif/Huawei_Sertif.pdf',
+    desc: 'Sertifikasi pengembangan inovasi teknologi dari Huawei.'
   },
   { 
-    title: 'UI/UX Design Fundamentals', 
-    issuer: 'Coursera', 
-    date: '2025',
-    image: '/E-Sertif/ui_ux.png',
-    desc: 'Pemahaman prinsip desain antarmuka, user experience, wireframing, dan pembuatan prototipe interaktif.'
+    title: 'Data Scientist', 
+    issuer: 'KT&G Career Prep', 
+    date: '2023',
+    file: '/E-Sertif/KTG_Data_Science.pdf',
+    desc: 'Pelatihan persiapan karir spesialisasi Data Science.'
   },
   { 
-    title: 'Google Data Analytics', 
-    issuer: 'Google', 
-    date: '2025',
-    image: '/E-Sertif/google_data.png',
-    desc: 'Sertifikasi profesional dari Google mencakup seluruh siklus analisis data mulai dari pengumpulan, pembersihan, hingga visualisasi akhir.'
+    title: 'Graphic Designer', 
+    issuer: 'KT&G Career Prep', 
+    date: '2023',
+    file: '/E-Sertif/KTG_Graphic_Designer.pdf',
+    desc: 'Pelatihan persiapan karir spesialisasi Graphic Design.'
+  },
+  { 
+    title: 'Digital Marketing', 
+    issuer: 'KT&G Career Prep', 
+    date: '2023',
+    file: '/E-Sertif/KTG_Digital_Marketing.pdf',
+    desc: 'Pelatihan persiapan karir spesialisasi Digital Marketing.'
+  },
+  { 
+    title: 'Personal Branding', 
+    issuer: 'KT&G Career Prep', 
+    date: '2023',
+    file: '/E-Sertif/KTG_Personal_Branding.pdf',
+    desc: 'Pengembangan personal branding yang kuat dalam platform profesional.'
+  },
+  { 
+    title: 'Career Preparation', 
+    issuer: 'KT&G Career Prep', 
+    date: '2023',
+    file: '/E-Sertif/KTG_Career_Prep.pdf',
+    desc: 'Sertifikat kelulusan persiapan karier komprehensif.'
+  },
+  { 
+    title: 'IT Fundamental', 
+    issuer: 'SmartPath', 
+    date: '2024',
+    file: '/E-Sertif/SmartPath_IT.pdf',
+    desc: 'Keahlian dasar IT dan pengenalan ke industri teknologi digital.'
+  },
+  { 
+    title: 'Ngangsu Kawruh MH', 
+    issuer: 'Event Organiser', 
+    date: '2023',
+    file: '/E-Sertif/Ngangsu_MH.pdf',
+    desc: 'Sertifikat apresiasi partisipasi dalam acara kemahasiswaan atau event terkait.'
+  },
+  { 
+    title: 'Panitia FTI', 
+    issuer: 'Universitas', 
+    date: '2023',
+    file: '/E-Sertif/Panitia_FTI.pdf',
+    desc: 'Penghargaan dedikasi dan kontribusi sebagai panitia kegiatan FTI.'
   },
 ];
 
@@ -590,13 +639,13 @@ function CertModal({
             </p>
           </div>
 
-          {/* Right: Image Preview */}
-          <div className="w-full md:w-1/2 bg-charcoal flex items-center justify-center p-8">
-            <div className="w-full relative aspect-[4/3] rounded-lg overflow-hidden border border-border bg-obsidian flex items-center justify-center">
-              {cert.image ? (
-                <img src={cert.image} alt={cert.title} className="w-full h-full object-cover" />
+          {/* Right: PDF Preview */}
+          <div className="w-full md:w-1/2 bg-charcoal flex items-center justify-center p-4">
+            <div className="w-full h-[300px] md:h-full relative rounded-lg overflow-hidden border border-border bg-obsidian flex items-center justify-center">
+              {cert.file ? (
+                <iframe src={`${cert.file}#toolbar=0&navpanes=0`} className="w-full h-full border-0 bg-white" />
               ) : (
-                <span className="text-system text-text-dim">No Image Available</span>
+                <span className="text-system text-text-dim">No File Available</span>
               )}
             </div>
           </div>
@@ -793,10 +842,10 @@ export default function PortfolioSection() {
                 </div>
                 <p className="relative z-10 text-text-muted text-xs">{cert.issuer}</p>
 
-                {/* Hover Image Preview Overlay */}
-                {cert.image && (
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 z-0">
-                    <img src={cert.image} alt="" className="w-full h-full object-cover grayscale" />
+                {/* Hover PDF Preview Overlay */}
+                {cert.file && (
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity duration-300 z-0 overflow-hidden">
+                    <iframe src={`${cert.file}#view=FitH&toolbar=0&navpanes=0`} className="w-[300%] h-[300%] origin-top-left scale-[0.33] grayscale opacity-50 pointer-events-none" tabIndex={-1} />
                   </div>
                 )}
               </div>
