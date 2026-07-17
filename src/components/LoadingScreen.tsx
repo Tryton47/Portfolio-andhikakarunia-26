@@ -8,7 +8,7 @@ const bootSequence = [
   { text: '> AUTH LAYER: Verified ✓', color: 'text-neon-cyan', delay: 600 },
   { text: '> Portfolio Core: ONLINE ✓', color: 'text-neon-cyan', delay: 900 },
   { text: '> UI Engine: Ready ✓', color: 'text-neon-cyan', delay: 1200 },
-  { text: '> SYSTEM READY — Welcome, Andhika.', color: 'text-neon-red', delay: 1600 },
+  { text: '> SYSTEM READY — Welcome, Visitor.', color: 'text-neon-red', delay: 1600 },
 ];
 
 export default function LoadingScreen({ onDone }: { onDone: () => void }) {
