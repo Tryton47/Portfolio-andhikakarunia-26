@@ -743,31 +743,27 @@ export default function PortfolioSection() {
               <button
                 key={tab}
                 onClick={() => setRootTab(tab)}
-                className={`relative px-8 py-3.5 rounded-xl font-mono tracking-widest text-sm transition-all duration-500 overflow-hidden backdrop-blur-md ${
+                className={`relative px-8 py-3.5 rounded-full font-bold tracking-wide text-sm transition-all duration-500 overflow-hidden ${
                   isActive
-                    ? 'text-white font-semibold scale-105'
-                    : 'text-slate-400 hover:text-white hover:-translate-y-0.5'
+                    ? 'text-white scale-105 backdrop-blur-2xl'
+                    : 'text-slate-300 hover:text-white hover:scale-105 backdrop-blur-md'
                 }`}
                 style={{
-                  border: isActive ? '1px solid var(--theme-primary-hex)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  border: isActive 
+                    ? '1px solid rgba(255, 255, 255, 0.4)' 
+                    : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderBottomColor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                  borderRightColor:  isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
                   background: isActive 
-                    ? `linear-gradient(135deg, rgba(var(--theme-primary), 0.15), rgba(var(--theme-secondary), 0.05))` 
-                    : 'rgba(255, 255, 255, 0.02)',
+                    ? `linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05))` 
+                    : 'rgba(255, 255, 255, 0.03)',
                   boxShadow: isActive 
-                    ? '0 0 25px rgba(var(--theme-primary), 0.2), inset 0 0 12px rgba(var(--theme-primary), 0.1)' 
-                    : '0 4px 20px rgba(0,0,0,0.2)',
-                  textShadow: isActive ? '0 0 10px rgba(255,255,255,0.3)' : 'none',
+                    ? `0 8px 32px 0 rgba(0,0,0,0.3), inset 0 0 20px rgba(var(--theme-primary), 0.4)` 
+                    : '0 4px 20px rgba(0,0,0,0.1)',
+                  textShadow: isActive ? '0 2px 10px rgba(0,0,0,0.3)' : 'none',
                 }}
               >
-                {/* Glossy highlight line */}
-                <div 
-                  className={`absolute top-0 left-0 w-full h-[1px] transition-all duration-500 ${
-                    isActive ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  style={{ background: 'linear-gradient(90deg, transparent, var(--theme-primary-hex), transparent)' }}
-                />
-                
-                {tab === 'techstack' ? 'TECH STACK' : tab.toUpperCase()}
+                {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             );
           })}
@@ -784,17 +780,23 @@ export default function PortfolioSection() {
                   <button
                     key={cat}
                     onClick={() => { setSubFilter(cat); setShowMore(false); }}
-                    className={`relative px-6 py-2.5 rounded-full text-xs font-mono tracking-widest whitespace-nowrap transition-all duration-400 backdrop-blur-sm ${
+                    className={`relative px-6 py-2.5 rounded-full text-xs font-bold tracking-widest whitespace-nowrap transition-all duration-400 ${
                       isActive
-                        ? 'text-white font-medium scale-105'
-                        : 'text-slate-400 hover:text-white hover:scale-105'
+                        ? 'text-white scale-105 backdrop-blur-2xl'
+                        : 'text-slate-400 hover:text-white hover:scale-105 backdrop-blur-md'
                     }`}
                     style={{
-                      border: isActive ? '1px solid var(--theme-primary-hex)' : '1px solid rgba(255, 255, 255, 0.06)',
+                      border: isActive 
+                        ? '1px solid rgba(255, 255, 255, 0.35)' 
+                        : '1px solid rgba(255, 255, 255, 0.08)',
+                      borderBottomColor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.04)',
+                      borderRightColor:  isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.04)',
                       background: isActive 
-                        ? `linear-gradient(135deg, rgba(var(--theme-primary), 0.2), rgba(var(--theme-secondary), 0.05))` 
+                        ? `linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.03))` 
                         : 'rgba(255, 255, 255, 0.02)',
-                      boxShadow: isActive ? '0 0 20px rgba(var(--theme-primary), 0.25)' : 'none',
+                      boxShadow: isActive 
+                        ? `0 8px 32px 0 rgba(0,0,0,0.3), inset 0 0 15px rgba(var(--theme-primary), 0.3)` 
+                        : '0 4px 15px rgba(0,0,0,0.1)',
                     }}
                   >
                     {cat.toUpperCase()}
