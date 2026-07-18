@@ -13,29 +13,30 @@ import { useIdleFloat }             from '../../hooks/useIdleFloat';
 // ─── FALLBACK SHAPE (shown when .glb is missing or loading) ───
 function FallbackShape({ color, isSelected, isHovered }) {
   const ref = useRef();
-
-  useFrame(({ clock }) => {
-    if (!ref.current) return;
-    if (isSelected) {
-      ref.current.scale.setScalar(1.25 + Math.sin(clock.elapsedTime * 3) * 0.04);
+  
+  useFrame(() => {
+    if (ref.current) {
+      ref.current.rotation.y += isSelected ? 0.04 : 0.008;
+      ref.current.rotation.x += 0.002; // tambah rotasi X sedikit biar 3D-nya terlihat
     }
   });
-
+  
   return (
     <group>
       <RoundedBox
         ref={ref}
         args={[1, 1, 1]}
-        radius={0.15}
+        radius={0.2}
         smoothness={6}
-        scale={isSelected ? 1.25 : 1}
+        scale={isSelected ? 1.4 : 1}
       >
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={isHovered || isSelected ? 0.8 : 0.15}
-          roughness={0.3}
-          metalness={0.6}
+          emissiveIntensity={isHovered || isSelected ? 0.8 : 0.25}
+          metalness={0.4}
+          roughness={0.6}
+          envMapIntensity={1.2}
         />
       </RoundedBox>
       {(isSelected || isHovered) && (
