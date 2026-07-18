@@ -282,83 +282,90 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           <meshBasicMaterial color={colors.primary} transparent opacity={0.5} />
         </mesh>
 
-        {/* HTML UI Dashboard - 100% visible now. */}
-        {/* Placed slightly further in front of glass so transmission doesn't hide it */}
-        <Html position={[0, 0, 0.08]} transform scale={0.012} rotation={[0, 0, 0]}>
+        {/* HTML UI Dashboard - 2D HUD Overlay (Guaranteed to be visible) */}
+        <Html position={[0, 0, 0.1]} center zIndexRange={[100, 0]}>
           <div
-            className="flex flex-col p-2 overflow-hidden rounded-md shadow-2xl"
             style={{
-              width: "180px",
-              height: "120px",
-              backgroundColor: isWarning ? "rgba(40, 10, 10, 0.85)" : "rgba(10, 10, 15, 0.7)", // More transparent dark base
+              width: "320px",
+              height: "200px",
+              backgroundColor: isWarning ? "rgba(40, 10, 10, 0.85)" : "rgba(10, 10, 15, 0.75)",
               border: `1px solid ${isWarning ? "#ff3333" : colors.primary}`,
-              boxShadow: `0 0 25px ${isWarning ? "rgba(255,20,20,0.5)" : `${colors.primary}44`}`,
+              boxShadow: `0 0 30px ${isWarning ? "rgba(255,20,20,0.5)" : `${colors.primary}44`}`,
+              borderRadius: "10px",
+              padding: "16px",
+              display: "flex",
+              flexDirection: "column",
+              fontFamily: "monospace",
+              color: "white",
+              transform: "translateY(-15px)", // Align visually with the 3D glass
             }}
           >
             {/* Header */}
-            <div className="flex justify-between items-center border-b border-white/20 pb-1 mb-1.5">
-              <span className="text-white text-[5px] font-mono tracking-[0.2em]">ANALYTICS.SYS</span>
-              <div className="flex items-center gap-1">
-                <span
-                  className="w-1 h-1 rounded-full animate-pulse"
-                  style={
-                    phase === "warning" || phaseTimer > 0
-                      ? {
-                          backgroundColor: "#ff3333",
-                          boxShadow: "0 0 12px rgba(255,51,51,0.8)",
-                        }
-                      : { backgroundColor: colors.secondary }
-                  }
-                />
-              </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.2)", paddingBottom: "8px", marginBottom: "12px" }}>
+              <span style={{ fontSize: "10px", letterSpacing: "2px", fontWeight: "bold", color: isWarning ? "#ff3333" : "white" }}>
+                {isWarning ? "⚠ SYSTEM ALERT" : "ANALYTICS.SYS"}
+              </span>
+              <div
+                style={{
+                  width: "8px", height: "8px", borderRadius: "50%",
+                  backgroundColor: isWarning ? "#ff3333" : colors.secondary,
+                  boxShadow: `0 0 10px ${isWarning ? "#ff3333" : colors.secondary}`
+                }}
+              />
             </div>
 
             {/* Analytics Grid */}
-            {(() => {
-              const isWarning = phase === "warning" || phaseTimer > 0;
-              return (
-                <div className="flex-1 flex gap-2">
-                  {/* Bar chart */}
-                  <div className="flex-[2] flex flex-col justify-end gap-0.5 relative border-l border-b border-white/10 p-1">
-                    <span className="absolute top-0 left-1 text-[4px] text-white/50 font-mono">TRAFFIC YIELD</span>
-                    <div className="flex items-end justify-between w-full h-[60px] gap-0.5">
-                      {[40, 70, 30, 90, 60, 80].map((h, i) => (
-                        <div
-                          key={i}
-                          className="w-full rounded-t-sm transition-all duration-200"
-                          style={{
-                            height: isWarning ? `${Math.max(8, h * 0.18 + (phaseTimer / 6.0) * 55)}%` : `${h}%`,
-                            backgroundColor: isWarning ? "#ff3333" : colors.primary,
-                            opacity: 0.92,
-                            filter: isWarning ? "brightness(1.25)" : "none",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  {/* Side Stats */}
-                  <div className="flex-[1] flex flex-col gap-1 justify-center">
-                    <div className="bg-black/50 p-1 rounded border border-white/10">
-                      <div className="text-[4px] text-white/60 mb-0.5 font-mono">CPU LOAD</div>
-                      <div className="w-full h-[2px] bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: isWarning ? "100%" : "65%", backgroundColor: isWarning ? "#ff3333" : colors.secondary }} />
-                      </div>
-                    </div>
-                    <div className="bg-black/50 p-1 rounded border border-white/10">
-                      <div className="text-[4px] text-white/60 mb-0.5 font-mono">MEMORY</div>
-                      <div className="w-full h-[2px] bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: isWarning ? "100%" : "45%", backgroundColor: isWarning ? "#ff3333" : colors.primary }} />
-                      </div>
-                    </div>
-                    <div className="mt-auto text-right">
-                      <span className="text-lg font-mono text-white tracking-tighter block leading-none" style={{ textShadow: `0 0 5px ${isWarning ? "#ff3333" : colors.primary}` }}>
-                        {isWarning ? "ERR" : "99%"}
-                      </span>
-                    </div>
+            <div style={{ display: "flex", gap: "16px", flex: 1 }}>
+              {/* Bar Chart */}
+              <div style={{ flex: 2, display: "flex", flexDirection: "column", borderLeft: "1px solid rgba(255,255,255,0.1)", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingLeft: "8px", position: "relative" }}>
+                <span style={{ position: "absolute", top: 0, left: "8px", fontSize: "8px", color: "rgba(255,255,255,0.5)" }}>
+                  {isWarning ? "ERROR RATE" : "TRAFFIC YIELD"}
+                </span>
+                <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", width: "100%", flex: 1, gap: "4px" }}>
+                  {[40, 70, 30, 90, 60, 80, 50].map((h, i) => {
+                    const height = isWarning ? `${Math.max(20, h * 0.18 + (phaseTimer / 6.0) * 80)}%` : `${h}%`;
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          width: "100%",
+                          height,
+                          backgroundColor: isWarning ? "#ff3333" : colors.primary,
+                          opacity: 0.9,
+                          borderTopLeftRadius: "2px",
+                          borderTopRightRadius: "2px",
+                          transition: "height 0.2s"
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Side Stats */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px", justifyContent: "center" }}>
+                <div style={{ backgroundColor: "rgba(0,0,0,0.5)", padding: "8px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.6)", marginBottom: "4px" }}>CPU LOAD</div>
+                  <div style={{ width: "100%", height: "4px", backgroundColor: "rgba(255,255,255,0.2)", borderRadius: "2px" }}>
+                    <div style={{ height: "100%", width: isWarning ? "98%" : "65%", backgroundColor: isWarning ? "#ff3333" : colors.secondary, borderRadius: "2px", transition: "width 0.5s" }} />
                   </div>
                 </div>
-              );
-            })()}
+                <div style={{ backgroundColor: "rgba(0,0,0,0.5)", padding: "8px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.6)", marginBottom: "4px" }}>MEMORY</div>
+                  <div style={{ width: "100%", height: "4px", backgroundColor: "rgba(255,255,255,0.2)", borderRadius: "2px" }}>
+                    <div style={{ height: "100%", width: isWarning ? "95%" : "45%", backgroundColor: isWarning ? "#ff3333" : colors.primary, borderRadius: "2px", transition: "width 0.5s" }} />
+                  </div>
+                </div>
+                <div style={{ marginTop: "auto", textAlign: "right" }}>
+                  <span style={{ fontSize: "24px", fontWeight: "bold", textShadow: `0 0 10px ${isWarning ? "#ff3333" : colors.primary}`, color: isWarning ? "#ff3333" : "white" }}>
+                    {isWarning ? "ERR" : "99%"}
+                  </span>
+                  <div style={{ fontSize: "8px", color: isWarning ? "rgba(255,50,50,0.8)" : "rgba(255,255,255,0.5)" }}>
+                    {isWarning ? "CRITICAL" : "UPTIME"}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </Html>
       </group>
