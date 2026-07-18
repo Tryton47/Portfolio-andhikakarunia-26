@@ -1,9 +1,103 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Environment, Float, useCursor, Html, RoundedBox, ContactShadows, Text } from "@react-three/drei";
 import * as THREE from "three";
+
+// ─── DANGER PARTICLES (Smoke + Ember system) ───
+const PARTICLE_COUNT = 40;
+
+function DangerParticles({ active }: { active: boolean }) {
+  const meshRef = useRef<THREE.Points>(null);
+
+  // Generate initial random particle data
+  const particles = useMemo(() => {
+    const positions = new Float32Array(PARTICLE_COUNT * 3);
+    const velocities: { vx: number; vy: number; vz: number; life: number; maxLife: number; size: number }[] = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 0.2 + Math.random() * 0.6;
+      positions[i * 3] = Math.cos(angle) * radius;
+      positions[i * 3 + 1] = Math.random() * 0.5 - 0.3;
+      positions[i * 3 + 2] = Math.sin(angle) * radius - 0.8;
+      const maxLife = 1.5 + Math.random() * 2.0;
+      velocities.push({
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: 0.3 + Math.random() * 0.8,
+        vz: (Math.random() - 0.5) * 0.4 - 0.1,
+        life: Math.random() * maxLife, // stagger starts
+        maxLife,
+        size: 0.05 + Math.random() * 0.18,
+      });
+    }
+    return { positions, velocities };
+  }, []);
+
+  const posRef = useRef(particles.positions.slice());
+  const opacityRef = useRef(new Float32Array(PARTICLE_COUNT).fill(0));
+
+  useFrame((_, delta) => {
+    if (!meshRef.current) return;
+    const geo = meshRef.current.geometry;
+    const pos = geo.attributes.position as THREE.BufferAttribute;
+    const vel = particles.velocities;
+    const targetOpacity = active ? 1 : 0;
+    const mat = meshRef.current.material as THREE.PointsMaterial;
+    mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.08);
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const v = vel[i];
+      if (!active) continue;
+      v.life += delta;
+      if (v.life > v.maxLife) {
+        // Reset particle
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 0.15 + Math.random() * 0.5;
+        posRef.current[i * 3] = Math.cos(angle) * radius;
+        posRef.current[i * 3 + 1] = -0.2 + Math.random() * 0.2;
+        posRef.current[i * 3 + 2] = Math.sin(angle) * radius - 0.8;
+        v.vx = (Math.random() - 0.5) * 0.4;
+        v.vy = 0.4 + Math.random() * 0.9;
+        v.vz = (Math.random() - 0.5) * 0.4 - 0.1;
+        v.life = 0;
+        v.maxLife = 1.5 + Math.random() * 2.0;
+      } else {
+        posRef.current[i * 3] += v.vx * delta;
+        posRef.current[i * 3 + 1] += v.vy * delta;
+        posRef.current[i * 3 + 2] += v.vz * delta;
+        // drift outward slightly for natural spread
+        v.vx *= 1 + delta * 0.3;
+        v.vz *= 1 + delta * 0.3;
+        v.vy *= 1 - delta * 0.15; // slow down rise over time
+      }
+      pos.array[i * 3] = posRef.current[i * 3];
+      pos.array[i * 3 + 1] = posRef.current[i * 3 + 1];
+      pos.array[i * 3 + 2] = posRef.current[i * 3 + 2];
+    }
+    pos.needsUpdate = true;
+  });
+
+  const geo = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(particles.positions.slice(), 3));
+    return g;
+  }, [particles]);
+
+  return (
+    <points ref={meshRef} geometry={geo}>
+      <pointsMaterial
+        color="#ff2200"
+        size={0.18}
+        sizeAttenuation
+        transparent
+        opacity={0}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
 
 // ─── CHIBI MECHA (BLACK & SILVER) ───
 type RobotPhase = "idle" | "parsing" | "running" | "results" | "warning";
@@ -15,7 +109,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   const rightArmRef = useRef<THREE.Group>(null);
   const eyeLeftRef = useRef<THREE.Mesh>(null);
   const eyeRightRef = useRef<THREE.Mesh>(null);
-  const fogRef = useRef<THREE.Mesh>(null);
+  // fogRef removed - replaced by DangerParticles component
 
   const target = new THREE.Vector3();
   const [hovered, setHovered] = useState(false);
@@ -121,12 +215,6 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
       eyeLeftRef.current.scale.y = THREE.MathUtils.lerp(eyeLeftRef.current.scale.y, targetScaleY, 0.1);
       eyeRightRef.current.scale.y = THREE.MathUtils.lerp(eyeRightRef.current.scale.y, targetScaleY, 0.1);
-    }
-
-    if (fogRef.current) {
-      const mat = fogRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = THREE.MathUtils.lerp(mat.opacity, isWarning ? 0.4 + Math.sin(t * 3) * 0.1 : 0, 0.05);
-      fogRef.current.scale.setScalar(THREE.MathUtils.lerp(fogRef.current.scale.x, isWarning ? 1.8 + Math.sin(t * 2) * 0.1 : 0.5, 0.03));
     }
   });
 
@@ -356,16 +444,13 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
         </group>
       </group>
 
-      {/* Aura Merah saat Marah */}
+      {/* Aura Merah saat Marah – red point light */}
       {isWarning && (
-        <pointLight position={[0, 1.0, 2.5]} intensity={50} color="#ff0000" distance={15} decay={1.5} />
+        <pointLight position={[0, 1.0, 1.5]} intensity={60} color="#ff2200" distance={12} decay={1.5} />
       )}
 
-      {/* Kabut Aura Merah di Belakang */}
-      <mesh ref={fogRef} position={[0, 0.8, -1.0]}>
-        <sphereGeometry args={[0.8, 32, 32]} />
-        <meshBasicMaterial color="#ff1111" transparent opacity={0} side={THREE.BackSide} depthWrite={false} />
-      </mesh>
+      {/* Dynamic Danger Particles – smoke & embers */}
+      <DangerParticles active={isWarning} />
     </group>
   );
 }
