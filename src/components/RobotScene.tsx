@@ -5,97 +5,139 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import { Environment, Float, useCursor, Html, RoundedBox, ContactShadows, Text } from "@react-three/drei";
 import * as THREE from "three";
 
-// ─── DANGER PARTICLES (Smoke + Ember system) ───
-const PARTICLE_COUNT = 40;
+// ─── DANGER PARTICLES – 3 layers: embers, smoke, shockwave sparks ───
+const EMBER_COUNT = 60;
+const SMOKE_COUNT = 30;
 
 function DangerParticles({ active }: { active: boolean }) {
-  const meshRef = useRef<THREE.Points>(null);
+  const emberRef = useRef<THREE.Points>(null);
+  const smokeRef = useRef<THREE.Points>(null);
 
-  // Generate initial random particle data
-  const particles = useMemo(() => {
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const velocities: { vx: number; vy: number; vz: number; life: number; maxLife: number; size: number }[] = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const radius = 0.2 + Math.random() * 0.6;
-      positions[i * 3] = Math.cos(angle) * radius;
-      positions[i * 3 + 1] = Math.random() * 0.5 - 0.3;
-      positions[i * 3 + 2] = Math.sin(angle) * radius - 0.8;
-      const maxLife = 1.5 + Math.random() * 2.0;
-      velocities.push({
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: 0.3 + Math.random() * 0.8,
-        vz: (Math.random() - 0.5) * 0.4 - 0.1,
-        life: Math.random() * maxLife, // stagger starts
-        maxLife,
-        size: 0.05 + Math.random() * 0.18,
-      });
+  type PData = { vx: number; vy: number; vz: number; life: number; maxLife: number };
+
+  // Embers – fast, small, fiery
+  const embers = useMemo(() => {
+    const positions = new Float32Array(EMBER_COUNT * 3);
+    const vel: PData[] = [];
+    for (let i = 0; i < EMBER_COUNT; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 0.05 + Math.random() * 0.3;
+      positions[i * 3]     = Math.cos(a) * r;
+      positions[i * 3 + 1] = Math.random() * 0.6 - 0.1;
+      positions[i * 3 + 2] = Math.sin(a) * r - 0.5;
+      vel.push({ vx: (Math.random()-0.5)*2.5, vy: 0.8+Math.random()*2.5, vz: (Math.random()-0.5)*2.5, life: Math.random()*1.2, maxLife: 0.6+Math.random()*1.0 });
     }
-    return { positions, velocities };
+    return { positions, vel };
   }, []);
 
-  const posRef = useRef(particles.positions.slice());
-  const opacityRef = useRef(new Float32Array(PARTICLE_COUNT).fill(0));
+  // Smoke – slow, large, billowing behind
+  const smoke = useMemo(() => {
+    const positions = new Float32Array(SMOKE_COUNT * 3);
+    const vel: PData[] = [];
+    for (let i = 0; i < SMOKE_COUNT; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 0.3 + Math.random() * 0.8;
+      positions[i * 3]     = Math.cos(a) * r;
+      positions[i * 3 + 1] = Math.random() * 0.3 - 0.5;
+      positions[i * 3 + 2] = Math.sin(a) * r - 1.0;
+      vel.push({ vx: (Math.random()-0.5)*0.3, vy: 0.2+Math.random()*0.5, vz: (Math.random()-0.5)*0.3, life: Math.random()*2.5, maxLife: 2.0+Math.random()*1.5 });
+    }
+    return { positions, vel };
+  }, []);
+
+  const emberPos = useRef(embers.positions.slice());
+  const smokePos = useRef(smoke.positions.slice());
+
+  const emberGeo = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(embers.positions.slice(), 3));
+    return g;
+  }, [embers]);
+
+  const smokeGeo = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(smoke.positions.slice(), 3));
+    return g;
+  }, [smoke]);
 
   useFrame((_, delta) => {
-    if (!meshRef.current) return;
-    const geo = meshRef.current.geometry;
-    const pos = geo.attributes.position as THREE.BufferAttribute;
-    const vel = particles.velocities;
-    const targetOpacity = active ? 1 : 0;
-    const mat = meshRef.current.material as THREE.PointsMaterial;
-    mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.08);
+    const tgt = active ? 1 : 0;
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const v = vel[i];
-      if (!active) continue;
-      v.life += delta;
-      if (v.life > v.maxLife) {
-        // Reset particle
-        const angle = Math.random() * Math.PI * 2;
-        const radius = 0.15 + Math.random() * 0.5;
-        posRef.current[i * 3] = Math.cos(angle) * radius;
-        posRef.current[i * 3 + 1] = -0.2 + Math.random() * 0.2;
-        posRef.current[i * 3 + 2] = Math.sin(angle) * radius - 0.8;
-        v.vx = (Math.random() - 0.5) * 0.4;
-        v.vy = 0.4 + Math.random() * 0.9;
-        v.vz = (Math.random() - 0.5) * 0.4 - 0.1;
-        v.life = 0;
-        v.maxLife = 1.5 + Math.random() * 2.0;
-      } else {
-        posRef.current[i * 3] += v.vx * delta;
-        posRef.current[i * 3 + 1] += v.vy * delta;
-        posRef.current[i * 3 + 2] += v.vz * delta;
-        // drift outward slightly for natural spread
-        v.vx *= 1 + delta * 0.3;
-        v.vz *= 1 + delta * 0.3;
-        v.vy *= 1 - delta * 0.15; // slow down rise over time
+    // --- EMBERS ---
+    if (emberRef.current) {
+      const mat = emberRef.current.material as THREE.PointsMaterial;
+      mat.opacity = THREE.MathUtils.lerp(mat.opacity, tgt * 0.95, 0.1);
+      const pos = emberRef.current.geometry.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < EMBER_COUNT; i++) {
+        const v = embers.vel[i];
+        if (!active) continue;
+        v.life += delta;
+        if (v.life > v.maxLife) {
+          const a = Math.random() * Math.PI * 2;
+          const r = 0.05 + Math.random() * 0.25;
+          emberPos.current[i*3]   = Math.cos(a)*r;
+          emberPos.current[i*3+1] = -0.1 + Math.random()*0.2;
+          emberPos.current[i*3+2] = Math.sin(a)*r - 0.5;
+          v.vx = (Math.random()-0.5)*3.0; v.vy = 1.2+Math.random()*3.0; v.vz = (Math.random()-0.5)*3.0;
+          v.life = 0; v.maxLife = 0.5+Math.random()*0.9;
+        } else {
+          emberPos.current[i*3]   += v.vx * delta;
+          emberPos.current[i*3+1] += v.vy * delta;
+          emberPos.current[i*3+2] += v.vz * delta;
+          v.vx *= 1 - delta*0.6;  // decelerate
+          v.vz *= 1 - delta*0.6;
+          v.vy -= delta * 2.0;    // gravity pull
+        }
+        pos.array[i*3]   = emberPos.current[i*3];
+        pos.array[i*3+1] = emberPos.current[i*3+1];
+        pos.array[i*3+2] = emberPos.current[i*3+2];
       }
-      pos.array[i * 3] = posRef.current[i * 3];
-      pos.array[i * 3 + 1] = posRef.current[i * 3 + 1];
-      pos.array[i * 3 + 2] = posRef.current[i * 3 + 2];
+      pos.needsUpdate = true;
     }
-    pos.needsUpdate = true;
+
+    // --- SMOKE ---
+    if (smokeRef.current) {
+      const mat = smokeRef.current.material as THREE.PointsMaterial;
+      mat.opacity = THREE.MathUtils.lerp(mat.opacity, tgt * 0.25, 0.04);
+      const pos = smokeRef.current.geometry.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < SMOKE_COUNT; i++) {
+        const v = smoke.vel[i];
+        if (!active) continue;
+        v.life += delta;
+        if (v.life > v.maxLife) {
+          const a = Math.random() * Math.PI * 2;
+          const r = 0.2 + Math.random() * 0.6;
+          smokePos.current[i*3]   = Math.cos(a)*r;
+          smokePos.current[i*3+1] = -0.5 + Math.random()*0.2;
+          smokePos.current[i*3+2] = Math.sin(a)*r - 1.0;
+          v.vx=(Math.random()-0.5)*0.4; v.vy=0.3+Math.random()*0.6; v.vz=(Math.random()-0.5)*0.4;
+          v.life=0; v.maxLife=2.0+Math.random()*1.5;
+        } else {
+          smokePos.current[i*3]   += v.vx * delta;
+          smokePos.current[i*3+1] += v.vy * delta;
+          smokePos.current[i*3+2] += v.vz * delta;
+          v.vx *= 1 + delta*0.2;
+          v.vz *= 1 + delta*0.2;
+        }
+        pos.array[i*3]   = smokePos.current[i*3];
+        pos.array[i*3+1] = smokePos.current[i*3+1];
+        pos.array[i*3+2] = smokePos.current[i*3+2];
+      }
+      pos.needsUpdate = true;
+    }
   });
 
-  const geo = useMemo(() => {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.BufferAttribute(particles.positions.slice(), 3));
-    return g;
-  }, [particles]);
-
   return (
-    <points ref={meshRef} geometry={geo}>
-      <pointsMaterial
-        color="#ff2200"
-        size={0.18}
-        sizeAttenuation
-        transparent
-        opacity={0}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
+    <>
+      {/* Embers layer – bright, fast, fiery orange-red */}
+      <points ref={emberRef} geometry={emberGeo}>
+        <pointsMaterial color="#ff4400" size={0.12} sizeAttenuation transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </points>
+      {/* Smoke layer – soft, dark red cloud */}
+      <points ref={smokeRef} geometry={smokeGeo}>
+        <pointsMaterial color="#cc1100" size={0.55} sizeAttenuation transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </points>
+    </>
   );
 }
 
@@ -195,26 +237,31 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
       }
     }
 
-    // Natural Expressions (Eyes)
+    // Natural Expressions (Eyes) – angry red glow
     if (eyeLeftRef.current && eyeRightRef.current) {
       const warn = isWarning;
       const activeBoost = hovered && !warn && (isParsing || isRunning);
 
-      const currentEyeColor = warn ? new THREE.Color("#ff3333") : new THREE.Color(activeBoost ? colors.secondary : colors.primary);
-      (eyeLeftRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.1);
-      (eyeRightRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.1);
+      // Lerp eye color to angry red or normal theme color
+      const targetHex = warn ? "#ff0000" : (activeBoost ? colors.secondary : colors.primary);
+      const currentEyeColor = new THREE.Color(targetHex);
+      (eyeLeftRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, warn ? 0.25 : 0.08);
+      (eyeRightRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, warn ? 0.25 : 0.08);
 
-      // Expression targets
-      const targetZLeft = warn ? -0.3 : isResults ? 0.12 : isRunning ? -0.1 : 0.05;
-      const targetZRight = warn ? 0.3 : isResults ? -0.12 : isRunning ? 0.1 : -0.05;
+      // Pulsing scale for angry glow effect
+      const eyePulse = warn ? 1.0 + Math.sin(t * 12) * 0.15 : 1.0;
+      eyeLeftRef.current.scale.x  = THREE.MathUtils.lerp(eyeLeftRef.current.scale.x, eyePulse, 0.2);
+      eyeRightRef.current.scale.x = THREE.MathUtils.lerp(eyeRightRef.current.scale.x, eyePulse, 0.2);
 
-      const targetScaleY = warn ? 0.4 : isRunning ? 0.75 : isParsing ? 0.9 : 1.0;
+      // Expression rotation – angry V-shape brows
+      const targetZLeft  = warn ? -0.5 : isResults ? 0.12 : isRunning ? -0.1 : 0.05;
+      const targetZRight = warn ?  0.5 : isResults ? -0.12 : isRunning ? 0.1 : -0.05;
+      const targetScaleY = warn ? 0.35 : isRunning ? 0.75 : isParsing ? 0.9 : 1.0;
 
-      eyeLeftRef.current.rotation.z = THREE.MathUtils.lerp(eyeLeftRef.current.rotation.z, targetZLeft, 0.1);
-      eyeRightRef.current.rotation.z = THREE.MathUtils.lerp(eyeRightRef.current.rotation.z, targetZRight, 0.1);
-
-      eyeLeftRef.current.scale.y = THREE.MathUtils.lerp(eyeLeftRef.current.scale.y, targetScaleY, 0.1);
-      eyeRightRef.current.scale.y = THREE.MathUtils.lerp(eyeRightRef.current.scale.y, targetScaleY, 0.1);
+      eyeLeftRef.current.rotation.z  = THREE.MathUtils.lerp(eyeLeftRef.current.rotation.z,  targetZLeft,  0.12);
+      eyeRightRef.current.rotation.z = THREE.MathUtils.lerp(eyeRightRef.current.rotation.z, targetZRight, 0.12);
+      eyeLeftRef.current.scale.y  = THREE.MathUtils.lerp(eyeLeftRef.current.scale.y,  targetScaleY, 0.12);
+      eyeRightRef.current.scale.y = THREE.MathUtils.lerp(eyeRightRef.current.scale.y, targetScaleY, 0.12);
     }
   });
 
