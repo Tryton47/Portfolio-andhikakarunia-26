@@ -21,13 +21,16 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     
-    // Head looks at cursor
+    // Head looks at cursor (Restricted and smooth)
     if (headRef.current) {
-      target.set(mousePos.x * 4, mousePos.y * 3 + 1, 5);
+      // Reduced multipliers so the head doesn't snap backwards or turn too far.
+      // The cursor maps to -1 to 1.
+      target.set(mousePos.x * 2.5, mousePos.y * 1.5 + 1.2, 6);
       const dummy = new THREE.Object3D();
       dummy.position.copy(headRef.current.position);
       dummy.lookAt(target);
-      headRef.current.quaternion.slerp(dummy.quaternion, 0.15);
+      // Slower slerp for ultra-smooth turning
+      headRef.current.quaternion.slerp(dummy.quaternion, 0.06);
     }
     
     // Idle floating
@@ -35,10 +38,10 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
       groupRef.current.position.y = Math.sin(t * 2) * 0.05 - 0.2;
     }
     
-    // Typing animation
+    // Typing/Interacting animation
     if (leftArmRef.current && rightArmRef.current) {
-      leftArmRef.current.rotation.x = -Math.PI / 4 + Math.sin(t * 15) * 0.1;
-      rightArmRef.current.rotation.x = -Math.PI / 4 + Math.cos(t * 15) * 0.1;
+      leftArmRef.current.rotation.x = -Math.PI / 4 + Math.sin(t * 10) * 0.08;
+      rightArmRef.current.rotation.x = -Math.PI / 4 + Math.cos(t * 10) * 0.08;
     }
   });
 
@@ -49,7 +52,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
     if (groupRef.current && headRef.current) {
       gsap.to(groupRef.current.position, {
         y: groupRef.current.position.y + 0.5,
-        duration: 0.3,
+        duration: 0.4,
         yoyo: true,
         repeat: 1,
         ease: "power2.out"
@@ -57,7 +60,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
       // Cool double spin
       gsap.to(groupRef.current.rotation, {
         y: groupRef.current.rotation.y - Math.PI * 2,
-        duration: 0.7,
+        duration: 0.8,
         ease: "power3.inOut"
       });
     }
@@ -65,10 +68,10 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
   // Materials: Dominant Black and Silver Glossy
   const blackMetal = new THREE.MeshPhysicalMaterial({ 
-    color: '#0a0a0a', metalness: 0.8, roughness: 0.2, clearcoat: 0.5 
+    color: '#080808', metalness: 0.8, roughness: 0.2, clearcoat: 0.6 
   });
   const silverMetal = new THREE.MeshPhysicalMaterial({ 
-    color: '#c0c0c0', metalness: 1.0, roughness: 0.1, clearcoat: 1.0 
+    color: '#d0d0d0', metalness: 1.0, roughness: 0.1, clearcoat: 1.0 
   });
   const darkGlass = new THREE.MeshPhysicalMaterial({
     color: '#000000', metalness: 0.9, roughness: 0.05, clearcoat: 1.0
@@ -80,15 +83,15 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
     <group 
       ref={groupRef} 
       position={[0, 0, 0]} 
+      // Scale up the entire robot slightly to make it proportional
+      scale={[1.2, 1.2, 1.2]} 
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
       onPointerDown={handlePointerDown}
     >
       {/* ─── BODY ─── */}
       <group position={[0, 0.6, 0]}>
-        {/* Core Chest */}
         <RoundedBox args={[1.0, 0.9, 0.7]} radius={0.15} material={blackMetal} castShadow />
-        {/* Silver Armor Plates */}
         <RoundedBox args={[0.8, 0.7, 0.75]} radius={0.1} position={[0, 0.05, 0]} material={silverMetal} />
         {/* Center Core Reactor */}
         <mesh position={[0, 0.1, 0.38]} material={secondaryGlow}>
@@ -105,25 +108,20 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
       {/* ─── HEAD ─── */}
       <group ref={headRef} position={[0, 1.4, 0]}>
-        {/* Neck */}
         <mesh position={[0, -0.25, 0]} material={silverMetal}>
           <cylinderGeometry args={[0.1, 0.1, 0.2]} />
         </mesh>
         
-        {/* Main Head Box (Angular) */}
         <RoundedBox args={[1.1, 0.9, 1.0]} radius={0.15} material={blackMetal} castShadow />
         
-        {/* Face Plate (Silver surround) */}
         <mesh position={[0, -0.05, 0.45]} material={silverMetal}>
           <boxGeometry args={[0.9, 0.5, 0.15]} />
         </mesh>
         
-        {/* Glass Visor (Dark) */}
         <mesh position={[0, -0.05, 0.51]} material={darkGlass}>
           <boxGeometry args={[0.8, 0.4, 0.05]} />
         </mesh>
         
-        {/* Glowing Eyes */}
         <group position={[0, -0.05, 0.54]}>
           <mesh position={[-0.2, 0, 0]} rotation={[0, 0, 0.1]} material={glowMaterial}>
             <boxGeometry args={[0.25, 0.1, 0.02]} />
@@ -133,7 +131,6 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           </mesh>
         </group>
         
-        {/* V-Fin (Gundam Antenna) */}
         <group position={[0, 0.35, 0.52]}>
           <mesh position={[-0.2, 0.2, 0]} rotation={[0, 0, -0.6]} material={secondaryGlow}>
             <boxGeometry args={[0.05, 0.5, 0.05]} />
@@ -166,62 +163,81 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
         </group>
       </group>
 
-      {/* ─── LAPTOP / CONSOLE ─── */}
-      <group position={[0, 0.1, 1.0]}>
-        {/* Laptop Base */}
-        <RoundedBox args={[1.5, 0.05, 1.0]} radius={0.02} material={silverMetal} castShadow />
+      {/* ─── PURE HOLOGRAM ANALYTICS (No Laptop) ─── */}
+      {/* Positioned floating in front of the robot */}
+      <group position={[0, 0.5, 1.2]} rotation={[-0.1, 0, 0]}>
         
-        {/* Keyboard Glow */}
-        <mesh position={[0, 0.03, 0.1]} rotation={[-Math.PI/2, 0, 0]}>
-          <planeGeometry args={[1.2, 0.5]} />
-          <meshBasicMaterial color={colors.primary} transparent opacity={0.3} />
+        {/* Holographic Border/Frame */}
+        <RoundedBox args={[1.6, 1.0, 0.02]} radius={0.05} smoothness={4}>
+          <meshBasicMaterial color={colors.primary} transparent opacity={0.3} wireframe />
+        </RoundedBox>
+        
+        {/* Glowing Base Projection Pad (below hologram) */}
+        <mesh position={[0, -0.6, 0.2]} rotation={[-Math.PI/2, 0, 0]}>
+          <circleGeometry args={[0.6, 32]} />
+          <meshBasicMaterial color={colors.secondary} transparent opacity={0.15} />
+        </mesh>
+        <mesh position={[0, -0.6, 0.2]} rotation={[-Math.PI/2, 0, 0]}>
+          <ringGeometry args={[0.55, 0.6, 32]} />
+          <meshBasicMaterial color={colors.primary} transparent opacity={0.6} />
         </mesh>
 
-        {/* Laptop Screen */}
-        <group position={[0, 0.02, -0.45]} rotation={[-0.15, 0, 0]}>
-          {/* Screen Lid */}
-          <RoundedBox args={[1.5, 1.0, 0.05]} radius={0.02} position={[0, 0.5, 0]} material={blackMetal} />
-          
-          {/* Glowing Display Background */}
-          <mesh position={[0, 0.5, 0.03]}>
-            <planeGeometry args={[1.4, 0.9]} />
-            <meshBasicMaterial color="#000000" />
-          </mesh>
-          
-          {/* HTML UI perfectly matched to screen size */}
-          {/* Screen plane is 1.4 x 0.9 units. With scale={0.01}, width=140px, height=90px */}
-          {/* Let's use scale={0.005} so we can design in 280x180 px for better resolution */}
-          <Html position={[0, 0.5, 0.031]} transform distanceFactor={1} scale={0.005} rotation={[0, 0, 0]}>
-            <div 
-              className="w-[280px] h-[180px] bg-black/90 border border-white/10 rounded flex flex-col p-2 overflow-hidden"
-            >
-              <div className="flex justify-between border-b border-white/20 pb-1 mb-2">
-                <span className="text-white/80 text-[8px] font-mono tracking-widest">ANALYTICS.SYS</span>
+        {/* HTML UI Dashboard */}
+        {/* Plane size is 1.6 x 1.0. If scale=0.005, CSS width should be 1.6/0.005 = 320px, height = 200px */}
+        <Html position={[0, 0, 0.02]} transform distanceFactor={1.2} scale={0.005} rotation={[0, 0, 0]}>
+          <div 
+            className="w-[320px] h-[200px] flex flex-col p-3 overflow-hidden rounded shadow-2xl backdrop-blur-sm"
+            style={{ 
+              backgroundColor: 'rgba(5, 5, 5, 0.7)',
+              border: `1px solid rgba(var(--theme-primary), 0.5)`
+            }}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-white/20 pb-1.5 mb-2">
+              <span className="text-white/90 text-[10px] font-mono tracking-[0.2em]">ANALYTICS.SYS</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[8px] text-white/50 font-mono">LIVE</span>
                 <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: colors.secondary }} />
               </div>
-              
-              <div className="flex-1 flex gap-2">
-                {/* Bar chart */}
-                <div className="flex-1 flex items-end gap-1">
-                  {[40, 70, 30, 90, 60].map((h, i) => (
-                    <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, backgroundColor: colors.primary }} />
+            </div>
+            
+            {/* Analytics Grid */}
+            <div className="flex-1 flex gap-3">
+              {/* Bar chart */}
+              <div className="w-2/3 flex flex-col justify-end gap-1 relative border-l border-b border-white/10 p-1">
+                <span className="absolute top-1 left-1 text-[7px] text-white/40 font-mono">TRAFFIC YIELD</span>
+                <div className="flex items-end justify-between w-full h-[120px] gap-1">
+                  {[40, 70, 30, 90, 60, 80].map((h, i) => (
+                    <div 
+                      key={i} 
+                      className="w-full rounded-t-sm transition-all duration-500 opacity-80" 
+                      style={{ height: `${h}%`, backgroundColor: colors.primary }} 
+                    />
                   ))}
                 </div>
-                {/* Stats */}
-                <div className="w-[80px] flex flex-col gap-2 justify-center">
-                   <div className="text-[7px] text-white/50 font-mono">CPU LOAD</div>
-                   <div className="w-full h-1 bg-white/10 rounded-full">
-                     <div className="h-full rounded-full" style={{ width: '70%', backgroundColor: colors.secondary }} />
+              </div>
+              {/* Side Stats */}
+              <div className="w-1/3 flex flex-col gap-2 justify-center">
+                 <div className="bg-black/40 p-1.5 rounded border border-white/5">
+                   <div className="text-[7px] text-white/50 mb-1 font-mono">CPU LOAD</div>
+                   <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                     <div className="h-full rounded-full" style={{ width: '65%', backgroundColor: colors.secondary }} />
                    </div>
-                   <div className="text-[7px] text-white/50 font-mono mt-1">MEM USAGE</div>
-                   <div className="w-full h-1 bg-white/10 rounded-full">
+                 </div>
+                 <div className="bg-black/40 p-1.5 rounded border border-white/5">
+                   <div className="text-[7px] text-white/50 mb-1 font-mono">MEM USAGE</div>
+                   <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
                      <div className="h-full rounded-full" style={{ width: '45%', backgroundColor: colors.primary }} />
                    </div>
-                </div>
+                 </div>
+                 <div className="mt-auto text-right pr-1">
+                    <span className="text-xl font-mono text-white tracking-tighter block leading-none" style={{ textShadow: `0 0 10px ${colors.primary}` }}>99%</span>
+                    <span className="text-[6px] text-white/60 tracking-widest font-mono">SYSTEM READY</span>
+                 </div>
               </div>
             </div>
-          </Html>
-        </group>
+          </div>
+        </Html>
       </group>
     </group>
   );
@@ -234,6 +250,7 @@ export default function RobotScene() {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      // Mapping cursor slightly constrained so it doesn't flip out
       setMousePos({
         x: (e.clientX / window.innerWidth) * 2 - 1,
         y: -(e.clientY / window.innerHeight) * 2 + 1,
@@ -268,24 +285,24 @@ export default function RobotScene() {
         INTERACTIVE MECHA
       </div>
 
-      <Canvas camera={{ position: [0, 1.5, 6], fov: 40 }} shadows>
+      <Canvas camera={{ position: [0, 1.5, 6.5], fov: 40 }} shadows>
         <ambientLight intensity={1.5} />
         <spotLight 
           position={[5, 10, 5]} 
           angle={0.3} 
           penumbra={1} 
-          intensity={2.5} 
+          intensity={3} 
           castShadow 
           shadow-mapSize={1024}
         />
-        <pointLight position={[-3, 2, 4]} intensity={1.5} color={colors.secondary} />
-        <pointLight position={[3, -1, 4]} intensity={1.5} color={colors.primary} />
+        <pointLight position={[-3, 2, 4]} intensity={2} color={colors.secondary} />
+        <pointLight position={[3, -1, 4]} intensity={2} color={colors.primary} />
         
         <Float speed={2} rotationIntensity={0.05} floatIntensity={0.2}>
           <CoolChibiMecha mousePos={mousePos} colors={colors} onClick={handleRobotClick} />
         </Float>
         
-        <ContactShadows position={[0, -1.2, 0]} opacity={0.7} scale={5} blur={2} far={4} color="#000000" />
+        <ContactShadows position={[0, -1.8, 0]} opacity={0.8} scale={6} blur={2.5} far={4} color="#000000" />
         <Environment preset="city" />
       </Canvas>
     </div>
