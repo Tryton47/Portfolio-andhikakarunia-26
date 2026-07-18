@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { ExternalLink, Code2, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { ExternalLink, Code2, ChevronDown, ChevronUp } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useScrollReveal }     from '../hooks/useScrollReveal';

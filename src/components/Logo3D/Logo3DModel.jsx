@@ -2,14 +2,13 @@
 
 import React, { useRef, useState, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { RoundedBox, Html } from '@react-three/drei';
+import { RoundedBox, Html, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { useLogoState }             from '../../hooks/useLogoState';
 import { useCategoryTransition }    from '../../hooks/useCategoryTransition';
 import { useEntranceStagger }       from '../../hooks/useEntranceStagger';
 import { useDragMomentum }          from '../../hooks/useDragMomentum';
 import { useIdleFloat }             from '../../hooks/useIdleFloat';
-import { useCopyPasteEasterEgg }    from './CopyPasteEasterEgg';
 
 // ─── FALLBACK SHAPE (shown when .glb is missing or loading) ───
 function FallbackShape({ color, isSelected, isHovered }) {
@@ -56,7 +55,6 @@ function FallbackShape({ color, isSelected, isHovered }) {
 
 // ─── GLB MODEL LOADER ───
 function GLBModel({ path, color, isSelected, isHovered }) {
-  const { useGLTF } = require('@react-three/drei');
   const { scene }   = useGLTF(path);
   const ref = useRef();
 
@@ -98,9 +96,6 @@ export default function Logo3DModel({ logo, index, position, color, category, on
   const { liveRef }         = useCategoryTransition(position, category, delay);
   const { onPointerDown, onPointerMove, onPointerUp, isDragging } = useDragMomentum(meshRef);
   useIdleFloat(meshRef, { phase: index * 0.7, paused: isHovered || isDragging.current });
-
-  // Easter egg: Ctrl+C on hover
-  const { feedback } = useCopyPasteEasterEgg(isHovered ? logo.id : null);
 
   // Sync transition position to mesh each frame
   useFrame(() => {

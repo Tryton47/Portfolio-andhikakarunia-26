@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { LOGOS_DATA } from '../../config/logoData';
-import { useLogoState } from '../../hooks/useLogoState';
 import { THEME } from '../../config/colors';
 
 /**

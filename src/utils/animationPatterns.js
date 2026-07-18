@@ -29,7 +29,7 @@ export const ARRANGEMENTS = {
   },
 
   // ─── DESIGNER: Organic scatter using golden angle ───
-  [CATEGORIES.DESIGN]: (i, total) => {
+  [CATEGORIES.DESIGN]: (i) => {
     const seed = i * 137.508; // golden angle (degrees)
     const r    = 1.6 + (i % 3) * 0.6;
     const rad  = (seed * Math.PI) / 180;

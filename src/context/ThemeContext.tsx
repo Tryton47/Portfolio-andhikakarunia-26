@@ -111,6 +111,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try {
       const saved = localStorage.getItem('portfolio-theme') as ThemeName | null;
       if (saved && THEMES.find((t) => t.name === saved)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setThemeName(saved);
       }
     } catch {}

@@ -39,7 +39,6 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
     // Derived state
     const isWarning = phase === "warning" || phaseTimer > 0;
-    const warningProgress = isWarning ? Math.max(0, Math.min(1, phaseTimer / 3.2)) : 0;
     const isParsing = phase === "parsing";
     const isRunning = phase === "running";
     const isResults = phase === "results";

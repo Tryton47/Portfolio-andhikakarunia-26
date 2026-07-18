@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, Stars, useGLTF } from '@react-three/drei';
 import Logo3DModel from './Logo3DModel';
-import { CopyPasteToast } from './CopyPasteEasterEgg';
+import { CopyPasteToast, useCopyPasteEasterEgg } from './CopyPasteEasterEgg';
 import { LOGOS_DATA }   from '../../config/logoData';
 import { THEME }        from '../../config/colors';
 import { useLogoState } from '../../hooks/useLogoState';
@@ -15,7 +15,7 @@ import * as THREE from 'three';
 function PreloadModels({ logos }) {
   logos.forEach((logo) => {
     if (logo.model) {
-      try { useGLTF.preload(logo.model); } catch (_) { /* file may not exist yet */ }
+      try { useGLTF.preload(logo.model); } catch { /* file may not exist yet */ }
     }
   });
   return null;
@@ -57,7 +57,7 @@ export default function Logo3DCanvas() {
 
   // Shared hovered state for easter egg
   const [hoveredLogoId, setHoveredLogoId] = useState(null);
-  const [easterFeedback, setEasterFeedback] = useState(null);
+  const { feedback: easterFeedback } = useCopyPasteEasterEgg(hoveredLogoId);
 
   const logos       = LOGOS_DATA[activeCategory] || [];
   const color       = THEME.categories[activeCategory]?.accent || '#06B6D4';
