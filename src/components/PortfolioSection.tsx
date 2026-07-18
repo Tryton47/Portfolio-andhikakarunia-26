@@ -692,7 +692,7 @@ export default function PortfolioSection() {
   });
 
   // ─── Scroll Reveal for section entrance ───
-  const [sectionRef, isSectionVisible] = useScrollReveal(0.1);
+  const { ref: sectionRef, isVisible: isSectionVisible } = useScrollReveal({ threshold: 0.1 });
 
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => p.category === subFilter);
