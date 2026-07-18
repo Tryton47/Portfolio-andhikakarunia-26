@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { ExternalLink, Code2, X, ChevronDown, ChevronUp } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { useScrollReveal }     from '../hooks/useScrollReveal';
 
 // ─── Dynamic imports to avoid SSR issues with Three.js canvas ───
 const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
@@ -689,6 +690,9 @@ export default function PortfolioSection() {
     onShowHelp: () => setRootTab('techstack'),
   });
 
+  // ─── Scroll Reveal for section entrance ───
+  const [sectionRef, isSectionVisible] = useScrollReveal(0.1);
+
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => p.category === subFilter);
   }, [subFilter]);
@@ -708,9 +712,15 @@ export default function PortfolioSection() {
 
   return (
     <section
+      ref={sectionRef}
       id="portfolio"
-      className="relative w-full py-20 md:py-28 px-6 md:px-12 bg-charcoal overflow-hidden"
+      className="relative w-full py-20 md:py-28 px-6 md:px-12 bg-charcoal overflow-hidden transition-all duration-1000"
+      style={{
+        opacity:   isSectionVisible ? 1 : 0,
+        transform: isSectionVisible ? 'translateY(0)' : 'translateY(40px)',
+      }}
     >
+
       {/* Ambient Background */}
       {AmbientBg}
 
