@@ -186,15 +186,15 @@ export default function ConsoleWidget() {
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-start gap-12 lg:gap-16">
         {/* LEFT: Headline + Badges */}
         <div className="w-full lg:w-[55%] flex flex-col">
-          <p className="text-system text-primary mb-4">Multi-Disciplinary Creator</p>
+          <p className="text-system text-neon-red mb-4">Multi-Disciplinary Creator</p>
 
           {/* Fix text overflow — block layout, profession on its own line */}
           <h2 className="text-heading text-2xl sm:text-3xl md:text-4xl text-text-primary leading-tight mb-4">
             I am a
           </h2>
-          <h2 className="text-heading text-2xl sm:text-3xl md:text-4xl text-primary leading-tight mb-4 min-h-[1.4em]">
+          <h2 className="text-heading text-2xl sm:text-3xl md:text-4xl text-neon-red leading-tight mb-4 min-h-[1.4em]">
             {displayText}
-            <span className="inline-block w-[2px] h-[0.9em] bg-primary ml-1 animate-pulse align-middle" />
+            <span className="inline-block w-[2px] h-[0.9em] bg-neon-red ml-1 animate-pulse align-middle" />
           </h2>
 
           <p className="text-text-body text-sm md:text-base leading-relaxed max-w-lg mb-10">
@@ -209,7 +209,7 @@ export default function ConsoleWidget() {
               <div
                 key={badge.name}
                 title={badge.name}
-                className="flex flex-col items-center gap-1.5 px-3 py-2 border border-border rounded-xl glass-panel hover:border-primary/40 transition-all duration-300 cursor-default group"
+                className="flex flex-col items-center gap-1.5 px-3 py-2 border border-border rounded-xl glass-panel hover:border-neon-red/40 transition-all duration-300 cursor-default group"
                 style={{
                   animation: `float ${3 + (i % 3)}s ease-in-out infinite`,
                   animationDelay: `${i * 0.2}s`,
@@ -218,7 +218,7 @@ export default function ConsoleWidget() {
                 <span className="group-hover:scale-110 transition-transform duration-300">
                   {badge.svg}
                 </span>
-                <span className="text-[9px] font-mono text-text-dim group-hover:text-primary transition-colors">
+                <span className="text-[9px] font-mono text-text-dim group-hover:text-neon-red transition-colors">
                   {badge.name}
                 </span>
               </div>
@@ -232,13 +232,13 @@ export default function ConsoleWidget() {
             {/* Terminal Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-charcoal">
               <div className="flex items-center gap-3">
-                <span className="w-2 h-2 rounded-full bg-primary pulse-neon" />
+                <span className="w-2 h-2 rounded-full bg-neon-red pulse-neon" />
                 <span className="text-system text-text-primary text-[10px]">
                   System Online — IT Core
                 </span>
               </div>
               <div className="flex gap-4">
-                <span className="text-system text-primary text-[10px]">{'> _'} CLI Shell</span>
+                <span className="text-system text-neon-red text-[10px]">{'> _'} CLI Shell</span>
                 <span className="text-system text-text-dim text-[10px]">☁️ Cloud Sync</span>
               </div>
             </div>
@@ -255,10 +255,10 @@ export default function ConsoleWidget() {
                   className="font-mono text-xs text-text-muted leading-7 flex"
                   style={{ animation: 'fadeInUp 0.3s ease-out forwards' }}
                 >
-                  <span className="text-primary mr-2 select-none">
+                  <span className="text-neon-red mr-2 select-none">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <span className={line.includes('ready') || line.includes('Secure') ? 'text-secondary' : ''}>
+                  <span className={line.includes('ready') || line.includes('Secure') ? 'text-neon-cyan' : ''}>
                     {line}
                   </span>
                 </div>
@@ -266,10 +266,10 @@ export default function ConsoleWidget() {
               {/* Blinking cursor */}
               {visibleLines.length > 0 && visibleLines.length < logLines.length && (
                 <div className="flex items-center mt-1">
-                  <span className="text-primary font-mono text-xs mr-2 select-none">
+                  <span className="text-neon-red font-mono text-xs mr-2 select-none">
                     {String(visibleLines.length + 1).padStart(2, '0')}
                   </span>
-                  <span className="w-2 h-4 bg-primary/70 animate-pulse" />
+                  <span className="w-2 h-4 bg-neon-red/70 animate-pulse" />
                 </div>
               )}
             </div>
@@ -277,7 +277,7 @@ export default function ConsoleWidget() {
             {/* Terminal Footer */}
             <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-charcoal">
               <span className="text-system text-text-dim text-[10px]">Server Node: Secure</span>
-              <span className="text-system text-secondary text-[10px]">Runtime Active</span>
+              <span className="text-system text-neon-cyan text-[10px]">Runtime Active</span>
             </div>
           </div>
         </div>

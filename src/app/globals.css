@@ -1,32 +1,46 @@
 @import "tailwindcss";
 
 /* ============================================
-   TECH-LUXURY CYBERPUNK DESIGN SYSTEM
+   TECH-EXECUTIVE SAAS DESIGN SYSTEM
    ============================================ */
+
+/* Default theme tokens (overridden at runtime by ThemeContext) */
+:root {
+  --theme-primary: 99 102 241;
+  --theme-primary-hex: #6366F1;
+  --theme-secondary: 6 182 212;
+  --theme-secondary-hex: #06B6D4;
+  --theme-grad1: #6366F1;
+  --theme-grad2: #818CF8;
+}
 
 @theme {
   /* Core Palette */
-  --color-obsidian: #0B0B0F;
-  --color-charcoal: #121217;
-  --color-card: #16161C;
-  --color-card-hover: #1C1C24;
-  --color-border: #1E1E28;
-  --color-border-hover: #2A2A38;
+  --color-obsidian: #050507;
+  --color-charcoal: #090A0F;
+  --color-card: #111422;
+  --color-card-hover: #1E293B;
+  --color-border: #1E293B;
+  --color-border-hover: #334155;
 
-  /* Accent */
-  --color-neon-red: #FF2A43;
-  --color-neon-red-dim: rgba(255, 42, 67, 0.15);
-  --color-neon-cyan: #00F0FF;
-  --color-neon-cyan-dim: rgba(0, 240, 255, 0.15);
+  /* Dynamic Accent — values overridden at runtime via ThemeContext */
+  --color-primary: #6366F1;
+  --color-primary-dim: rgba(99, 102, 241, 0.15);
+  --color-secondary: #06B6D4;
+  --color-secondary-dim: rgba(6, 182, 212, 0.15);
+
+  /* Legacy maps */
+  --color-neon-red: var(--color-primary);
+  --color-neon-cyan: var(--color-secondary);
 
   /* Text */
-  --color-text-primary: #FFFFFF;
+  --color-text-primary: #F8FAFC;
   --color-text-body: #E2E8F0;
   --color-text-muted: #94A3B8;
-  --color-text-dim: #475569;
+  --color-text-dim: #64748B;
 
   /* Fonts */
-  --font-heading: var(--font-syncopate);
+  --font-heading: var(--font-jakarta);
   --font-body: var(--font-inter);
   --font-mono: var(--font-jetbrains);
 }
@@ -37,24 +51,22 @@
   }
 
   body {
-    @apply bg-obsidian text-text-body font-body overflow-x-hidden;
+    @apply bg-charcoal text-text-muted font-body overflow-x-hidden;
+    line-height: 1.6;
     scrollbar-width: thin;
-    scrollbar-color: var(--color-neon-red) var(--color-charcoal);
+    scrollbar-color: var(--color-border) var(--color-charcoal);
   }
 
-  body::-webkit-scrollbar {
-    width: 6px;
-  }
-  body::-webkit-scrollbar-track {
-    background: var(--color-charcoal);
-  }
+  body::-webkit-scrollbar { width: 6px; }
+  body::-webkit-scrollbar-track { background: var(--color-charcoal); }
   body::-webkit-scrollbar-thumb {
-    background: var(--color-neon-red);
+    background: var(--theme-primary-hex);
     border-radius: 3px;
+    opacity: 0.4;
   }
 
   ::selection {
-    background: var(--color-neon-red);
+    background: var(--theme-primary-hex);
     color: #fff;
   }
 }
@@ -64,95 +76,107 @@
    ============================================ */
 
 @layer utilities {
-  /* Heading Style: Syncopate */
   .text-heading {
     font-family: var(--font-heading);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 700;
+    font-weight: 800;
   }
 
-  /* System Label Style: JetBrains Mono */
   .text-system {
     font-family: var(--font-mono);
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.1em;
     font-weight: 500;
-    font-size: 0.75rem;
   }
 
-  /* Neon Glow Effects */
-  .text-neon-red {
-    color: var(--color-neon-red);
-    text-shadow: 0 0 4px rgba(255, 42, 67, 0.4),
-                 0 0 12px rgba(255, 42, 67, 0.15);
+  /* Dynamic accent text — always reads current theme */
+  .text-primary {
+    color: var(--theme-primary-hex) !important;
+  }
+  .text-secondary {
+    color: var(--theme-secondary-hex) !important;
   }
 
-  .text-neon-cyan {
-    color: var(--color-neon-cyan);
-    text-shadow: 0 0 4px rgba(0, 240, 255, 0.4);
+  /* These exist so existing Tailwind classes like bg-primary still work */
+  .bg-primary {
+    background-color: var(--theme-primary-hex) !important;
+  }
+  .bg-secondary {
+    background-color: var(--theme-secondary-hex) !important;
+  }
+  .border-primary {
+    border-color: var(--theme-primary-hex) !important;
+  }
+  .border-secondary {
+    border-color: var(--theme-secondary-hex) !important;
   }
 
-  .border-glow-red {
-    border-color: var(--color-neon-red);
-    box-shadow: 0 0 8px rgba(255, 42, 67, 0.2),
-                inset 0 0 8px rgba(255, 42, 67, 0.05);
-  }
-
-  .border-glow-cyan {
-    border-color: var(--color-neon-cyan);
-    box-shadow: 0 0 8px rgba(0, 240, 255, 0.2),
-                inset 0 0 8px rgba(0, 240, 255, 0.05);
+  /* Premium gradient accent for headings, borders etc */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--theme-grad1), var(--theme-grad2));
   }
 
   /* Glass Panel */
   .glass-panel {
-    background: rgba(22, 22, 28, 0.6);
+    background: rgba(17, 20, 34, 0.6);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  /* Subtle Grid Background */
+  /* Subtle Grid Background — uses theme primary */
   .bg-grid {
     background-image:
-      linear-gradient(rgba(255, 42, 67, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 42, 67, 0.03) 1px, transparent 1px);
+      linear-gradient(rgba(var(--theme-primary), 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--theme-primary), 0.03) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
-  /* Pulse animation for status indicators */
+  /* Glow helpers */
+  .glow-primary {
+    box-shadow: 0 0 16px rgba(var(--theme-primary), 0.25);
+  }
+
   .pulse-neon {
     animation: pulseNeon 2s ease-in-out infinite;
   }
+
+  /* Fade-in animation for certificate cards */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 }
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
 
 @keyframes pulseNeon {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
+  50%       { opacity: 0.6; transform: scale(1.05); }
 }
 
 @keyframes radarSweep {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @keyframes typeWriter {
   from { width: 0; }
-  to { width: 100%; }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { width: 100%; }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
+  50%       { transform: translateY(-6px); }
 }
 
 @keyframes lightSweep {
-  0% { transform: rotate(0deg); }
+  0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px) blur(4px); }
+  to   { opacity: 1; transform: translateY(0) blur(0); }
 }

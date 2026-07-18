@@ -24,13 +24,13 @@ export default function LoginPage() {
   return (
     <main className="relative min-h-screen w-full flex items-center justify-center p-6 bg-obsidian bg-grid">
       {/* Ambient */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(var(--theme-primary),0.05)_0%,transparent_60%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,42,67,0.05)_0%,transparent_60%)] pointer-events-none" />
 
       <div className="w-full max-w-sm glass-panel border border-border rounded-xl p-8 relative z-10">
         {/* Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-14 h-14 rounded-full border border-primary/30 bg-primary-dim flex items-center justify-center">
-            <Lock size={24} className="text-primary" />
+          <div className="w-14 h-14 rounded-full border border-neon-red/30 bg-neon-red-dim flex items-center justify-center">
+            <Lock size={24} className="text-neon-red" />
           </div>
         </div>
 
@@ -52,8 +52,8 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full bg-obsidian border rounded-lg p-3.5 pr-12 text-sm text-text-primary font-mono focus:outline-none transition-colors ${
                   error
-                    ? 'border-primary text-primary'
-                    : 'border-border focus:border-primary/50'
+                    ? 'border-neon-red text-neon-red'
+                    : 'border-border focus:border-neon-red/50'
                 }`}
                 placeholder="Enter password"
                 autoFocus
@@ -62,13 +62,13 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-dim hover:text-primary transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-dim hover:text-neon-red transition-colors"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {error && (
-              <span className="text-primary text-xs font-mono mt-1 animate-pulse">
+              <span className="text-neon-red text-xs font-mono mt-1 animate-pulse">
                 ✕ Access Denied — Invalid Credentials
               </span>
             )}
@@ -76,7 +76,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full py-3.5 bg-primary text-white text-system rounded-lg hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(var(--theme-primary),0.3)]"
+            className="w-full py-3.5 bg-neon-red text-white text-system rounded-lg hover:bg-[#e0243b] transition-colors shadow-[0_0_15px_rgba(255,42,67,0.3)]"
           >
             Authenticate
           </button>
@@ -85,7 +85,7 @@ export default function LoginPage() {
         <div className="mt-8 text-center">
           <a
             href="/"
-            className="text-text-dim text-system hover:text-primary transition-colors inline-flex items-center gap-2"
+            className="text-text-dim text-system hover:text-neon-red transition-colors inline-flex items-center gap-2"
           >
             <ArrowLeft size={12} /> Back to Portfolio
           </a>

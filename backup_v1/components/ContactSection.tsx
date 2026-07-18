@@ -106,7 +106,7 @@ export default function ContactSection() {
         {/* Section Header */}
         <div className="text-center mb-14">
           <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
-            Get In <span style={{ color: 'var(--theme-primary-hex)' }}>Touch</span>
+            Get In <span className="text-neon-red">Touch</span>
           </h2>
           <p className="text-system text-text-dim">
             Open for opportunities & collaboration
@@ -127,12 +127,12 @@ export default function ContactSection() {
                     if (errors.name) setErrors({ ...errors, name: '' });
                   }}
                   className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors ${
-                    errors.name ? 'border-primary' : 'border-border focus:border-primary/50'
+                    errors.name ? 'border-neon-red' : 'border-border focus:border-neon-red/50'
                   }`}
                   placeholder="Nama Anda"
                 />
                 {errors.name && (
-                  <span className="text-primary text-xs">{errors.name}</span>
+                  <span className="text-neon-red text-xs">{errors.name}</span>
                 )}
               </div>
 
@@ -146,12 +146,12 @@ export default function ContactSection() {
                     if (errors.email) setErrors({ ...errors, email: '' });
                   }}
                   className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors ${
-                    errors.email ? 'border-primary' : 'border-border focus:border-primary/50'
+                    errors.email ? 'border-neon-red' : 'border-border focus:border-neon-red/50'
                   }`}
                   placeholder="Email Anda"
                 />
                 {errors.email && (
-                  <span className="text-primary text-xs">{errors.email}</span>
+                  <span className="text-neon-red text-xs">{errors.email}</span>
                 )}
               </div>
 
@@ -165,25 +165,24 @@ export default function ContactSection() {
                     if (errors.message) setErrors({ ...errors, message: '' });
                   }}
                   className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors resize-none ${
-                    errors.message ? 'border-primary' : 'border-border focus:border-primary/50'
+                    errors.message ? 'border-neon-red' : 'border-border focus:border-neon-red/50'
                   }`}
                   placeholder="Tulis pesan Anda disini..."
                 />
                 {errors.message && (
-                  <span className="text-primary text-xs">{errors.message}</span>
+                  <span className="text-neon-red text-xs">{errors.message}</span>
                 )}
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3.5 text-white text-system rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
-                style={{ background: `linear-gradient(135deg, var(--theme-grad1), var(--theme-grad2))`, boxShadow: '0 0 20px rgba(var(--theme-primary), 0.25)' }}
+                className="w-full py-3.5 bg-neon-red text-white text-system rounded-lg hover:bg-[#e0243b] transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,42,67,0.3)]"
               >
                 <Send size={14} /> Kirim Pesan
               </button>
 
               {submitStatus === 'success' && (
-                <p className="text-secondary text-xs text-center">
+                <p className="text-neon-cyan text-xs text-center">
                   ✓ Pesan berhasil terkirim!
                 </p>
               )}
@@ -197,9 +196,9 @@ export default function ContactSection() {
                   href="https://www.linkedin.com/in/andhika-karunia-545166292"
                   target="_blank"
                   rel="noreferrer"
-                  className="glass-panel border border-border rounded-lg p-4 flex items-center gap-3 hover:border-primary/30 transition-colors group"
+                  className="glass-panel border border-border rounded-lg p-4 flex items-center gap-3 hover:border-neon-red/30 transition-colors group"
                 >
-                  <Link2 size={18} className="text-text-dim group-hover:text-primary transition-colors" />
+                  <Link2 size={18} className="text-text-dim group-hover:text-neon-red transition-colors" />
                   <span className="text-text-muted text-xs group-hover:text-text-primary transition-colors">
                     LinkedIn
                   </span>
@@ -208,9 +207,9 @@ export default function ContactSection() {
                   href="https://www.instagram.com/andhka_rzq"
                   target="_blank"
                   rel="noreferrer"
-                  className="glass-panel border border-border rounded-lg p-4 flex items-center gap-3 hover:border-primary/30 transition-colors group"
+                  className="glass-panel border border-border rounded-lg p-4 flex items-center gap-3 hover:border-neon-red/30 transition-colors group"
                 >
-                  <Globe size={18} className="text-text-dim group-hover:text-primary transition-colors" />
+                  <Globe size={18} className="text-text-dim group-hover:text-neon-red transition-colors" />
                   <span className="text-text-muted text-xs group-hover:text-text-primary transition-colors">
                     Instagram
                   </span>
@@ -228,8 +227,8 @@ export default function ContactSection() {
                   Live Comment Board
                 </h3>
                 <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-secondary pulse-neon" />
-                  <span className="text-system text-secondary text-[10px]">Live</span>
+                  <span className="w-2 h-2 rounded-full bg-neon-cyan pulse-neon" />
+                  <span className="text-system text-neon-cyan text-[10px]">Live</span>
                 </span>
               </div>
 
@@ -240,7 +239,7 @@ export default function ContactSection() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-10 h-10 rounded-full border border-border bg-charcoal flex items-center justify-center shrink-0 overflow-hidden hover:border-primary/30 transition-colors"
+                    className="w-10 h-10 rounded-full border border-border bg-charcoal flex items-center justify-center shrink-0 overflow-hidden hover:border-neon-red/30 transition-colors"
                   >
                     {avatarPreview ? (
                       <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
@@ -260,7 +259,7 @@ export default function ContactSection() {
                     placeholder="Your name"
                     value={commentForm.name}
                     onChange={(e) => setCommentForm({ ...commentForm, name: e.target.value })}
-                    className="flex-grow bg-charcoal border border-border rounded-lg p-2.5 text-xs text-text-primary focus:outline-none focus:border-primary/50"
+                    className="flex-grow bg-charcoal border border-border rounded-lg p-2.5 text-xs text-text-primary focus:outline-none focus:border-neon-red/50"
                   />
                 </div>
                 <div className="flex gap-3">
@@ -269,11 +268,11 @@ export default function ContactSection() {
                     placeholder="Write a comment..."
                     value={commentForm.message}
                     onChange={(e) => setCommentForm({ ...commentForm, message: e.target.value })}
-                    className="flex-grow bg-charcoal border border-border rounded-lg p-2.5 text-xs text-text-primary focus:outline-none focus:border-primary/50 resize-none"
+                    className="flex-grow bg-charcoal border border-border rounded-lg p-2.5 text-xs text-text-primary focus:outline-none focus:border-neon-red/50 resize-none"
                   />
                   <button
                     type="submit"
-                    className="px-4 bg-primary text-white rounded-lg text-system hover:bg-primary/90 transition-colors"
+                    className="px-4 bg-neon-red text-white rounded-lg text-system hover:bg-[#e0243b] transition-colors"
                   >
                     Post
                   </button>

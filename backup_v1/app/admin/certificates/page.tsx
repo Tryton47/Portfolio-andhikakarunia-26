@@ -48,7 +48,7 @@ export default function AdminCertificates() {
           <h2 className="text-text-primary text-lg font-bold mb-1">Certificates</h2>
           <p className="text-text-dim text-xs">Manage your professional credentials.</p>
         </div>
-        <button onClick={openCreate} className="bg-primary text-white px-4 py-2.5 rounded-lg text-system flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-[0_0_12px_rgba(var(--theme-primary),0.2)]">
+        <button onClick={openCreate} className="bg-neon-red text-white px-4 py-2.5 rounded-lg text-system flex items-center gap-2 hover:bg-[#e0243b] transition-colors shadow-[0_0_12px_rgba(255,42,67,0.2)]">
           <Plus size={16} /> Add Certificate
         </button>
       </div>
@@ -70,11 +70,11 @@ export default function AdminCertificates() {
                   <tr key={c.id} className="border-b border-border last:border-b-0 hover:bg-card/50 transition-colors">
                     <td className="px-5 py-4 text-text-primary font-medium">{c.title}</td>
                     <td className="px-5 py-4 text-text-muted">{c.issuer}</td>
-                    <td className="px-5 py-4"><span className="text-system text-secondary text-[10px]">{c.date}</span></td>
+                    <td className="px-5 py-4"><span className="text-system text-neon-cyan text-[10px]">{c.date}</span></td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => openEdit(c)} className="p-2 border border-border rounded-lg text-text-dim hover:text-secondary hover:border-secondary/30 transition-colors"><Edit size={14} /></button>
-                        <button onClick={() => handleDelete(c.id)} className="p-2 border border-border rounded-lg text-text-dim hover:text-primary hover:border-primary/30 transition-colors"><Trash2 size={14} /></button>
+                        <button onClick={() => openEdit(c)} className="p-2 border border-border rounded-lg text-text-dim hover:text-neon-cyan hover:border-neon-cyan/30 transition-colors"><Edit size={14} /></button>
+                        <button onClick={() => handleDelete(c.id)} className="p-2 border border-border rounded-lg text-text-dim hover:text-neon-red hover:border-neon-red/30 transition-colors"><Trash2 size={14} /></button>
                       </div>
                     </td>
                   </tr>
@@ -90,31 +90,31 @@ export default function AdminCertificates() {
           <div className="w-full max-w-lg glass-panel border border-border rounded-xl flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h3 className="text-text-primary text-sm font-bold">{editing ? 'Edit Certificate' : 'Add Certificate'}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-text-dim hover:text-primary"><X size={18} /></button>
+              <button onClick={() => setIsModalOpen(false)} className="text-text-dim hover:text-neon-red"><X size={18} /></button>
             </div>
             <div className="p-6 flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-system text-text-dim">Title *</label>
-                <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50" placeholder="Certificate title" />
+                <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50" placeholder="Certificate title" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-system text-text-dim">Issuer</label>
-                  <input type="text" value={form.issuer} onChange={(e) => setForm({ ...form, issuer: e.target.value })} className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50" placeholder="e.g. Dicoding" />
+                  <input type="text" value={form.issuer} onChange={(e) => setForm({ ...form, issuer: e.target.value })} className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50" placeholder="e.g. Dicoding" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-system text-text-dim">Year</label>
-                  <input type="text" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50" placeholder="2025" />
+                  <input type="text" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50" placeholder="2025" />
                 </div>
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-system text-text-dim">Link (Optional)</label>
-                <input type="url" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50" placeholder="https://..." />
+                <input type="url" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50" placeholder="https://..." />
               </div>
             </div>
             <div className="px-6 py-4 border-t border-border flex justify-end gap-3">
               <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-lg text-text-muted text-sm hover:text-text-primary">Cancel</button>
-              <button onClick={handleSave} className="px-5 py-2.5 bg-primary text-white rounded-lg text-system hover:bg-primary/90">{editing ? 'Update' : 'Create'}</button>
+              <button onClick={handleSave} className="px-5 py-2.5 bg-neon-red text-white rounded-lg text-system hover:bg-[#e0243b]">{editing ? 'Update' : 'Create'}</button>
             </div>
           </div>
         </div>

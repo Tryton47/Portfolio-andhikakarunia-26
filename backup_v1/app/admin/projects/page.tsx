@@ -122,7 +122,7 @@ export default function AdminProjects() {
         </div>
         <button
           onClick={openCreate}
-          className="bg-primary text-white px-4 py-2.5 rounded-lg text-system flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-[0_0_12px_rgba(var(--theme-primary),0.2)]"
+          className="bg-neon-red text-white px-4 py-2.5 rounded-lg text-system flex items-center gap-2 hover:bg-[#e0243b] transition-colors shadow-[0_0_12px_rgba(255,42,67,0.2)]"
         >
           <Plus size={16} /> Add Project
         </button>
@@ -152,20 +152,20 @@ export default function AdminProjects() {
                   <tr key={p.id} className="border-b border-border last:border-b-0 hover:bg-card/50 transition-colors">
                     <td className="px-5 py-4 text-text-primary font-medium">{p.title}</td>
                     <td className="px-5 py-4">
-                      <span className="text-system text-secondary text-[10px]">{p.category}</span>
+                      <span className="text-system text-neon-cyan text-[10px]">{p.category}</span>
                     </td>
                     <td className="px-5 py-4 text-text-muted text-xs max-w-[200px] truncate">{p.tech}</td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => openEdit(p)}
-                          className="p-2 border border-border rounded-lg text-text-dim hover:text-secondary hover:border-secondary/30 transition-colors"
+                          className="p-2 border border-border rounded-lg text-text-dim hover:text-neon-cyan hover:border-neon-cyan/30 transition-colors"
                         >
                           <Edit size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="p-2 border border-border rounded-lg text-text-dim hover:text-primary hover:border-primary/30 transition-colors"
+                          className="p-2 border border-border rounded-lg text-text-dim hover:text-neon-red hover:border-neon-red/30 transition-colors"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -188,7 +188,7 @@ export default function AdminProjects() {
               <h3 className="text-text-primary text-sm font-bold">
                 {editingProject ? 'Edit Project' : 'Add New Project'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-text-dim hover:text-primary transition-colors">
+              <button onClick={() => setIsModalOpen(false)} className="text-text-dim hover:text-neon-red transition-colors">
                 <X size={18} />
               </button>
             </div>
@@ -201,7 +201,7 @@ export default function AdminProjects() {
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+                  className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
                   placeholder="e.g. E-Commerce Recommendation Engine"
                 />
               </div>
@@ -212,7 +212,7 @@ export default function AdminProjects() {
                   rows={3}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50 resize-none"
+                  className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50 resize-none"
                   placeholder="Project background and description..."
                 />
               </div>
@@ -222,7 +222,7 @@ export default function AdminProjects() {
                 <select
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+                  className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
                 >
                   {categories.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -237,7 +237,7 @@ export default function AdminProjects() {
                     type="url"
                     value={form.link}
                     onChange={(e) => setForm({ ...form, link: e.target.value })}
-                    className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+                    className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
                     placeholder="https://..."
                   />
                 </div>
@@ -247,7 +247,7 @@ export default function AdminProjects() {
                     type="url"
                     value={form.github}
                     onChange={(e) => setForm({ ...form, github: e.target.value })}
-                    className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+                    className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
                     placeholder="https://github.com/..."
                   />
                 </div>
@@ -262,13 +262,13 @@ export default function AdminProjects() {
                     value={techInput}
                     onChange={(e) => setTechInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTechTag(); } }}
-                    className="flex-grow bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+                    className="flex-grow bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
                     placeholder="Type & press + or Enter"
                   />
                   <button
                     type="button"
                     onClick={addTechTag}
-                    className="px-4 bg-primary text-white rounded-lg text-system hover:bg-primary/90 transition-colors"
+                    className="px-4 bg-neon-red text-white rounded-lg text-system hover:bg-[#e0243b] transition-colors"
                   >
                     +
                   </button>
@@ -281,7 +281,7 @@ export default function AdminProjects() {
                         className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-full text-system text-text-muted text-[10px]"
                       >
                         {tag}
-                        <button onClick={() => removeTechTag(tag)} className="text-text-dim hover:text-primary">
+                        <button onClick={() => removeTechTag(tag)} className="text-text-dim hover:text-neon-red">
                           <X size={10} />
                         </button>
                       </span>
@@ -301,7 +301,7 @@ export default function AdminProjects() {
               </button>
               <button
                 onClick={handleSave}
-                className="px-5 py-2.5 bg-primary text-white rounded-lg text-system hover:bg-primary/90 transition-colors"
+                className="px-5 py-2.5 bg-neon-red text-white rounded-lg text-system hover:bg-[#e0243b] transition-colors"
               >
                 {editingProject ? 'Update' : 'Create'}
               </button>

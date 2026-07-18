@@ -46,7 +46,7 @@ export default function AdminSettings() {
               <div className="w-16 h-16 rounded-full bg-charcoal border border-border flex items-center justify-center overflow-hidden">
                 <img src="/foto-pribadi.png" alt="Profile" className="w-full h-full object-cover" />
               </div>
-              <label className="px-4 py-2 border border-border rounded-lg text-system text-text-muted hover:border-primary/30 hover:text-primary transition-colors cursor-pointer flex items-center gap-2">
+              <label className="px-4 py-2 border border-border rounded-lg text-system text-text-muted hover:border-neon-red/30 hover:text-neon-red transition-colors cursor-pointer flex items-center gap-2">
                 <Upload size={14} /> Choose File
                 <input type="file" accept="image/*" className="hidden" />
               </label>
@@ -59,7 +59,7 @@ export default function AdminSettings() {
               type="text"
               value={profile.headline}
               onChange={(e) => setProfile({ ...profile, headline: e.target.value })}
-              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
             />
           </div>
 
@@ -69,7 +69,7 @@ export default function AdminSettings() {
               rows={4}
               value={profile.bio}
               onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50 resize-none"
+              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50 resize-none"
             />
           </div>
 
@@ -79,7 +79,7 @@ export default function AdminSettings() {
               type="url"
               value={profile.cvLink}
               onChange={(e) => setProfile({ ...profile, cvLink: e.target.value })}
-              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
               placeholder="https://drive.google.com/..."
             />
           </div>
@@ -91,7 +91,7 @@ export default function AdminSettings() {
                 type="email"
                 value={profile.email}
                 onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+                className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -100,7 +100,7 @@ export default function AdminSettings() {
                 type="text"
                 value={profile.phone}
                 onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+                className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
               />
             </div>
           </div>
@@ -118,7 +118,7 @@ export default function AdminSettings() {
               type="url"
               value={profile.linkedin}
               onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
-              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
             />
           </div>
 
@@ -128,7 +128,7 @@ export default function AdminSettings() {
               type="url"
               value={profile.github}
               onChange={(e) => setProfile({ ...profile, github: e.target.value })}
-              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
             />
           </div>
 
@@ -138,7 +138,7 @@ export default function AdminSettings() {
               type="url"
               value={profile.instagram}
               onChange={(e) => setProfile({ ...profile, instagram: e.target.value })}
-              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
             />
           </div>
 
@@ -148,7 +148,7 @@ export default function AdminSettings() {
               type="url"
               value={profile.youtube}
               onChange={(e) => setProfile({ ...profile, youtube: e.target.value })}
-              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-primary/50"
+              className="w-full bg-obsidian border border-border rounded-lg p-3 text-sm text-text-primary focus:outline-none focus:border-neon-red/50"
               placeholder="https://youtube.com/..."
             />
           </div>
@@ -159,12 +159,12 @@ export default function AdminSettings() {
       <div className="mt-8 flex items-center gap-4">
         <button
           onClick={handleSave}
-          className="px-8 py-3 bg-primary text-white text-system rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(var(--theme-primary),0.3)]"
+          className="px-8 py-3 bg-neon-red text-white text-system rounded-lg hover:bg-[#e0243b] transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,42,67,0.3)]"
         >
           <Save size={14} /> Simpan Profil
         </button>
         {saved && (
-          <span className="text-secondary text-xs font-mono animate-pulse">
+          <span className="text-neon-cyan text-xs font-mono animate-pulse">
             ✓ Profile saved successfully!
           </span>
         )}

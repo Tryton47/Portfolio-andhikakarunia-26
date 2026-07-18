@@ -236,7 +236,7 @@ function MatrixCanvas() {
     const draw = () => {
       ctx.fillStyle = 'rgba(11, 11, 15, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(var(--theme-primary), 0.12)';
+      ctx.fillStyle = 'rgba(255, 42, 67, 0.12)';
       ctx.font = '12px JetBrains Mono, monospace';
       for (let i = 0; i < drops.length; i++) {
         const text = chars[Math.floor(Math.random() * chars.length)];
@@ -283,7 +283,7 @@ function DataAnalystCanvas() {
       ctx.clearRect(0, 0, W, H);
 
       // ── Grid lines ──
-      ctx.strokeStyle = 'rgba(var(--theme-secondary), 0.04)';
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
       ctx.lineWidth = 1;
       for (let i = 0; i < 8; i++) {
         const y = H * (i / 7);
@@ -299,12 +299,12 @@ function DataAnalystCanvas() {
         const barH = v * H * 0.55;
         // Bar fill with gradient
         const grad = ctx.createLinearGradient(x, barBaseY - barH, x, barBaseY);
-        grad.addColorStop(0, `rgba(var(--theme-secondary), ${0.3 + Math.sin(t * 0.02 + i) * 0.1})`);
-        grad.addColorStop(1, 'rgba(var(--theme-secondary), 0.03)');
+        grad.addColorStop(0, `rgba(0, 240, 255, ${0.3 + Math.sin(t * 0.02 + i) * 0.1})`);
+        grad.addColorStop(1, 'rgba(0, 240, 255, 0.03)');
         ctx.fillStyle = grad;
         ctx.fillRect(x, barBaseY - barH, barW, barH);
         // Top highlight
-        ctx.fillStyle = `rgba(var(--theme-secondary), ${0.6 + Math.sin(t * 0.02 + i) * 0.2})`;
+        ctx.fillStyle = `rgba(0, 240, 255, ${0.6 + Math.sin(t * 0.02 + i) * 0.2})`;
         ctx.fillRect(x, barBaseY - barH, barW, 2);
       });
 
@@ -319,7 +319,7 @@ function DataAnalystCanvas() {
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
-      ctx.strokeStyle = 'rgba(var(--theme-primary), 0.4)';
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.4)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
       // Fill under line
@@ -327,8 +327,8 @@ function DataAnalystCanvas() {
       ctx.lineTo(lineStartX, lineBaseY);
       ctx.closePath();
       const lineGrad = ctx.createLinearGradient(0, lineBaseY - H * 0.5, 0, lineBaseY);
-      lineGrad.addColorStop(0, 'rgba(var(--theme-primary), 0.1)');
-      lineGrad.addColorStop(1, 'rgba(var(--theme-primary), 0)');
+      lineGrad.addColorStop(0, 'rgba(255, 42, 67, 0.1)');
+      lineGrad.addColorStop(1, 'rgba(255, 42, 67, 0)');
       ctx.fillStyle = lineGrad;
       ctx.fill();
 
@@ -338,7 +338,7 @@ function DataAnalystCanvas() {
         const alpha = 0.15 + pulse * 0.1;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r + pulse * 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(var(--theme-secondary), ${alpha})`;
+        ctx.fillStyle = `rgba(0, 240, 255, ${alpha})`;
         ctx.fill();
       });
 
@@ -346,7 +346,7 @@ function DataAnalystCanvas() {
       ctx.font = '9px JetBrains Mono, monospace';
       const metrics = ['AVG: 72.4%', 'R²: 0.94', 'n=1,240', 'σ: 3.2'];
       metrics.forEach((m, i) => {
-        ctx.fillStyle = `rgba(var(--theme-secondary), ${0.2 + Math.sin(t * 0.02 + i) * 0.05})`;
+        ctx.fillStyle = `rgba(0, 240, 255, ${0.2 + Math.sin(t * 0.02 + i) * 0.05})`;
         ctx.fillText(m, W * 0.5 + i * 70, H * 0.15 + Math.sin(t * 0.01 + i) * 4);
       });
 
@@ -381,9 +381,9 @@ function VideoCanvas() {
       // ── Timeline track (horizontal bar) ──
       const trackY = H * 0.55;
       const trackH = 28;
-      ctx.fillStyle = 'rgba(var(--theme-primary), 0.05)';
+      ctx.fillStyle = 'rgba(255, 42, 67, 0.05)';
       ctx.fillRect(0, trackY, W, trackH);
-      ctx.strokeStyle = 'rgba(var(--theme-primary), 0.15)';
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.15)';
       ctx.lineWidth = 0.5;
       ctx.strokeRect(0, trackY, W, trackH);
 
@@ -393,11 +393,11 @@ function VideoCanvas() {
       const offset = (t * 0.8) % frameW;
       for (let i = -1; i < numFrames; i++) {
         const fx = i * frameW - offset;
-        ctx.strokeStyle = 'rgba(var(--theme-primary), 0.25)';
+        ctx.strokeStyle = 'rgba(255, 42, 67, 0.25)';
         ctx.strokeRect(fx, trackY + 2, frameW - 2, trackH - 4);
         // Film perfs top/bottom
         for (let p = 0; p < 3; p++) {
-          ctx.fillStyle = 'rgba(var(--theme-primary), 0.15)';
+          ctx.fillStyle = 'rgba(255, 42, 67, 0.15)';
           ctx.fillRect(fx + 4 + p * 11, trackY + 4, 7, 4);
           ctx.fillRect(fx + 4 + p * 11, trackY + trackH - 8, 7, 4);
         }
@@ -405,10 +405,10 @@ function VideoCanvas() {
 
       // ── Playhead ──
       const playX = W * 0.4 + Math.sin(t * 0.02) * 20;
-      ctx.strokeStyle = 'rgba(var(--theme-primary), 0.8)';
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.8)';
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(playX, trackY - 12); ctx.lineTo(playX, trackY + trackH + 12); ctx.stroke();
-      ctx.fillStyle = 'rgba(var(--theme-primary), 0.8)';
+      ctx.fillStyle = 'rgba(255, 42, 67, 0.8)';
       ctx.beginPath();
       ctx.moveTo(playX - 6, trackY - 12);
       ctx.lineTo(playX + 6, trackY - 12);
@@ -417,7 +417,7 @@ function VideoCanvas() {
 
       // ── Audio waveform ──
       const waveY = H * 0.75;
-      ctx.strokeStyle = 'rgba(var(--theme-primary), 0.3)';
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.3)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       for (let x = 0; x < W; x++) {
@@ -433,7 +433,7 @@ function VideoCanvas() {
       ctx.font = '9px JetBrains Mono, monospace';
       const times = ['00:00:12:14', '00:00:24:08', '00:01:03:22'];
       times.forEach((tc, i) => {
-        ctx.fillStyle = `rgba(var(--theme-primary), ${0.15 + Math.sin(t * 0.02 + i) * 0.05})`;
+        ctx.fillStyle = `rgba(255, 42, 67, ${0.15 + Math.sin(t * 0.02 + i) * 0.05})`;
         ctx.fillText(tc, (W / 4) * i + 20, H * 0.3 + Math.sin(t * 0.015 + i) * 5);
       });
 
@@ -487,7 +487,7 @@ function BezierCanvas() {
           (Math.sin(offset * 0.007 + 5) * 0.5 + 0.5) * canvas.width,
           (Math.cos(offset * 0.01 + 6) * 0.5 + 0.5) * canvas.height
         );
-        ctx.strokeStyle = `rgba(var(--theme-primary), 0.08)`;
+        ctx.strokeStyle = `rgba(255, 42, 67, 0.08)`;
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -520,7 +520,7 @@ function ProjectModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-charcoal">
           <button
             onClick={onClose}
-            className="text-system text-primary hover:text-text-primary transition-colors flex items-center gap-2"
+            className="text-system text-neon-red hover:text-text-primary transition-colors flex items-center gap-2"
           >
             ← Back
           </button>
@@ -539,18 +539,18 @@ function ProjectModal({
             </p>
 
             {/* Features */}
-            <h4 className="text-system text-secondary mb-3">Key Features</h4>
+            <h4 className="text-system text-neon-cyan mb-3">Key Features</h4>
             <ul className="space-y-2 mb-8">
               {project.features.map((f, i) => (
                 <li key={i} className="flex items-start gap-2 text-text-muted text-sm">
-                  <span className="text-primary mt-0.5">✦</span>
+                  <span className="text-neon-red mt-0.5">✦</span>
                   {f}
                 </li>
               ))}
             </ul>
 
             {/* Tech Tags */}
-            <h4 className="text-system text-secondary mb-3">Technologies</h4>
+            <h4 className="text-system text-neon-cyan mb-3">Technologies</h4>
             <div className="flex flex-wrap gap-2 mb-8">
               {project.tech.map((t, i) => (
                 <span
@@ -569,7 +569,7 @@ function ProjectModal({
                   href={project.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-5 py-2 bg-primary text-white text-system rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+                  className="px-5 py-2 bg-neon-red text-white text-system rounded-md hover:bg-[#e0243b] transition-colors flex items-center gap-2"
                 >
                   <ExternalLink size={14} /> Live Demo
                 </a>
@@ -579,7 +579,7 @@ function ProjectModal({
                   href={project.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-5 py-2 border border-border text-text-muted text-system rounded-md hover:border-primary/40 hover:text-primary transition-colors flex items-center gap-2"
+                  className="px-5 py-2 border border-border text-text-muted text-system rounded-md hover:border-neon-red/40 hover:text-neon-red transition-colors flex items-center gap-2"
                 >
                   <Code2 size={14} /> GitHub
                 </a>
@@ -619,7 +619,7 @@ function CertModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-charcoal">
           <button
             onClick={onClose}
-            className="text-system text-primary hover:text-text-primary transition-colors flex items-center gap-2"
+            className="text-system text-neon-red hover:text-text-primary transition-colors flex items-center gap-2"
           >
             ← Back
           </button>
@@ -633,7 +633,7 @@ function CertModal({
             <h3 className="text-heading text-xl text-text-primary mb-2">
               {cert.title}
             </h3>
-            <p className="text-system text-secondary mb-6">{cert.issuer}</p>
+            <p className="text-system text-neon-cyan mb-6">{cert.issuer}</p>
             <p className="text-text-body text-sm leading-relaxed mb-6">
               {cert.desc}
             </p>
@@ -692,7 +692,7 @@ export default function PortfolioSection() {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
-            Portfolio <span style={{ color: 'var(--theme-primary-hex)' }}>Showcase</span>
+            Portfolio <span className="text-neon-red">Showcase</span>
           </h2>
           <p className="text-system text-text-dim">
             Explore my journey across disciplines
@@ -707,27 +707,9 @@ export default function PortfolioSection() {
               onClick={() => setRootTab(tab)}
               className={`px-6 py-3 rounded-lg text-system transition-all duration-300 ${
                 rootTab === tab
-                  ? 'text-white'
-                  : 'border border-border text-text-muted'
+                  ? 'bg-neon-red text-white shadow-[0_0_15px_rgba(255,42,67,0.3)]'
+                  : 'border border-border text-text-muted hover:border-neon-red/30 hover:text-neon-red'
               }`}
-              style={rootTab === tab ? {
-                background: `linear-gradient(135deg, var(--theme-grad1), var(--theme-grad2))`,
-                boxShadow: '0 0 15px rgba(var(--theme-primary), 0.25)',
-              } : {
-                borderColor: 'var(--color-border)',
-              }}
-              onMouseEnter={e => {
-                if (rootTab !== tab) {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--theme-primary-hex)';
-                  (e.currentTarget as HTMLElement).style.color = 'var(--theme-primary-hex)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (rootTab !== tab) {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
-                  (e.currentTarget as HTMLElement).style.color = '';
-                }
-              }}
             >
               {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -745,8 +727,8 @@ export default function PortfolioSection() {
                   onClick={() => { setSubFilter(cat); setShowMore(false); }}
                   className={`px-5 py-2 rounded-full text-system whitespace-nowrap transition-all duration-300 ${
                     subFilter === cat
-                      ? 'border border-primary text-primary bg-primary-dim'
-                      : 'border border-border text-text-dim hover:border-primary/30 hover:text-primary'
+                      ? 'border border-neon-red text-neon-red bg-neon-red-dim'
+                      : 'border border-border text-text-dim hover:border-neon-red/30 hover:text-neon-red'
                   }`}
                 >
                   {cat}
@@ -759,7 +741,7 @@ export default function PortfolioSection() {
               {visibleProjects.map((project, idx) => (
                 <div
                   key={project.id}
-                  className="glass-panel border border-border rounded-xl overflow-hidden group hover:border-primary/40 transition-all duration-300"
+                  className="glass-panel border border-border rounded-xl overflow-hidden group hover:border-neon-red/40 transition-all duration-300"
                   style={{
                     animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`,
                   }}
@@ -771,7 +753,7 @@ export default function PortfolioSection() {
                     {/* Maintenance Overlay */}
                     {project.isMaintenance && (
                       <div className="absolute inset-0 bg-obsidian/60 flex items-center justify-center backdrop-blur-sm z-10">
-                        <span className="text-system text-primary border border-primary px-3 py-1 rounded bg-obsidian/80">
+                        <span className="text-system text-neon-red border border-neon-red px-3 py-1 rounded bg-obsidian/80">
                           Maintenance
                         </span>
                       </div>
@@ -784,14 +766,14 @@ export default function PortfolioSection() {
                           href={project.link || project.github || '#'}
                           target="_blank"
                           rel="noreferrer"
-                          className="px-4 py-2 bg-primary text-white text-system rounded-md hover:bg-primary/90 transition-colors flex items-center gap-1"
+                          className="px-4 py-2 bg-neon-red text-white text-system rounded-md hover:bg-[#e0243b] transition-colors flex items-center gap-1"
                         >
                           <ExternalLink size={12} /> View App
                         </a>
                       )}
                       <button
                         onClick={() => setSelectedProject(project)}
-                        className="px-4 py-2 border border-primary/40 text-primary text-system rounded-md hover:bg-primary-dim transition-colors"
+                        className="px-4 py-2 border border-neon-red/40 text-neon-red text-system rounded-md hover:bg-neon-red-dim transition-colors"
                       >
                         Details ↗
                       </button>
@@ -800,7 +782,7 @@ export default function PortfolioSection() {
 
                   {/* Card Content */}
                   <div className="p-5">
-                    <h3 className="text-text-primary text-sm font-bold mb-2 group-hover:text-primary transition-colors">
+                    <h3 className="text-text-primary text-sm font-bold mb-2 group-hover:text-neon-red transition-colors">
                       {project.title}
                     </h3>
                     <p className="text-text-muted text-xs leading-relaxed mb-4 line-clamp-2">
@@ -831,7 +813,7 @@ export default function PortfolioSection() {
               <div className="flex justify-center mt-8">
                 <button
                   onClick={() => setShowMore(!showMore)}
-                  className="px-6 py-3 border border-border text-system text-text-muted rounded-lg hover:border-primary/30 hover:text-primary transition-colors flex items-center gap-2"
+                  className="px-6 py-3 border border-border text-system text-text-muted rounded-lg hover:border-neon-red/30 hover:text-neon-red transition-colors flex items-center gap-2"
                 >
                   {showMore ? (
                     <><ChevronUp size={14} /> See Less</>
@@ -884,7 +866,7 @@ export default function PortfolioSection() {
           <div className="space-y-10">
             {['Web', 'Data', 'Design', 'Video'].map((cat) => (
               <div key={cat}>
-                <h3 className="text-system text-primary mb-4">
+                <h3 className="text-system text-neon-red mb-4">
                   {cat === 'Web' ? 'Web Development' : cat === 'Data' ? 'Data Analytics' : cat === 'Design' ? 'Graphic Design' : 'Video Editing'}
                 </h3>
                 <div className="flex flex-wrap gap-3">
@@ -893,7 +875,7 @@ export default function PortfolioSection() {
                     .map((t, i) => (
                       <span
                         key={i}
-                        className="px-4 py-2 glass-panel border border-border rounded-lg text-system text-text-muted hover:border-primary/40 hover:text-primary transition-colors"
+                        className="px-4 py-2 glass-panel border border-border rounded-lg text-system text-text-muted hover:border-neon-red/40 hover:text-neon-red transition-colors"
                         style={{
                           animation: `fadeInUp 0.4s ease-out ${i * 0.05}s both`,
                         }}

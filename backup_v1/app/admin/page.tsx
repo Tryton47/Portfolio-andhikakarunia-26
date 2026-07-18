@@ -39,8 +39,8 @@ const stats = [
     label: 'Comments',
     value: 0,
     icon: MessageSquare,
-    color: 'text-primary',
-    bg: 'bg-primary-dim',
+    color: 'text-neon-red',
+    bg: 'bg-neon-red-dim',
     link: '/admin/comments',
   },
 ];
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
             <Link
               key={s.label}
               href={s.link}
-              className="glass-panel border border-border rounded-xl p-5 flex items-center justify-between hover:border-primary/30 transition-colors group"
+              className="glass-panel border border-border rounded-xl p-5 flex items-center justify-between hover:border-neon-red/30 transition-colors group"
             >
               <div>
                 <p className="text-text-dim text-xs mb-1">{s.label}</p>
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
         {/* Activity Log */}
         <div className="glass-panel border border-border rounded-xl overflow-hidden">
           <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
-            <Activity className="text-primary" size={16} />
+            <Activity className="text-neon-red" size={16} />
             <h3 className="text-text-primary text-sm font-bold">
               Recent Activity
             </h3>
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
           <ul className="p-5 space-y-4">
             {activityLog.map((log, i) => (
               <li key={i} className="flex gap-4 text-xs">
-                <span className="text-primary font-mono w-12 shrink-0">
+                <span className="text-neon-red font-mono w-12 shrink-0">
                   {log.time}
                 </span>
                 <span className="text-text-muted">{log.text}</span>
@@ -115,12 +115,12 @@ export default function AdminDashboard() {
             <Link
               key={a.label}
               href={a.href}
-              className="flex items-center justify-between px-4 py-3 border border-border rounded-lg hover:border-primary/30 hover:bg-card transition-colors text-text-muted text-sm group"
+              className="flex items-center justify-between px-4 py-3 border border-border rounded-lg hover:border-neon-red/30 hover:bg-card transition-colors text-text-muted text-sm group"
             >
               {a.label}
               <ArrowUpRight
                 size={14}
-                className="group-hover:text-primary transition-colors"
+                className="group-hover:text-neon-red transition-colors"
               />
             </Link>
           ))}

@@ -45,7 +45,7 @@ export default function AdminLayout({
   if (!isAuth) {
     return (
       <div className="min-h-screen bg-obsidian flex items-center justify-center">
-        <span className="text-system text-primary animate-pulse">
+        <span className="text-system text-neon-red animate-pulse">
           Verifying Session...
         </span>
       </div>
@@ -65,7 +65,7 @@ export default function AdminLayout({
       >
         {/* Logo */}
         <div className="px-6 pt-8 pb-6 border-b border-border flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-heading text-xs text-white">
+          <div className="w-8 h-8 bg-neon-red rounded-lg flex items-center justify-center text-heading text-xs text-white">
             A
           </div>
           <div>
@@ -77,7 +77,7 @@ export default function AdminLayout({
           {/* Close on mobile */}
           <button
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden ml-auto text-text-dim hover:text-primary"
+            className="md:hidden ml-auto text-text-dim hover:text-neon-red"
           >
             <X size={18} />
           </button>
@@ -95,7 +95,7 @@ export default function AdminLayout({
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
                   isActive
-                    ? 'bg-primary text-white shadow-[0_0_12px_rgba(var(--theme-primary),0.25)]'
+                    ? 'bg-neon-red text-white shadow-[0_0_12px_rgba(255,42,67,0.25)]'
                     : 'text-text-muted hover:bg-card hover:text-text-primary'
                 }`}
               >
@@ -113,7 +113,7 @@ export default function AdminLayout({
               localStorage.removeItem('admin_auth');
               router.push('/');
             }}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-text-dim hover:text-primary transition-colors text-sm"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-text-dim hover:text-neon-red transition-colors text-sm"
           >
             <LogOut size={18} />
             Logout
@@ -128,7 +128,7 @@ export default function AdminLayout({
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="md:hidden text-text-muted hover:text-primary"
+              className="md:hidden text-text-muted hover:text-neon-red"
             >
               <Menu size={20} />
             </button>

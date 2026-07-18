@@ -52,7 +52,7 @@ function RadarWidget() {
       // Outer ring
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.3)';
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.3)';
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -60,7 +60,7 @@ function RadarWidget() {
       for (let i = 1; i <= 3; i++) {
         ctx.beginPath();
         ctx.arc(cx, cy, r * (i / 4), 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(99, 102, 241, ${0.08 + i * 0.04})`;
+        ctx.strokeStyle = `rgba(255, 42, 67, ${0.08 + i * 0.04})`;
         ctx.lineWidth = 0.5;
         ctx.stroke();
       }
@@ -71,7 +71,7 @@ function RadarWidget() {
       ctx.lineTo(cx + r, cy);
       ctx.moveTo(cx, cy - r);
       ctx.lineTo(cx, cy + r);
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.1)';
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.1)';
       ctx.lineWidth = 0.5;
       ctx.stroke();
 
@@ -79,7 +79,7 @@ function RadarWidget() {
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.7)';
+      ctx.strokeStyle = 'rgba(255, 42, 67, 0.7)';
       ctx.lineWidth = 2;
       ctx.stroke();
 
@@ -89,8 +89,8 @@ function RadarWidget() {
       ctx.arc(cx, cy, r, angle - 0.5, angle, false);
       ctx.closePath();
       const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-      gradient.addColorStop(0, 'rgba(99, 102, 241, 0.15)');
-      gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+      gradient.addColorStop(0, 'rgba(255, 42, 67, 0.15)');
+      gradient.addColorStop(1, 'rgba(255, 42, 67, 0)');
       ctx.fillStyle = gradient;
       ctx.fill();
 
@@ -107,11 +107,11 @@ function RadarWidget() {
         if (alpha > 0) {
           ctx.beginPath();
           ctx.arc(cx + r * b.d * Math.cos(b.a), cy + r * b.d * Math.sin(b.a), 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(6, 182, 212, ${alpha * 0.8})`;
+          ctx.fillStyle = `rgba(0, 240, 255, ${alpha * 0.8})`;
           ctx.fill();
           ctx.beginPath();
           ctx.arc(cx + r * b.d * Math.cos(b.a), cy + r * b.d * Math.sin(b.a), 6, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(6, 182, 212, ${alpha * 0.2})`;
+          ctx.fillStyle = `rgba(0, 240, 255, ${alpha * 0.2})`;
           ctx.fill();
         }
       });
@@ -119,7 +119,7 @@ function RadarWidget() {
       // Center dot
       ctx.beginPath();
       ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(99, 102, 241, 0.8)';
+      ctx.fillStyle = 'rgba(255, 42, 67, 0.8)';
       ctx.fill();
 
       angle += 0.012;
@@ -134,7 +134,7 @@ function RadarWidget() {
     <div className="relative">
       <canvas ref={canvasRef} width={280} height={280} className="w-[240px] h-[240px] md:w-[280px] md:h-[280px]" />
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className="text-system text-[10px] text-primary tracking-[0.3em] font-mono">STANDBY</span>
+        <span className="text-heading text-xs text-neon-red tracking-[0.3em]">WELCOME</span>
       </div>
     </div>
   );
@@ -182,15 +182,15 @@ export default function HeroSection() {
       {/* TOP HUD STATUS */}
       <div className="relative z-10 flex justify-between items-start px-6 md:px-12 pt-24 md:pt-28">
         <div className="flex flex-col gap-1">
-          <span className="text-system text-primary">System Ready</span>
+          <span className="text-system text-neon-red">System Ready</span>
           <span className="text-system text-text-dim">Portfolio 2026</span>
           <span className="text-system text-text-dim">UI Loading.</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-system text-text-dim">Core UI</span>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-system text-primary">Online</span>
+            <span className="w-2 h-2 rounded-full bg-neon-red pulse-neon" />
+            <span className="text-system text-neon-red">Online</span>
           </div>
         </div>
       </div>
@@ -202,11 +202,15 @@ export default function HeroSection() {
           className="w-full md:w-[55%] flex flex-col"
           style={{ transform: `translate(${mousePos.x * -8}px, ${mousePos.y * -5}px)`, transition: 'transform 0.3s ease-out' }}
         >
-          <h1 className="text-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-6 uppercase">
-            Building Modern Digital Experiences through Data, Code, and Visual Design.
+          <h1 className="text-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-6">
+            Welcome to my{' '}
+            <span className="text-neon-red">Portfolio</span>{' '}
+            Website
           </h1>
           <p className="text-text-body font-body text-sm md:text-base leading-relaxed max-w-xl mb-6">
-            Bridging the gap between data insights, creative design, and robust development to deliver reliable and fast web applications.
+            Building modern, reliable, and fast digital experiences with a focus
+            on clean UI and solid engineering. Bridging the gap between data
+            insights, creative design, and robust development.
           </p>
 
           {/* Social Icons */}
@@ -218,7 +222,7 @@ export default function HeroSection() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={s.label}
-                className={`w-10 h-10 rounded-lg bg-white/5 backdrop-blur-sm border border-border flex items-center justify-center text-text-muted transition-all duration-300 ${s.color} hover:-translate-y-1`}
+                className={`w-10 h-10 rounded-lg glass-panel border border-border flex items-center justify-center text-text-muted transition-all duration-300 ${s.color} shadow-sm hover:shadow-[0_0_12px_rgba(255,42,67,0.2)]`}
               >
                 {s.icon}
               </a>
@@ -229,17 +233,15 @@ export default function HeroSection() {
           <div className="flex flex-wrap gap-4">
             <a
               href="#portfolio"
-              className="px-6 py-3 text-white text-system rounded-md transition-all duration-300 flex items-center gap-2"
-              style={{ background: `linear-gradient(135deg, var(--theme-grad1), var(--theme-grad2))`, boxShadow: '0 0 20px rgba(var(--theme-primary), 0.2)' }}
+              className="px-6 py-3 bg-neon-red text-white text-system rounded-md hover:bg-[#e0243b] transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,42,67,0.3)]"
             >
               Projects ↗
             </a>
             <a
-              href="#contact"
-              className="px-6 py-3 border text-system rounded-md transition-colors flex items-center gap-2"
-              style={{ borderColor: 'var(--theme-primary-hex)', color: 'var(--theme-primary-hex)' }}
+              href="#about"
+              className="px-6 py-3 border border-neon-red/40 text-neon-red text-system rounded-md hover:bg-neon-red-dim transition-colors flex items-center gap-2"
             >
-              Contact ↗
+              Profile ↗
             </a>
           </div>
         </div>
@@ -253,29 +255,29 @@ export default function HeroSection() {
           <div className="flex gap-8">
             <div className="flex flex-col items-center">
               <span className="text-system text-text-dim">Modules</span>
-              <span className="text-system text-secondary">06 Loaded</span>
+              <span className="text-system text-neon-cyan">06 Loaded</span>
             </div>
             <div className="flex flex-col items-center">
               <span className="text-system text-text-dim">Latency</span>
-              <span className="text-system text-secondary">12ms Stable</span>
+              <span className="text-system text-neon-cyan">12ms Stable</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* BOTTOM ACTION PANEL */}
+      {/* BOTTOM ACTION PANEL — only Profile */}
       <div className="relative z-10 flex items-center gap-4 px-6 md:px-12 pb-8">
         <a
           href="#about"
-          className="px-4 py-2 border border-border rounded text-system text-text-muted hover:border-primary/50 hover:text-primary transition-colors"
+          className="px-4 py-2 border border-border rounded text-system text-text-muted hover:border-neon-red/30 hover:text-neon-red transition-colors"
         >
           Profile
         </a>
       </div>
 
       {/* BACKGROUND AMBIENT GRADIENT */}
-      <div className="absolute top-0 right-0 w-[60%] h-full bg-[radial-gradient(ellipse_at_80%_30%,rgba(99,102,241,0.04)_0%,transparent_60%)] pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-[radial-gradient(ellipse_at_20%_80%,rgba(6,182,212,0.03)_0%,transparent_60%)] pointer-events-none mix-blend-screen" />
+      <div className="absolute top-0 right-0 w-[60%] h-full bg-[radial-gradient(ellipse_at_80%_30%,rgba(255,42,67,0.06)_0%,transparent_60%)] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-[radial-gradient(ellipse_at_20%_80%,rgba(0,240,255,0.03)_0%,transparent_60%)] pointer-events-none" />
     </section>
   );
 }

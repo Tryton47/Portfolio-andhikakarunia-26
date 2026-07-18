@@ -55,19 +55,13 @@ function StatCard({
   return (
     <div
       ref={ref}
-      className="glass-panel border border-border rounded-xl p-6 flex items-center justify-between transition-colors group"
-      style={{ borderColor: 'var(--color-border)' }}
-      onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--theme-primary-hex)')}
-      onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}
+      className="glass-panel border border-border rounded-xl p-6 flex items-center justify-between hover:border-neon-red/30 transition-colors group"
     >
       <div>
         <p className="text-system text-text-dim mb-1">{label}</p>
         <p className="text-text-muted text-xs mt-1">{sublabel}</p>
       </div>
-      <span
-        className="text-4xl md:text-5xl font-mono font-bold text-text-primary transition-colors"
-        style={{ color: 'var(--color-text-primary)' }}
-      >
+      <span className="text-4xl md:text-5xl font-mono font-bold text-text-primary group-hover:text-neon-red transition-colors">
         {count}
       </span>
     </div>
@@ -94,9 +88,9 @@ export default function AboutSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
-            About <span style={{ color: 'var(--theme-primary-hex)' }}>Me</span>
+            About <span className="text-neon-red">Me</span>
           </h2>
-          <p className="text-system" style={{ color: 'var(--theme-secondary-hex)' }}>
+          <p className="text-system text-neon-cyan">
             Transforming ideas into digital experiences
           </p>
         </div>
@@ -107,7 +101,7 @@ export default function AboutSection() {
           <div className="w-full lg:w-[55%] flex flex-col">
             <h3 className="text-heading text-xl md:text-2xl text-text-primary mb-4">
               Hello, I'm{' '}
-              <span style={{ color: 'var(--theme-primary-hex)' }}>Andhika Karunia Rizqi</span>
+              <span className="text-neon-red">Andhika Karunia Rizqi</span>
             </h3>
             <p className="text-text-body text-sm md:text-base leading-relaxed mb-6">
               I'm an Information Systems student with a strong interest in
@@ -124,7 +118,7 @@ export default function AboutSection() {
             </p>
 
             {/* Quote Box */}
-            <div className="border-l-2 pl-5 py-3 mb-8 glass-panel rounded-r-lg" style={{ borderColor: 'var(--theme-primary-hex)' }}>
+            <div className="border-l-2 border-neon-red pl-5 py-3 mb-8 glass-panel rounded-r-lg">
               <p className="text-text-muted text-sm italic">
                 "Leveraging technology as a professional tool to elevate visual
                 and data engineering — one project at a time."
@@ -136,15 +130,13 @@ export default function AboutSection() {
               <a
                 href="/CV_ATS_Andhika_Karunia_Rizqi_2026.pdf"
                 download="CV_ATS_Andhika_Karunia_Rizqi_2026.pdf"
-                className="px-6 py-3 text-white text-system rounded-md transition-all duration-300"
-                style={{ background: `linear-gradient(135deg, var(--theme-grad1), var(--theme-grad2))`, boxShadow: '0 0 20px rgba(var(--theme-primary), 0.25)' }}
+                className="px-6 py-3 bg-neon-red text-white text-system rounded-md hover:bg-[#e0243b] transition-colors shadow-[0_0_15px_rgba(255,42,67,0.3)]"
               >
                 Download CV
               </a>
               <a
                 href="#portfolio"
-                className="px-6 py-3 border text-system rounded-md transition-colors"
-                style={{ borderColor: 'var(--theme-primary-hex)', color: 'var(--theme-primary-hex)' }}
+                className="px-6 py-3 border border-neon-red/40 text-neon-red text-system rounded-md hover:bg-neon-red-dim transition-colors"
               >
                 View Projects
               </a>
@@ -158,7 +150,7 @@ export default function AboutSection() {
               <div
                 className="absolute inset-[-8px] rounded-full"
                 style={{
-                  background: `conic-gradient(from ${sweepAngle}deg, transparent 0deg, rgba(var(--theme-primary), 0.5) 30deg, transparent 60deg, transparent 360deg)`,
+                  background: `conic-gradient(from ${sweepAngle}deg, transparent 0deg, rgba(255, 42, 67, 0.5) 30deg, transparent 60deg, transparent 360deg)`,
                   transition: 'none',
                 }}
               />

@@ -79,7 +79,7 @@ export default function AdminComments() {
 
                 <button
                   onClick={() => handleDelete(c.id)}
-                  className="p-2 border border-border rounded-lg text-text-dim hover:text-primary hover:border-primary/30 transition-colors shrink-0"
+                  className="p-2 border border-border rounded-lg text-text-dim hover:text-neon-red hover:border-neon-red/30 transition-colors shrink-0"
                   title="Delete comment"
                 >
                   <Trash2 size={14} />
