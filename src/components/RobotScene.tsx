@@ -36,10 +36,9 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
       dummy.lookAt(target);
 
       if (isAngry) {
-        // Angry: Head shakes rapidly and looks down/aggressively
-        headRef.current.rotation.y = (Math.random() - 0.5) * 0.2;
-        headRef.current.rotation.z = (Math.random() - 0.5) * 0.1;
-        headRef.current.rotation.x = -0.2 + (Math.random() - 0.5) * 0.1;
+        // Calm & natural anger: Slowly tilt head down and stare, no vibrating
+        dummy.rotation.x -= 0.2; 
+        headRef.current.quaternion.slerp(dummy.quaternion, 0.05);
       } else {
         // Normal smooth tracking
         headRef.current.quaternion.slerp(dummy.quaternion, 0.06);
@@ -48,49 +47,62 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
     
     // Body Animation
     if (groupRef.current) {
+      // Smooth floating only. No shaking.
+      groupRef.current.position.y = Math.sin(t * 2) * 0.05 - 0.2;
+    }
+    
+    // Typing animation
+    if (leftArmRef.current && rightArmRef.current) {
       if (isAngry) {
-        // Angry vibrating
-        groupRef.current.position.x = (Math.random() - 0.5) * 0.05;
-        groupRef.current.position.y = (Math.random() - 0.5) * 0.05;
+        // Stop working, arms reset to neutral defensive pose
+        leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, -Math.PI / 4, 0.1);
+        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, -Math.PI / 4, 0.1);
       } else {
-        // Smooth floating + reset X
-        groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, 0, 0.1);
-        groupRef.current.position.y = Math.sin(t * 2) * 0.05 - 0.2;
+        // Smoothly and elegantly working
+        const typeSpeed = 20;
+        const typeIntensity = 0.1;
+        leftArmRef.current.rotation.x = -Math.PI / 4 + Math.sin(t * typeSpeed) * typeIntensity;
+        rightArmRef.current.rotation.x = -Math.PI / 4 + Math.cos(t * typeSpeed + Math.PI/3) * typeIntensity;
       }
     }
     
-    // Busy working/typing animation
-    if (leftArmRef.current && rightArmRef.current) {
-      const typeSpeed = isAngry ? 50 : 25; // Types aggressively when angry, very fast normally ("umek bekerja")
-      const typeIntensity = isAngry ? 0.3 : 0.15;
-      
-      leftArmRef.current.rotation.x = -Math.PI / 4 + Math.sin(t * typeSpeed) * typeIntensity;
-      rightArmRef.current.rotation.x = -Math.PI / 4 + Math.cos(t * typeSpeed + Math.PI/3) * typeIntensity;
-    }
-    
-    // Dynamic Eye Colors
+    // Natural Expressions (Eyes)
     if (eyeLeftRef.current && eyeRightRef.current) {
-      const currentEyeColor = isAngry ? new THREE.Color('#ff0000') : new THREE.Color(colors.primary);
-      (eyeLeftRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.2);
-      (eyeRightRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.2);
+      const currentEyeColor = isAngry ? new THREE.Color('#ff3333') : new THREE.Color(colors.primary);
+      (eyeLeftRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.1);
+      (eyeRightRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.1);
+
+      // Rotate eyes to form an angry expression \ /
+      const targetZLeft = isAngry ? -0.3 : 0.05; // default slight tilt
+      const targetZRight = isAngry ? 0.3 : -0.05;
+      
+      // Also scale Y down slightly to squint
+      const targetScaleY = isAngry ? 0.4 : 1.0;
+
+      eyeLeftRef.current.rotation.z = THREE.MathUtils.lerp(eyeLeftRef.current.rotation.z, targetZLeft, 0.1);
+      eyeRightRef.current.rotation.z = THREE.MathUtils.lerp(eyeRightRef.current.rotation.z, targetZRight, 0.1);
+      
+      eyeLeftRef.current.scale.y = THREE.MathUtils.lerp(eyeLeftRef.current.scale.y, targetScaleY, 0.1);
+      eyeRightRef.current.scale.y = THREE.MathUtils.lerp(eyeRightRef.current.scale.y, targetScaleY, 0.1);
     }
   });
 
   const handlePointerDown = (e: any) => {
     e.stopPropagation();
     onClick();
-    setAngryTimer(1.5); // Stay angry for 1.5 seconds
+    // Increase angry duration for a calm, long stare
+    setAngryTimer(2.5); 
   };
 
   // Materials: Dominant Black and Silver Glossy
   const blackMetal = new THREE.MeshPhysicalMaterial({ 
-    color: '#080808', metalness: 0.8, roughness: 0.2, clearcoat: 0.6 
+    color: '#0a0a0a', metalness: 0.8, roughness: 0.15, clearcoat: 0.8 
   });
   const silverMetal = new THREE.MeshPhysicalMaterial({ 
     color: '#d0d0d0', metalness: 1.0, roughness: 0.1, clearcoat: 1.0 
   });
   const darkGlass = new THREE.MeshPhysicalMaterial({
-    color: '#000000', metalness: 0.9, roughness: 0.05, clearcoat: 1.0
+    color: '#000000', metalness: 0.9, roughness: 0.02, clearcoat: 1.0
   });
   const secondaryGlow = new THREE.MeshBasicMaterial({ color: colors.secondary });
   const eyeMaterial = new THREE.MeshBasicMaterial({ color: colors.primary });
@@ -100,7 +112,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
     color: '#ffffff',
     metalness: 0.2,
     roughness: 0.05,
-    transmission: 0.95, // Fully glass-like
+    transmission: 1.0, // Fully glass-like
     thickness: 0.05,
     ior: 1.4,
     transparent: true,
@@ -110,7 +122,8 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   return (
     <group 
       ref={groupRef} 
-      position={[0, 0, 0]} 
+      // Lowered slightly to prevent clipping V-Fin at the top of the canvas
+      position={[0, -0.4, 0]} 
       scale={[1.1, 1.1, 1.1]} 
       // Angled slightly so we see it in 3/4 perspective
       rotation={[0, -Math.PI / 8, 0]}
@@ -151,16 +164,18 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           <boxGeometry args={[0.8, 0.4, 0.05]} />
         </mesh>
         
+        {/* Eyes Group */}
         <group position={[0, -0.05, 0.54]}>
-          <mesh ref={eyeLeftRef} position={[-0.2, 0, 0]} rotation={[0, 0, 0.1]} material={eyeMaterial.clone()}>
-            <boxGeometry args={[0.25, 0.1, 0.02]} />
+          <mesh ref={eyeLeftRef} position={[-0.2, 0, 0]} material={eyeMaterial.clone()}>
+            <boxGeometry args={[0.25, 0.12, 0.02]} />
           </mesh>
-          <mesh ref={eyeRightRef} position={[0.2, 0, 0]} rotation={[0, 0, -0.1]} material={eyeMaterial.clone()}>
-            <boxGeometry args={[0.25, 0.1, 0.02]} />
+          <mesh ref={eyeRightRef} position={[0.2, 0, 0]} material={eyeMaterial.clone()}>
+            <boxGeometry args={[0.25, 0.12, 0.02]} />
           </mesh>
         </group>
         
-        <group position={[0, 0.35, 0.52]}>
+        {/* V-Fin (Gundam Antenna) - Scaled down slightly to prevent clipping */}
+        <group position={[0, 0.35, 0.52]} scale={[0.8, 0.8, 0.8]}>
           <mesh position={[-0.2, 0.2, 0]} rotation={[0, 0, -0.6]} material={secondaryGlow}>
             <boxGeometry args={[0.05, 0.5, 0.05]} />
           </mesh>
@@ -173,7 +188,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
         </group>
       </group>
 
-      {/* ─── ARMS (Busy typing fast) ─── */}
+      {/* ─── ARMS ─── */}
       <group position={[-0.7, 0.9, 0]}>
         <mesh material={silverMetal}><sphereGeometry args={[0.2, 16, 16]} /></mesh>
         <group ref={leftArmRef} position={[0, -0.1, 0]} rotation={[-Math.PI/4, 0, 0]}>
@@ -193,7 +208,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
       </group>
 
       {/* ─── PURE HOLOGRAM ANALYTICS ─── */}
-      <group position={[0, 0.4, 1.2]} rotation={[-0.1, 0, 0]}>
+      <group position={[0, 0.4, 1.2]} rotation={[-0.05, 0, 0]}>
         
         {/* Physical Transparent Glass Screen to catch reflections */}
         <RoundedBox args={[1.7, 1.1, 0.02]} radius={0.05} smoothness={4} material={hologramGlass} />
@@ -203,74 +218,71 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           <meshBasicMaterial color={colors.primary} transparent opacity={0.4} wireframe />
         </RoundedBox>
         
-        {/* Glowing Base Projection Pad (below hologram) */}
+        {/* Base Projection Pad */}
         <mesh position={[0, -0.7, 0.2]} rotation={[-Math.PI/2, 0, 0]}>
           <circleGeometry args={[0.6, 32]} />
           <meshBasicMaterial color={colors.secondary} transparent opacity={0.15} />
         </mesh>
         <mesh position={[0, -0.7, 0.2]} rotation={[-Math.PI/2, 0, 0]}>
           <ringGeometry args={[0.55, 0.6, 32]} />
-          <meshBasicMaterial color={colors.primary} transparent opacity={0.6} />
+          <meshBasicMaterial color={colors.primary} transparent opacity={0.5} />
         </mesh>
 
-        {/* HTML UI Dashboard - Partially transparent so we can see the physical glass reflections */}
-        {/* HTML Scale 0.005, Plane is 1.7 x 1.1 => CSS 340px x 220px */}
-        <Html position={[0, 0, 0.015]} transform distanceFactor={1.2} scale={0.005} rotation={[0, 0, 0]}>
+        {/* HTML UI Dashboard - 100% visible now. */}
+        {/* Placed slightly further in front of glass so transmission doesn't hide it */}
+        {/* Adjusted scale to 0.01. So 1.7 units wide = 170px wide in CSS */}
+        <Html position={[0, 0, 0.03]} transform distanceFactor={1.2} scale={0.01} rotation={[0, 0, 0]}>
           <div 
-            className="w-[340px] h-[220px] flex flex-col p-3 overflow-hidden rounded shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+            className="w-[170px] h-[110px] flex flex-col p-2 overflow-hidden rounded-md shadow-2xl"
             style={{ 
-              backgroundColor: 'rgba(5, 5, 5, 0.4)', // highly transparent to let glass show
-              border: `1px solid rgba(var(--theme-primary), 0.5)`,
-              backdropFilter: 'blur(2px)' // slight CSS blur in addition to 3D glass
+              backgroundColor: 'rgba(10, 10, 15, 0.85)', // Highly opaque dark base to ensure visibility
+              border: `1px solid rgba(var(--theme-primary), 0.8)`
             }}
           >
             {/* Header */}
-            <div className="flex justify-between items-center border-b border-white/20 pb-1.5 mb-2">
-              <span className="text-white/90 text-[10px] font-mono tracking-[0.2em]">ANALYTICS.SYS</span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[8px] text-white/50 font-mono">LIVE</span>
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={angryTimer > 0 ? {backgroundColor: '#ff0000'} : { backgroundColor: colors.secondary }} />
+            <div className="flex justify-between items-center border-b border-white/20 pb-1 mb-1.5">
+              <span className="text-white text-[5px] font-mono tracking-[0.2em]">ANALYTICS.SYS</span>
+              <div className="flex items-center gap-1">
+                <span className="w-1 h-1 rounded-full animate-pulse" style={angryTimer > 0 ? {backgroundColor: '#ff3333'} : { backgroundColor: colors.secondary }} />
               </div>
             </div>
             
             {/* Analytics Grid */}
-            <div className="flex-1 flex gap-3">
+            <div className="flex-1 flex gap-2">
               {/* Bar chart */}
-              <div className="w-2/3 flex flex-col justify-end gap-1 relative border-l border-b border-white/10 p-1">
-                <span className="absolute top-1 left-1 text-[7px] text-white/40 font-mono">TRAFFIC YIELD</span>
-                <div className="flex items-end justify-between w-full h-[120px] gap-1">
+              <div className="flex-[2] flex flex-col justify-end gap-0.5 relative border-l border-b border-white/10 p-1">
+                <span className="absolute top-0 left-1 text-[4px] text-white/50 font-mono">TRAFFIC YIELD</span>
+                <div className="flex items-end justify-between w-full h-[60px] gap-0.5">
                   {[40, 70, 30, 90, 60, 80].map((h, i) => (
                     <div 
                       key={i} 
-                      className="w-full rounded-t-sm transition-all duration-300 opacity-80" 
+                      className="w-full rounded-t-sm transition-all duration-300" 
                       style={{ 
-                        height: angryTimer > 0 ? `${Math.random() * 100}%` : `${h}%`, 
-                        backgroundColor: angryTimer > 0 ? '#ff0000' : colors.primary 
+                        height: angryTimer > 0 ? '10%' : `${h}%`, 
+                        backgroundColor: angryTimer > 0 ? '#ff3333' : colors.primary,
+                        opacity: 0.9
                       }} 
                     />
                   ))}
                 </div>
               </div>
               {/* Side Stats */}
-              <div className="w-1/3 flex flex-col gap-2 justify-center">
-                 <div className="bg-black/40 p-1.5 rounded border border-white/5">
-                   <div className="text-[7px] text-white/50 mb-1 font-mono">CPU LOAD</div>
-                   <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                     <div className="h-full rounded-full transition-all" style={{ width: angryTimer > 0 ? '99%' : '65%', backgroundColor: angryTimer > 0 ? '#ff0000' : colors.secondary }} />
+              <div className="flex-[1] flex flex-col gap-1 justify-center">
+                 <div className="bg-black/50 p-1 rounded border border-white/10">
+                   <div className="text-[4px] text-white/60 mb-0.5 font-mono">CPU LOAD</div>
+                   <div className="w-full h-[2px] bg-white/20 rounded-full overflow-hidden">
+                     <div className="h-full rounded-full transition-all" style={{ width: angryTimer > 0 ? '100%' : '65%', backgroundColor: angryTimer > 0 ? '#ff3333' : colors.secondary }} />
                    </div>
                  </div>
-                 <div className="bg-black/40 p-1.5 rounded border border-white/5">
-                   <div className="text-[7px] text-white/50 mb-1 font-mono">MEM USAGE</div>
-                   <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                     <div className="h-full rounded-full transition-all" style={{ width: angryTimer > 0 ? '99%' : '45%', backgroundColor: angryTimer > 0 ? '#ff0000' : colors.primary }} />
+                 <div className="bg-black/50 p-1 rounded border border-white/10">
+                   <div className="text-[4px] text-white/60 mb-0.5 font-mono">MEMORY</div>
+                   <div className="w-full h-[2px] bg-white/20 rounded-full overflow-hidden">
+                     <div className="h-full rounded-full transition-all" style={{ width: angryTimer > 0 ? '100%' : '45%', backgroundColor: angryTimer > 0 ? '#ff3333' : colors.primary }} />
                    </div>
                  </div>
-                 <div className="mt-auto text-right pr-1">
-                    <span className="text-xl font-mono text-white tracking-tighter block leading-none" style={{ textShadow: `0 0 10px ${angryTimer > 0 ? '#ff0000' : colors.primary}` }}>
+                 <div className="mt-auto text-right">
+                    <span className="text-lg font-mono text-white tracking-tighter block leading-none" style={{ textShadow: `0 0 5px ${angryTimer > 0 ? '#ff3333' : colors.primary}` }}>
                       {angryTimer > 0 ? 'ERR' : '99%'}
-                    </span>
-                    <span className="text-[6px] text-white/60 tracking-widest font-mono">
-                      {angryTimer > 0 ? 'CRITICAL' : 'SYSTEM READY'}
                     </span>
                  </div>
               </div>
@@ -288,7 +300,6 @@ export default function RobotScene() {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Mapping cursor slightly constrained so it doesn't flip out
       setMousePos({
         x: (e.clientX / window.innerWidth) * 2 - 1,
         y: -(e.clientY / window.innerHeight) * 2 + 1,
@@ -315,8 +326,6 @@ export default function RobotScene() {
 
   return (
     <div className="relative w-full h-full min-h-[350px]">
-      {/* Removed the "INTERACTIVE MECHA" text here as requested */}
-      
       <Canvas camera={{ position: [0, 1.5, 6.5], fov: 40 }} shadows>
         <ambientLight intensity={1.5} />
         <spotLight 
