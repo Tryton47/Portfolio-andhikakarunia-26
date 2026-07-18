@@ -125,8 +125,8 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
     if (fogRef.current) {
       const mat = fogRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = THREE.MathUtils.lerp(mat.opacity, isWarning ? 0.2 + Math.sin(t * 3) * 0.1 : 0, 0.05);
-      fogRef.current.scale.setScalar(THREE.MathUtils.lerp(fogRef.current.scale.x, isWarning ? 3.5 + Math.sin(t * 2) * 0.5 : 0.5, 0.03));
+      mat.opacity = THREE.MathUtils.lerp(mat.opacity, isWarning ? 0.4 + Math.sin(t * 3) * 0.1 : 0, 0.05);
+      fogRef.current.scale.setScalar(THREE.MathUtils.lerp(fogRef.current.scale.x, isWarning ? 1.8 + Math.sin(t * 2) * 0.1 : 0.5, 0.03));
     }
   });
 
@@ -284,14 +284,15 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
         {/* HTML UI Dashboard - 100% visible now. */}
         {/* Placed slightly further in front of glass so transmission doesn't hide it */}
-        <Html position={[0, 0, 0.08]} transform scale={0.012} rotation={[0, 0, 0]} zIndexRange={[100, 0]}>
+        <Html position={[0, 0, 0.08]} transform scale={0.012} rotation={[0, 0, 0]}>
           <div
-            className="w-[180px] h-[120px] flex flex-col p-2 overflow-hidden rounded-md shadow-2xl"
+            className="flex flex-col p-2 overflow-hidden rounded-md shadow-2xl"
             style={{
+              width: "180px",
+              height: "120px",
               backgroundColor: isWarning ? "rgba(40, 10, 10, 0.85)" : "rgba(10, 10, 15, 0.7)", // More transparent dark base
               border: `1px solid ${isWarning ? "#ff3333" : colors.primary}`,
               boxShadow: `0 0 25px ${isWarning ? "rgba(255,20,20,0.5)" : `${colors.primary}44`}`,
-              pointerEvents: "none",
             }}
           >
             {/* Header */}
@@ -368,8 +369,8 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
       )}
 
       {/* Kabut Aura Merah di Belakang */}
-      <mesh ref={fogRef} position={[0, 0.8, -1.2]}>
-        <sphereGeometry args={[1, 24, 24]} />
+      <mesh ref={fogRef} position={[0, 0.8, -1.0]}>
+        <sphereGeometry args={[0.8, 32, 32]} />
         <meshBasicMaterial color="#ff1111" transparent opacity={0} side={THREE.BackSide} depthWrite={false} />
       </mesh>
     </group>
