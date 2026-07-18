@@ -4,7 +4,6 @@ import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Float, useCursor, Html, RoundedBox, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
-import { gsap } from 'gsap';
 
 // ─── CHIBI MECHA (BLACK & SILVER) ───
 function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; y: number }, colors: { primary: string, secondary: string }, onClick: () => void }) {
@@ -12,58 +11,75 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   const headRef = useRef<THREE.Group>(null);
   const leftArmRef = useRef<THREE.Group>(null);
   const rightArmRef = useRef<THREE.Group>(null);
+  const eyeLeftRef = useRef<THREE.Mesh>(null);
+  const eyeRightRef = useRef<THREE.Mesh>(null);
   
   const target = new THREE.Vector3();
   const [hovered, setHovered] = useState(false);
+  const [angryTimer, setAngryTimer] = useState(0);
 
   useCursor(hovered, 'pointer', 'auto');
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
     
+    if (angryTimer > 0) {
+      setAngryTimer((prev) => prev - delta);
+    }
+    const isAngry = angryTimer > 0;
+
     // Head looks at cursor (Restricted and smooth)
     if (headRef.current) {
-      // Reduced multipliers so the head doesn't snap backwards or turn too far.
-      // The cursor maps to -1 to 1.
       target.set(mousePos.x * 2.5, mousePos.y * 1.5 + 1.2, 6);
       const dummy = new THREE.Object3D();
       dummy.position.copy(headRef.current.position);
       dummy.lookAt(target);
-      // Slower slerp for ultra-smooth turning
-      headRef.current.quaternion.slerp(dummy.quaternion, 0.06);
+
+      if (isAngry) {
+        // Angry: Head shakes rapidly and looks down/aggressively
+        headRef.current.rotation.y = (Math.random() - 0.5) * 0.2;
+        headRef.current.rotation.z = (Math.random() - 0.5) * 0.1;
+        headRef.current.rotation.x = -0.2 + (Math.random() - 0.5) * 0.1;
+      } else {
+        // Normal smooth tracking
+        headRef.current.quaternion.slerp(dummy.quaternion, 0.06);
+      }
     }
     
-    // Idle floating
+    // Body Animation
     if (groupRef.current) {
-      groupRef.current.position.y = Math.sin(t * 2) * 0.05 - 0.2;
+      if (isAngry) {
+        // Angry vibrating
+        groupRef.current.position.x = (Math.random() - 0.5) * 0.05;
+        groupRef.current.position.y = (Math.random() - 0.5) * 0.05;
+      } else {
+        // Smooth floating + reset X
+        groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, 0, 0.1);
+        groupRef.current.position.y = Math.sin(t * 2) * 0.05 - 0.2;
+      }
     }
     
-    // Typing/Interacting animation
+    // Busy working/typing animation
     if (leftArmRef.current && rightArmRef.current) {
-      leftArmRef.current.rotation.x = -Math.PI / 4 + Math.sin(t * 10) * 0.08;
-      rightArmRef.current.rotation.x = -Math.PI / 4 + Math.cos(t * 10) * 0.08;
+      const typeSpeed = isAngry ? 50 : 25; // Types aggressively when angry, very fast normally ("umek bekerja")
+      const typeIntensity = isAngry ? 0.3 : 0.15;
+      
+      leftArmRef.current.rotation.x = -Math.PI / 4 + Math.sin(t * typeSpeed) * typeIntensity;
+      rightArmRef.current.rotation.x = -Math.PI / 4 + Math.cos(t * typeSpeed + Math.PI/3) * typeIntensity;
+    }
+    
+    // Dynamic Eye Colors
+    if (eyeLeftRef.current && eyeRightRef.current) {
+      const currentEyeColor = isAngry ? new THREE.Color('#ff0000') : new THREE.Color(colors.primary);
+      (eyeLeftRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.2);
+      (eyeRightRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.2);
     }
   });
 
   const handlePointerDown = (e: any) => {
     e.stopPropagation();
     onClick();
-    
-    if (groupRef.current && headRef.current) {
-      gsap.to(groupRef.current.position, {
-        y: groupRef.current.position.y + 0.5,
-        duration: 0.4,
-        yoyo: true,
-        repeat: 1,
-        ease: "power2.out"
-      });
-      // Cool double spin
-      gsap.to(groupRef.current.rotation, {
-        y: groupRef.current.rotation.y - Math.PI * 2,
-        duration: 0.8,
-        ease: "power3.inOut"
-      });
-    }
+    setAngryTimer(1.5); // Stay angry for 1.5 seconds
   };
 
   // Materials: Dominant Black and Silver Glossy
@@ -76,15 +92,28 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   const darkGlass = new THREE.MeshPhysicalMaterial({
     color: '#000000', metalness: 0.9, roughness: 0.05, clearcoat: 1.0
   });
-  const glowMaterial = new THREE.MeshBasicMaterial({ color: colors.primary });
   const secondaryGlow = new THREE.MeshBasicMaterial({ color: colors.secondary });
+  const eyeMaterial = new THREE.MeshBasicMaterial({ color: colors.primary });
+
+  // Premium transparent glass screen for hologram
+  const hologramGlass = new THREE.MeshPhysicalMaterial({
+    color: '#ffffff',
+    metalness: 0.2,
+    roughness: 0.05,
+    transmission: 0.95, // Fully glass-like
+    thickness: 0.05,
+    ior: 1.4,
+    transparent: true,
+    opacity: 1
+  });
 
   return (
     <group 
       ref={groupRef} 
       position={[0, 0, 0]} 
-      // Scale up the entire robot slightly to make it proportional
-      scale={[1.2, 1.2, 1.2]} 
+      scale={[1.1, 1.1, 1.1]} 
+      // Angled slightly so we see it in 3/4 perspective
+      rotation={[0, -Math.PI / 8, 0]}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
       onPointerDown={handlePointerDown}
@@ -123,10 +152,10 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
         </mesh>
         
         <group position={[0, -0.05, 0.54]}>
-          <mesh position={[-0.2, 0, 0]} rotation={[0, 0, 0.1]} material={glowMaterial}>
+          <mesh ref={eyeLeftRef} position={[-0.2, 0, 0]} rotation={[0, 0, 0.1]} material={eyeMaterial.clone()}>
             <boxGeometry args={[0.25, 0.1, 0.02]} />
           </mesh>
-          <mesh position={[0.2, 0, 0]} rotation={[0, 0, -0.1]} material={glowMaterial}>
+          <mesh ref={eyeRightRef} position={[0.2, 0, 0]} rotation={[0, 0, -0.1]} material={eyeMaterial.clone()}>
             <boxGeometry args={[0.25, 0.1, 0.02]} />
           </mesh>
         </group>
@@ -138,13 +167,13 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           <mesh position={[0.2, 0.2, 0]} rotation={[0, 0, 0.6]} material={secondaryGlow}>
             <boxGeometry args={[0.05, 0.5, 0.05]} />
           </mesh>
-          <mesh position={[0, 0, 0]} material={glowMaterial}>
+          <mesh position={[0, 0, 0]} material={eyeMaterial}>
             <boxGeometry args={[0.15, 0.15, 0.1]} />
           </mesh>
         </group>
       </group>
 
-      {/* ─── ARMS ─── */}
+      {/* ─── ARMS (Busy typing fast) ─── */}
       <group position={[-0.7, 0.9, 0]}>
         <mesh material={silverMetal}><sphereGeometry args={[0.2, 16, 16]} /></mesh>
         <group ref={leftArmRef} position={[0, -0.1, 0]} rotation={[-Math.PI/4, 0, 0]}>
@@ -163,33 +192,36 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
         </group>
       </group>
 
-      {/* ─── PURE HOLOGRAM ANALYTICS (No Laptop) ─── */}
-      {/* Positioned floating in front of the robot */}
-      <group position={[0, 0.5, 1.2]} rotation={[-0.1, 0, 0]}>
+      {/* ─── PURE HOLOGRAM ANALYTICS ─── */}
+      <group position={[0, 0.4, 1.2]} rotation={[-0.1, 0, 0]}>
         
-        {/* Holographic Border/Frame */}
-        <RoundedBox args={[1.6, 1.0, 0.02]} radius={0.05} smoothness={4}>
-          <meshBasicMaterial color={colors.primary} transparent opacity={0.3} wireframe />
+        {/* Physical Transparent Glass Screen to catch reflections */}
+        <RoundedBox args={[1.7, 1.1, 0.02]} radius={0.05} smoothness={4} material={hologramGlass} />
+        
+        {/* Holographic Glowing Border */}
+        <RoundedBox args={[1.72, 1.12, 0.01]} radius={0.06} smoothness={4}>
+          <meshBasicMaterial color={colors.primary} transparent opacity={0.4} wireframe />
         </RoundedBox>
         
         {/* Glowing Base Projection Pad (below hologram) */}
-        <mesh position={[0, -0.6, 0.2]} rotation={[-Math.PI/2, 0, 0]}>
+        <mesh position={[0, -0.7, 0.2]} rotation={[-Math.PI/2, 0, 0]}>
           <circleGeometry args={[0.6, 32]} />
           <meshBasicMaterial color={colors.secondary} transparent opacity={0.15} />
         </mesh>
-        <mesh position={[0, -0.6, 0.2]} rotation={[-Math.PI/2, 0, 0]}>
+        <mesh position={[0, -0.7, 0.2]} rotation={[-Math.PI/2, 0, 0]}>
           <ringGeometry args={[0.55, 0.6, 32]} />
           <meshBasicMaterial color={colors.primary} transparent opacity={0.6} />
         </mesh>
 
-        {/* HTML UI Dashboard */}
-        {/* Plane size is 1.6 x 1.0. If scale=0.005, CSS width should be 1.6/0.005 = 320px, height = 200px */}
-        <Html position={[0, 0, 0.02]} transform distanceFactor={1.2} scale={0.005} rotation={[0, 0, 0]}>
+        {/* HTML UI Dashboard - Partially transparent so we can see the physical glass reflections */}
+        {/* HTML Scale 0.005, Plane is 1.7 x 1.1 => CSS 340px x 220px */}
+        <Html position={[0, 0, 0.015]} transform distanceFactor={1.2} scale={0.005} rotation={[0, 0, 0]}>
           <div 
-            className="w-[320px] h-[200px] flex flex-col p-3 overflow-hidden rounded shadow-2xl backdrop-blur-sm"
+            className="w-[340px] h-[220px] flex flex-col p-3 overflow-hidden rounded shadow-[0_0_20px_rgba(0,0,0,0.5)]"
             style={{ 
-              backgroundColor: 'rgba(5, 5, 5, 0.7)',
-              border: `1px solid rgba(var(--theme-primary), 0.5)`
+              backgroundColor: 'rgba(5, 5, 5, 0.4)', // highly transparent to let glass show
+              border: `1px solid rgba(var(--theme-primary), 0.5)`,
+              backdropFilter: 'blur(2px)' // slight CSS blur in addition to 3D glass
             }}
           >
             {/* Header */}
@@ -197,7 +229,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
               <span className="text-white/90 text-[10px] font-mono tracking-[0.2em]">ANALYTICS.SYS</span>
               <div className="flex items-center gap-1.5">
                 <span className="text-[8px] text-white/50 font-mono">LIVE</span>
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: colors.secondary }} />
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={angryTimer > 0 ? {backgroundColor: '#ff0000'} : { backgroundColor: colors.secondary }} />
               </div>
             </div>
             
@@ -210,8 +242,11 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
                   {[40, 70, 30, 90, 60, 80].map((h, i) => (
                     <div 
                       key={i} 
-                      className="w-full rounded-t-sm transition-all duration-500 opacity-80" 
-                      style={{ height: `${h}%`, backgroundColor: colors.primary }} 
+                      className="w-full rounded-t-sm transition-all duration-300 opacity-80" 
+                      style={{ 
+                        height: angryTimer > 0 ? `${Math.random() * 100}%` : `${h}%`, 
+                        backgroundColor: angryTimer > 0 ? '#ff0000' : colors.primary 
+                      }} 
                     />
                   ))}
                 </div>
@@ -221,18 +256,22 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
                  <div className="bg-black/40 p-1.5 rounded border border-white/5">
                    <div className="text-[7px] text-white/50 mb-1 font-mono">CPU LOAD</div>
                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                     <div className="h-full rounded-full" style={{ width: '65%', backgroundColor: colors.secondary }} />
+                     <div className="h-full rounded-full transition-all" style={{ width: angryTimer > 0 ? '99%' : '65%', backgroundColor: angryTimer > 0 ? '#ff0000' : colors.secondary }} />
                    </div>
                  </div>
                  <div className="bg-black/40 p-1.5 rounded border border-white/5">
                    <div className="text-[7px] text-white/50 mb-1 font-mono">MEM USAGE</div>
                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                     <div className="h-full rounded-full" style={{ width: '45%', backgroundColor: colors.primary }} />
+                     <div className="h-full rounded-full transition-all" style={{ width: angryTimer > 0 ? '99%' : '45%', backgroundColor: angryTimer > 0 ? '#ff0000' : colors.primary }} />
                    </div>
                  </div>
                  <div className="mt-auto text-right pr-1">
-                    <span className="text-xl font-mono text-white tracking-tighter block leading-none" style={{ textShadow: `0 0 10px ${colors.primary}` }}>99%</span>
-                    <span className="text-[6px] text-white/60 tracking-widest font-mono">SYSTEM READY</span>
+                    <span className="text-xl font-mono text-white tracking-tighter block leading-none" style={{ textShadow: `0 0 10px ${angryTimer > 0 ? '#ff0000' : colors.primary}` }}>
+                      {angryTimer > 0 ? 'ERR' : '99%'}
+                    </span>
+                    <span className="text-[6px] text-white/60 tracking-widest font-mono">
+                      {angryTimer > 0 ? 'CRITICAL' : 'SYSTEM READY'}
+                    </span>
                  </div>
               </div>
             </div>
@@ -246,7 +285,6 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 // ─── MAIN COMPONENT ───
 export default function RobotScene() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [clickCount, setClickCount] = useState(0);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -275,16 +313,10 @@ export default function RobotScene() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleRobotClick = () => {
-    setClickCount(prev => prev + 1);
-  };
-
   return (
     <div className="relative w-full h-full min-h-[350px]">
-      <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] text-text-dim font-mono tracking-widest opacity-60 animate-pulse pointer-events-none whitespace-nowrap border-b border-primary/30 pb-1">
-        INTERACTIVE MECHA
-      </div>
-
+      {/* Removed the "INTERACTIVE MECHA" text here as requested */}
+      
       <Canvas camera={{ position: [0, 1.5, 6.5], fov: 40 }} shadows>
         <ambientLight intensity={1.5} />
         <spotLight 
@@ -299,7 +331,7 @@ export default function RobotScene() {
         <pointLight position={[3, -1, 4]} intensity={2} color={colors.primary} />
         
         <Float speed={2} rotationIntensity={0.05} floatIntensity={0.2}>
-          <CoolChibiMecha mousePos={mousePos} colors={colors} onClick={handleRobotClick} />
+          <CoolChibiMecha mousePos={mousePos} colors={colors} onClick={() => {}} />
         </Float>
         
         <ContactShadows position={[0, -1.8, 0]} opacity={0.8} scale={6} blur={2.5} far={4} color="#000000" />
