@@ -24,8 +24,8 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   const triggerWarning = () => {
     onClick();
     setPhase("warning");
-    // Bikin marahnya lebih “meledak” lalu cepat balik
-    setPhaseTimer(3.2);
+    // Bikin marahnya 6 detik lalu normal
+    setPhaseTimer(6.0);
   };
 
   useCursor(hovered, "pointer", "auto");
@@ -166,9 +166,9 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
       ref={groupRef}
       // Lowered slightly to prevent clipping V-Fin at the top of the canvas
       position={[0, -0.4, 0]}
-      scale={[1.1, 1.1, 1.1]}
-      // Angled slightly so we see it in 3/4 perspective
-      rotation={[0, -Math.PI / 8, 0]}
+      scale={[1.15, 1.15, 1.15]}
+      // Straighter perspective
+      rotation={[0, -Math.PI / 24, 0]}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
       onPointerDown={handlePointerDown}
@@ -275,13 +275,12 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
         {/* HTML UI Dashboard - 100% visible now. */}
         {/* Placed slightly further in front of glass so transmission doesn't hide it */}
-        {/* Adjusted scale to 0.01. So 1.7 units wide = 170px wide in CSS */}
-        <Html position={[0, 0, 0.03]} transform distanceFactor={1.2} scale={0.01} rotation={[0, 0, 0]}>
+        <Html position={[0, 0, 0.05]} transform distanceFactor={1.2} scale={0.011} rotation={[0, 0, 0]} zIndexRange={[100, 0]}>
           <div
-            className="w-[170px] h-[110px] flex flex-col p-2 overflow-hidden rounded-md shadow-2xl"
+            className="w-[180px] h-[120px] flex flex-col p-2 overflow-hidden rounded-md shadow-2xl"
             style={{
-              backgroundColor: "rgba(10, 10, 15, 0.85)", // Highly opaque dark base to ensure visibility
-              border: `1px solid rgba(var(--theme-primary), 0.8)`,
+              backgroundColor: "rgba(10, 10, 15, 0.9)", // Highly opaque dark base to ensure visibility
+              border: `1px solid ${colors.primary}`,
             }}
           >
             {/* Header */}
@@ -316,7 +315,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
                           key={i}
                           className="w-full rounded-t-sm transition-all duration-200"
                           style={{
-                            height: isWarning ? `${Math.max(8, h * 0.18 + (phaseTimer / 3.2) * 55)}%` : `${h}%`,
+                            height: isWarning ? `${Math.max(8, h * 0.18 + (phaseTimer / 6.0) * 55)}%` : `${h}%`,
                             backgroundColor: isWarning ? "#ff3333" : colors.primary,
                             opacity: 0.92,
                             filter: isWarning ? "brightness(1.25)" : "none",
@@ -351,6 +350,11 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           </div>
         </Html>
       </group>
+
+      {/* Aura Merah saat Marah */}
+      {(phase === "warning" || phaseTimer > 0) && (
+        <pointLight position={[0, 1.5, 1]} intensity={5} color="#ff1111" distance={6} decay={2} />
+      )}
     </group>
   );
 }

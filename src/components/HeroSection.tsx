@@ -142,14 +142,14 @@ export default function HeroSection() {
           <div className="w-full max-w-[400px] h-[480px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
             <RobotScene />
           </div>
-          <div className="flex gap-8">
+          <div className="flex justify-around w-full max-w-[400px] mt-2 border-t border-border/30 pt-4">
             <div className="flex flex-col items-center">
-              <span className="text-system text-text-dim">Modules</span>
-              <span className="text-system text-secondary">06 Loaded</span>
+              <span className="text-system text-text-dim font-mono text-xs">MODULES</span>
+              <span className="text-system text-secondary font-bold">06 Loaded</span>
             </div>
-            <div className="flex flex-col items-center">
-              <span className="text-system text-text-dim">Latency</span>
-              <span className="text-system text-secondary">12ms Stable</span>
+            <div className="flex flex-col items-center border-l border-border/30 pl-8">
+              <span className="text-system text-text-dim font-mono text-xs">LATENCY</span>
+              <span className="text-system text-secondary font-bold">12ms Stable</span>
             </div>
           </div>
         </div>
