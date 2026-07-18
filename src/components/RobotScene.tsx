@@ -282,24 +282,26 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           <meshBasicMaterial color={colors.primary} transparent opacity={0.5} />
         </mesh>
 
-        {/* PURE WEBGL DASHBOARD (Guaranteed rendering without CSS issues, perfectly mirrored to face the robot) */}
-        <group position={[0, 0, -0.01]} rotation={[0, Math.PI, 0]}>
+        {/* PURE WEBGL DASHBOARD (Moved IN FRONT of glass to avoid transmission culling, DoubleSide so it's visible when mirrored) */}
+        <group position={[0, 0, 0.04]} rotation={[0, Math.PI, 0]}>
           {/* HEADER */}
-          <Text position={[-0.7, 0.42, 0]} fontSize={0.06} color={isWarning ? "#ff3333" : "#ffffff"} anchorX="left" anchorY="middle">
+          <Text position={[-0.7, 0.42, 0]} fontSize={0.06} anchorX="left" anchorY="middle">
+            <meshBasicMaterial attach="material" color={isWarning ? "#ff3333" : "#ffffff"} side={THREE.DoubleSide} />
             {isWarning ? "⚠ SYSTEM ALERT" : "ANALYTICS.SYS"}
           </Text>
           <mesh position={[0.7, 0.42, 0]}>
             <circleGeometry args={[0.02, 16]} />
-            <meshBasicMaterial color={isWarning ? "#ff3333" : colors.secondary} />
+            <meshBasicMaterial color={isWarning ? "#ff3333" : colors.secondary} side={THREE.DoubleSide} />
           </mesh>
           <mesh position={[0, 0.35, 0]}>
             <planeGeometry args={[1.5, 0.005]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.2} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.2} side={THREE.DoubleSide} />
           </mesh>
 
           {/* BAR CHART */}
           <group position={[-0.7, -0.4, 0]}>
-            <Text position={[0.02, 0.65, 0]} fontSize={0.04} color="rgba(255,255,255,0.5)" anchorX="left">
+            <Text position={[0.02, 0.65, 0]} fontSize={0.04} anchorX="left">
+              <meshBasicMaterial attach="material" color="rgba(255,255,255,0.5)" side={THREE.DoubleSide} />
               {isWarning ? "ERROR RATE" : "TRAFFIC YIELD"}
             </Text>
             {[40, 70, 30, 90, 60, 80, 50].map((val, i) => {
@@ -308,7 +310,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
               return (
                 <mesh key={i} position={[i * 0.12 + 0.05, h / 2, 0]}>
                   <planeGeometry args={[0.08, h]} />
-                  <meshBasicMaterial color={isWarning ? "#ff3333" : colors.primary} transparent opacity={0.9} />
+                  <meshBasicMaterial color={isWarning ? "#ff3333" : colors.primary} transparent opacity={0.9} side={THREE.DoubleSide} />
                 </mesh>
               );
             })}
@@ -316,34 +318,38 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
           {/* SIDE STATS */}
           <group position={[0.35, -0.4, 0]}>
-            <Text position={[0, 0.65, 0]} fontSize={0.04} color="rgba(255,255,255,0.5)" anchorX="left">
+            <Text position={[0, 0.65, 0]} fontSize={0.04} anchorX="left">
+              <meshBasicMaterial attach="material" color="rgba(255,255,255,0.5)" side={THREE.DoubleSide} />
               CPU LOAD
             </Text>
             <mesh position={[0.18, 0.58, 0]}>
               <planeGeometry args={[0.36, 0.02]} />
-              <meshBasicMaterial color="rgba(255,255,255,0.2)" />
+              <meshBasicMaterial color="rgba(255,255,255,0.2)" side={THREE.DoubleSide} />
             </mesh>
             <mesh position={[isWarning ? 0.17 : 0.11, 0.58, 0.001]}>
               <planeGeometry args={[isWarning ? 0.34 : 0.22, 0.02]} />
-              <meshBasicMaterial color={isWarning ? "#ff3333" : colors.secondary} />
+              <meshBasicMaterial color={isWarning ? "#ff3333" : colors.secondary} side={THREE.DoubleSide} />
             </mesh>
 
-            <Text position={[0, 0.45, 0]} fontSize={0.04} color="rgba(255,255,255,0.5)" anchorX="left">
+            <Text position={[0, 0.45, 0]} fontSize={0.04} anchorX="left">
+              <meshBasicMaterial attach="material" color="rgba(255,255,255,0.5)" side={THREE.DoubleSide} />
               MEMORY
             </Text>
             <mesh position={[0.18, 0.38, 0]}>
               <planeGeometry args={[0.36, 0.02]} />
-              <meshBasicMaterial color="rgba(255,255,255,0.2)" />
+              <meshBasicMaterial color="rgba(255,255,255,0.2)" side={THREE.DoubleSide} />
             </mesh>
             <mesh position={[isWarning ? 0.165 : 0.07, 0.38, 0.001]}>
               <planeGeometry args={[isWarning ? 0.33 : 0.14, 0.02]} />
-              <meshBasicMaterial color={isWarning ? "#ff3333" : colors.primary} />
+              <meshBasicMaterial color={isWarning ? "#ff3333" : colors.primary} side={THREE.DoubleSide} />
             </mesh>
 
-            <Text position={[0.35, 0.12, 0]} fontSize={0.16} color={isWarning ? "#ff3333" : "#ffffff"} anchorX="right">
+            <Text position={[0.35, 0.12, 0]} fontSize={0.16} anchorX="right">
+              <meshBasicMaterial attach="material" color={isWarning ? "#ff3333" : "#ffffff"} side={THREE.DoubleSide} />
               {isWarning ? "ERR" : "99%"}
             </Text>
-            <Text position={[0.35, -0.02, 0]} fontSize={0.04} color={isWarning ? "#ff5555" : "rgba(255,255,255,0.5)"} anchorX="right">
+            <Text position={[0.35, -0.02, 0]} fontSize={0.04} anchorX="right">
+              <meshBasicMaterial attach="material" color={isWarning ? "#ff5555" : "rgba(255,255,255,0.5)"} side={THREE.DoubleSide} />
               {isWarning ? "CRITICAL" : "UPTIME"}
             </Text>
           </group>
