@@ -736,58 +736,71 @@ export default function PortfolioSection() {
         </div>
 
         {/* Root Tabs */}
-        <div className="flex justify-center gap-2 mb-8">
-          {(['projects', 'certificates', 'techstack'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setRootTab(tab)}
-              className={`px-6 py-3 rounded-lg text-system transition-all duration-300 ${
-                rootTab === tab
-                  ? 'text-white'
-                  : 'border border-border text-text-muted'
-              }`}
-              style={rootTab === tab ? {
-                background: `linear-gradient(135deg, var(--theme-grad1), var(--theme-grad2))`,
-                boxShadow: '0 0 15px rgba(var(--theme-primary), 0.25)',
-              } : {
-                borderColor: 'var(--color-border)',
-              }}
-              onMouseEnter={e => {
-                if (rootTab !== tab) {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--theme-primary-hex)';
-                  (e.currentTarget as HTMLElement).style.color = 'var(--theme-primary-hex)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (rootTab !== tab) {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
-                  (e.currentTarget as HTMLElement).style.color = '';
-                }
-              }}
-            >
-              {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
+        <div className="flex justify-center gap-3 mb-10">
+          {(['projects', 'certificates', 'techstack'] as const).map((tab) => {
+            const isActive = rootTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setRootTab(tab)}
+                className={`relative px-8 py-3.5 rounded-xl font-mono tracking-widest text-sm transition-all duration-500 overflow-hidden backdrop-blur-md ${
+                  isActive
+                    ? 'text-white font-semibold scale-105'
+                    : 'text-slate-400 hover:text-white hover:-translate-y-0.5'
+                }`}
+                style={{
+                  border: isActive ? '1px solid var(--theme-primary-hex)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: isActive 
+                    ? `linear-gradient(135deg, rgba(var(--theme-primary), 0.15), rgba(var(--theme-secondary), 0.05))` 
+                    : 'rgba(255, 255, 255, 0.02)',
+                  boxShadow: isActive 
+                    ? '0 0 25px rgba(var(--theme-primary), 0.2), inset 0 0 12px rgba(var(--theme-primary), 0.1)' 
+                    : '0 4px 20px rgba(0,0,0,0.2)',
+                  textShadow: isActive ? '0 0 10px rgba(255,255,255,0.3)' : 'none',
+                }}
+              >
+                {/* Glossy highlight line */}
+                <div 
+                  className={`absolute top-0 left-0 w-full h-[1px] transition-all duration-500 ${
+                    isActive ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  style={{ background: 'linear-gradient(90deg, transparent, var(--theme-primary-hex), transparent)' }}
+                />
+                
+                {tab === 'techstack' ? 'TECH STACK' : tab.toUpperCase()}
+              </button>
+            );
+          })}
         </div>
 
         {/* ═══ PROJECTS TAB ═══ */}
         {rootTab === 'projects' && (
           <>
             {/* Sub-filter */}
-            <div className="flex justify-center gap-3 mb-10 overflow-x-auto pb-2">
-              {subCategories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => { setSubFilter(cat); setShowMore(false); }}
-                  className={`px-5 py-2 rounded-full text-system whitespace-nowrap transition-all duration-300 ${
-                    subFilter === cat
-                      ? 'border border-primary text-primary bg-primary-dim'
-                      : 'border border-border text-text-dim hover:border-primary/30 hover:text-primary'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="flex justify-center gap-4 mb-12 overflow-x-auto pb-4 hide-scrollbar">
+              {subCategories.map((cat) => {
+                const isActive = subFilter === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => { setSubFilter(cat); setShowMore(false); }}
+                    className={`relative px-6 py-2.5 rounded-full text-xs font-mono tracking-widest whitespace-nowrap transition-all duration-400 backdrop-blur-sm ${
+                      isActive
+                        ? 'text-white font-medium scale-105'
+                        : 'text-slate-400 hover:text-white hover:scale-105'
+                    }`}
+                    style={{
+                      border: isActive ? '1px solid var(--theme-primary-hex)' : '1px solid rgba(255, 255, 255, 0.06)',
+                      background: isActive 
+                        ? `linear-gradient(135deg, rgba(var(--theme-primary), 0.2), rgba(var(--theme-secondary), 0.05))` 
+                        : 'rgba(255, 255, 255, 0.02)',
+                      boxShadow: isActive ? '0 0 20px rgba(var(--theme-primary), 0.25)' : 'none',
+                    }}
+                  >
+                    {cat.toUpperCase()}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Project Grid */}
