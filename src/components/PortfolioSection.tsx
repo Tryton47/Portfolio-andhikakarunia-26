@@ -5,6 +5,7 @@ import { ExternalLink, Code2, ChevronDown, ChevronUp } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useScrollReveal }     from '../hooks/useScrollReveal';
+import ScrollReveal from './Shared/ScrollReveal';
 import GlassButton from './Shared/GlassButton';
 
 // ─── Dynamic imports to avoid SSR issues with Three.js canvas ───
