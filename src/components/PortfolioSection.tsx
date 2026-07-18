@@ -7,6 +7,7 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useScrollReveal }     from '../hooks/useScrollReveal';
 import ScrollReveal from './Shared/ScrollReveal';
 import GlassButton from './Shared/GlassButton';
+import { useTheme } from '@/context/ThemeContext';
 
 // ─── Dynamic imports to avoid SSR issues with Three.js canvas ───
 const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
@@ -245,11 +246,15 @@ const subCategories = ['Web Dev', 'Data Analysis', 'Graphic Design', 'Video Edit
 /* ─── AMBIENT CANVAS: Matrix ─── */
 function MatrixCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+  
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    
+    const pRGB = theme.vars.primary.split(' ').join(', ');
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
     const cols = Math.floor(canvas.width / 16);
@@ -259,7 +264,7 @@ function MatrixCanvas() {
     const draw = () => {
       ctx.fillStyle = 'rgba(11, 11, 15, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(var(--theme-primary), 0.12)';
+      ctx.fillStyle = `rgba(${pRGB}, 0.12)`;
       ctx.font = '12px JetBrains Mono, monospace';
       for (let i = 0; i < drops.length; i++) {
         const text = chars[Math.floor(Math.random() * chars.length)];
@@ -277,11 +282,16 @@ function MatrixCanvas() {
 /* ─── AMBIENT CANVAS: Data Analyst (Charts + Scatter) ─── */
 function DataAnalystCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    
+    const pRGB = theme.vars.primary.split(' ').join(', ');
+    const sRGB = theme.vars.secondary.split(' ').join(', ');
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
     const W = canvas.width;
@@ -306,7 +316,7 @@ function DataAnalystCanvas() {
       ctx.clearRect(0, 0, W, H);
 
       // ── Grid lines ──
-      ctx.strokeStyle = 'rgba(var(--theme-secondary), 0.04)';
+      ctx.strokeStyle = `rgba(${sRGB}, 0.04)`;
       ctx.lineWidth = 1;
       for (let i = 0; i < 8; i++) {
         const y = H * (i / 7);
@@ -322,12 +332,12 @@ function DataAnalystCanvas() {
         const barH = v * H * 0.55;
         // Bar fill with gradient
         const grad = ctx.createLinearGradient(x, barBaseY - barH, x, barBaseY);
-        grad.addColorStop(0, `rgba(var(--theme-secondary), ${0.3 + Math.sin(t * 0.02 + i) * 0.1})`);
-        grad.addColorStop(1, 'rgba(var(--theme-secondary), 0.03)');
+        grad.addColorStop(0, `rgba(${sRGB}, ${0.3 + Math.sin(t * 0.02 + i) * 0.1})`);
+        grad.addColorStop(1, `rgba(${sRGB}, 0.03)`);
         ctx.fillStyle = grad;
         ctx.fillRect(x, barBaseY - barH, barW, barH);
         // Top highlight
-        ctx.fillStyle = `rgba(var(--theme-secondary), ${0.6 + Math.sin(t * 0.02 + i) * 0.2})`;
+        ctx.fillStyle = `rgba(${sRGB}, ${0.6 + Math.sin(t * 0.02 + i) * 0.2})`;
         ctx.fillRect(x, barBaseY - barH, barW, 2);
       });
 
@@ -342,7 +352,7 @@ function DataAnalystCanvas() {
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
-      ctx.strokeStyle = 'rgba(var(--theme-primary), 0.4)';
+      ctx.strokeStyle = `rgba(${pRGB}, 0.4)`;
       ctx.lineWidth = 1.5;
       ctx.stroke();
       // Fill under line
@@ -350,8 +360,8 @@ function DataAnalystCanvas() {
       ctx.lineTo(lineStartX, lineBaseY);
       ctx.closePath();
       const lineGrad = ctx.createLinearGradient(0, lineBaseY - H * 0.5, 0, lineBaseY);
-      lineGrad.addColorStop(0, 'rgba(var(--theme-primary), 0.1)');
-      lineGrad.addColorStop(1, 'rgba(var(--theme-primary), 0)');
+      lineGrad.addColorStop(0, `rgba(${pRGB}, 0.1)`);
+      lineGrad.addColorStop(1, `rgba(${pRGB}, 0)`);
       ctx.fillStyle = lineGrad;
       ctx.fill();
 
@@ -361,7 +371,7 @@ function DataAnalystCanvas() {
         const alpha = 0.15 + pulse * 0.1;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r + pulse * 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(var(--theme-secondary), ${alpha})`;
+        ctx.fillStyle = `rgba(${sRGB}, ${alpha})`;
         ctx.fill();
       });
 
@@ -369,7 +379,7 @@ function DataAnalystCanvas() {
       ctx.font = '9px JetBrains Mono, monospace';
       const metrics = ['AVG: 72.4%', 'R²: 0.94', 'n=1,240', 'σ: 3.2'];
       metrics.forEach((m, i) => {
-        ctx.fillStyle = `rgba(var(--theme-secondary), ${0.2 + Math.sin(t * 0.02 + i) * 0.05})`;
+        ctx.fillStyle = `rgba(${sRGB}, ${0.2 + Math.sin(t * 0.02 + i) * 0.05})`;
         ctx.fillText(m, W * 0.5 + i * 70, H * 0.15 + Math.sin(t * 0.01 + i) * 4);
       });
 
@@ -385,11 +395,15 @@ function DataAnalystCanvas() {
 /* ─── AMBIENT CANVAS: Video Editing (Film Strip + Waveform) ─── */
 function VideoCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    
+    const pRGB = theme.vars.primary.split(' ').join(', ');
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
     const W = canvas.width;
@@ -404,9 +418,9 @@ function VideoCanvas() {
       // ── Timeline track (horizontal bar) ──
       const trackY = H * 0.55;
       const trackH = 28;
-      ctx.fillStyle = 'rgba(var(--theme-primary), 0.05)';
+      ctx.fillStyle = `rgba(${pRGB}, 0.05)`;
       ctx.fillRect(0, trackY, W, trackH);
-      ctx.strokeStyle = 'rgba(var(--theme-primary), 0.15)';
+      ctx.strokeStyle = `rgba(${pRGB}, 0.15)`;
       ctx.lineWidth = 0.5;
       ctx.strokeRect(0, trackY, W, trackH);
 
@@ -416,11 +430,11 @@ function VideoCanvas() {
       const offset = (t * 0.8) % frameW;
       for (let i = -1; i < numFrames; i++) {
         const fx = i * frameW - offset;
-        ctx.strokeStyle = 'rgba(var(--theme-primary), 0.25)';
+        ctx.strokeStyle = `rgba(${pRGB}, 0.25)`;
         ctx.strokeRect(fx, trackY + 2, frameW - 2, trackH - 4);
         // Film perfs top/bottom
         for (let p = 0; p < 3; p++) {
-          ctx.fillStyle = 'rgba(var(--theme-primary), 0.15)';
+          ctx.fillStyle = `rgba(${pRGB}, 0.15)`;
           ctx.fillRect(fx + 4 + p * 11, trackY + 4, 7, 4);
           ctx.fillRect(fx + 4 + p * 11, trackY + trackH - 8, 7, 4);
         }
@@ -428,10 +442,10 @@ function VideoCanvas() {
 
       // ── Playhead ──
       const playX = W * 0.4 + Math.sin(t * 0.02) * 20;
-      ctx.strokeStyle = 'rgba(var(--theme-primary), 0.8)';
+      ctx.strokeStyle = `rgba(${pRGB}, 0.8)`;
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(playX, trackY - 12); ctx.lineTo(playX, trackY + trackH + 12); ctx.stroke();
-      ctx.fillStyle = 'rgba(var(--theme-primary), 0.8)';
+      ctx.fillStyle = `rgba(${pRGB}, 0.8)`;
       ctx.beginPath();
       ctx.moveTo(playX - 6, trackY - 12);
       ctx.lineTo(playX + 6, trackY - 12);
@@ -440,7 +454,7 @@ function VideoCanvas() {
 
       // ── Audio waveform ──
       const waveY = H * 0.75;
-      ctx.strokeStyle = 'rgba(var(--theme-primary), 0.3)';
+      ctx.strokeStyle = `rgba(${pRGB}, 0.3)`;
       ctx.lineWidth = 1;
       ctx.beginPath();
       for (let x = 0; x < W; x++) {
@@ -456,7 +470,7 @@ function VideoCanvas() {
       ctx.font = '9px JetBrains Mono, monospace';
       const times = ['00:00:12:14', '00:00:24:08', '00:01:03:22'];
       times.forEach((tc, i) => {
-        ctx.fillStyle = `rgba(var(--theme-primary), ${0.15 + Math.sin(t * 0.02 + i) * 0.05})`;
+        ctx.fillStyle = `rgba(${pRGB}, ${0.15 + Math.sin(t * 0.02 + i) * 0.05})`;
         ctx.fillText(tc, (W / 4) * i + 20, H * 0.3 + Math.sin(t * 0.015 + i) * 5);
       });
 
@@ -483,11 +497,15 @@ function VideoCanvas() {
 /* ─── AMBIENT CANVAS: Bezier Curves ─── */
 function BezierCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    
+    const pRGB = theme.vars.primary.split(' ').join(', ');
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
     let t = 0;
@@ -510,7 +528,7 @@ function BezierCanvas() {
           (Math.sin(offset * 0.007 + 5) * 0.5 + 0.5) * canvas.width,
           (Math.cos(offset * 0.01 + 6) * 0.5 + 0.5) * canvas.height
         );
-        ctx.strokeStyle = `rgba(var(--theme-primary), 0.08)`;
+        ctx.strokeStyle = `rgba(${pRGB}, 0.08)`;
         ctx.lineWidth = 1;
         ctx.stroke();
       }
