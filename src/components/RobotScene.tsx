@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState, useEffect } from "react";
-import { Environment, Float, useCursor, Html, RoundedBox, ContactShadows } from "@react-three/drei";
+import { Environment, Float, useCursor, Html, RoundedBox, ContactShadows, Text } from "@react-three/drei";
 import * as THREE from "three";
 
 // ─── CHIBI MECHA (BLACK & SILVER) ───
@@ -282,91 +282,72 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           <meshBasicMaterial color={colors.primary} transparent opacity={0.5} />
         </mesh>
 
-        {/* HTML UI Dashboard - 3D HUD (Scaled to glass and mirrored to face the robot) */}
-        <Html position={[0, 0, 0.01]} transform scale={0.005} rotation={[0, Math.PI, 0]}>
-          <div
-            style={{
-              width: "320px",
-              height: "200px",
-              backgroundColor: isWarning ? "rgba(40, 10, 10, 0.65)" : "rgba(10, 10, 15, 0.55)",
-              border: `2px solid ${isWarning ? "#ff3333" : colors.primary}`,
-              boxShadow: `0 0 30px ${isWarning ? "rgba(255,20,20,0.5)" : `${colors.primary}44`}`,
-              borderRadius: "10px",
-              padding: "16px",
-              display: "flex",
-              flexDirection: "column",
-              fontFamily: "monospace",
-              color: "white",
-            }}
-          >
-            {/* Header */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.2)", paddingBottom: "8px", marginBottom: "12px" }}>
-              <span style={{ fontSize: "10px", letterSpacing: "2px", fontWeight: "bold", color: isWarning ? "#ff3333" : "white" }}>
-                {isWarning ? "⚠ SYSTEM ALERT" : "ANALYTICS.SYS"}
-              </span>
-              <div
-                style={{
-                  width: "8px", height: "8px", borderRadius: "50%",
-                  backgroundColor: isWarning ? "#ff3333" : colors.secondary,
-                  boxShadow: `0 0 10px ${isWarning ? "#ff3333" : colors.secondary}`
-                }}
-              />
-            </div>
+        {/* PURE WEBGL DASHBOARD (Guaranteed rendering without CSS issues, perfectly mirrored to face the robot) */}
+        <group position={[0, 0, -0.01]} rotation={[0, Math.PI, 0]}>
+          {/* HEADER */}
+          <Text position={[-0.7, 0.42, 0]} fontSize={0.06} color={isWarning ? "#ff3333" : "#ffffff"} anchorX="left" anchorY="middle">
+            {isWarning ? "⚠ SYSTEM ALERT" : "ANALYTICS.SYS"}
+          </Text>
+          <mesh position={[0.7, 0.42, 0]}>
+            <circleGeometry args={[0.02, 16]} />
+            <meshBasicMaterial color={isWarning ? "#ff3333" : colors.secondary} />
+          </mesh>
+          <mesh position={[0, 0.35, 0]}>
+            <planeGeometry args={[1.5, 0.005]} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.2} />
+          </mesh>
 
-            {/* Analytics Grid */}
-            <div style={{ display: "flex", gap: "16px", flex: 1 }}>
-              {/* Bar Chart */}
-              <div style={{ flex: 2, display: "flex", flexDirection: "column", borderLeft: "1px solid rgba(255,255,255,0.1)", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingLeft: "8px", position: "relative" }}>
-                <span style={{ position: "absolute", top: 0, left: "8px", fontSize: "8px", color: "rgba(255,255,255,0.5)" }}>
-                  {isWarning ? "ERROR RATE" : "TRAFFIC YIELD"}
-                </span>
-                <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", width: "100%", flex: 1, gap: "4px" }}>
-                  {[40, 70, 30, 90, 60, 80, 50].map((h, i) => {
-                    const height = isWarning ? `${Math.max(20, h * 0.18 + (phaseTimer / 6.0) * 80)}%` : `${h}%`;
-                    return (
-                      <div
-                        key={i}
-                        style={{
-                          width: "100%",
-                          height,
-                          backgroundColor: isWarning ? "#ff3333" : colors.primary,
-                          opacity: 0.9,
-                          borderTopLeftRadius: "2px",
-                          borderTopRightRadius: "2px",
-                          transition: "height 0.2s"
-                        }}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
+          {/* BAR CHART */}
+          <group position={[-0.7, -0.4, 0]}>
+            <Text position={[0.02, 0.65, 0]} fontSize={0.04} color="rgba(255,255,255,0.5)" anchorX="left">
+              {isWarning ? "ERROR RATE" : "TRAFFIC YIELD"}
+            </Text>
+            {[40, 70, 30, 90, 60, 80, 50].map((val, i) => {
+              const baseH = isWarning ? Math.max(20, val * 0.18 + (phaseTimer / 6.0) * 80) : val;
+              const h = (baseH / 100) * 0.55;
+              return (
+                <mesh key={i} position={[i * 0.12 + 0.05, h / 2, 0]}>
+                  <planeGeometry args={[0.08, h]} />
+                  <meshBasicMaterial color={isWarning ? "#ff3333" : colors.primary} transparent opacity={0.9} />
+                </mesh>
+              );
+            })}
+          </group>
 
-              {/* Side Stats */}
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px", justifyContent: "center" }}>
-                <div style={{ backgroundColor: "rgba(0,0,0,0.5)", padding: "8px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}>
-                  <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.6)", marginBottom: "4px" }}>CPU LOAD</div>
-                  <div style={{ width: "100%", height: "4px", backgroundColor: "rgba(255,255,255,0.2)", borderRadius: "2px" }}>
-                    <div style={{ height: "100%", width: isWarning ? "98%" : "65%", backgroundColor: isWarning ? "#ff3333" : colors.secondary, borderRadius: "2px", transition: "width 0.5s" }} />
-                  </div>
-                </div>
-                <div style={{ backgroundColor: "rgba(0,0,0,0.5)", padding: "8px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}>
-                  <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.6)", marginBottom: "4px" }}>MEMORY</div>
-                  <div style={{ width: "100%", height: "4px", backgroundColor: "rgba(255,255,255,0.2)", borderRadius: "2px" }}>
-                    <div style={{ height: "100%", width: isWarning ? "95%" : "45%", backgroundColor: isWarning ? "#ff3333" : colors.primary, borderRadius: "2px", transition: "width 0.5s" }} />
-                  </div>
-                </div>
-                <div style={{ marginTop: "auto", textAlign: "right" }}>
-                  <span style={{ fontSize: "24px", fontWeight: "bold", textShadow: `0 0 10px ${isWarning ? "#ff3333" : colors.primary}`, color: isWarning ? "#ff3333" : "white" }}>
-                    {isWarning ? "ERR" : "99%"}
-                  </span>
-                  <div style={{ fontSize: "8px", color: isWarning ? "rgba(255,50,50,0.8)" : "rgba(255,255,255,0.5)" }}>
-                    {isWarning ? "CRITICAL" : "UPTIME"}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Html>
+          {/* SIDE STATS */}
+          <group position={[0.35, -0.4, 0]}>
+            <Text position={[0, 0.65, 0]} fontSize={0.04} color="rgba(255,255,255,0.5)" anchorX="left">
+              CPU LOAD
+            </Text>
+            <mesh position={[0.18, 0.58, 0]}>
+              <planeGeometry args={[0.36, 0.02]} />
+              <meshBasicMaterial color="rgba(255,255,255,0.2)" />
+            </mesh>
+            <mesh position={[isWarning ? 0.17 : 0.11, 0.58, 0.001]}>
+              <planeGeometry args={[isWarning ? 0.34 : 0.22, 0.02]} />
+              <meshBasicMaterial color={isWarning ? "#ff3333" : colors.secondary} />
+            </mesh>
+
+            <Text position={[0, 0.45, 0]} fontSize={0.04} color="rgba(255,255,255,0.5)" anchorX="left">
+              MEMORY
+            </Text>
+            <mesh position={[0.18, 0.38, 0]}>
+              <planeGeometry args={[0.36, 0.02]} />
+              <meshBasicMaterial color="rgba(255,255,255,0.2)" />
+            </mesh>
+            <mesh position={[isWarning ? 0.165 : 0.07, 0.38, 0.001]}>
+              <planeGeometry args={[isWarning ? 0.33 : 0.14, 0.02]} />
+              <meshBasicMaterial color={isWarning ? "#ff3333" : colors.primary} />
+            </mesh>
+
+            <Text position={[0.35, 0.12, 0]} fontSize={0.16} color={isWarning ? "#ff3333" : "#ffffff"} anchorX="right">
+              {isWarning ? "ERR" : "99%"}
+            </Text>
+            <Text position={[0.35, -0.02, 0]} fontSize={0.04} color={isWarning ? "#ff5555" : "rgba(255,255,255,0.5)"} anchorX="right">
+              {isWarning ? "CRITICAL" : "UPTIME"}
+            </Text>
+          </group>
+        </group>
       </group>
 
       {/* Aura Merah saat Marah */}
