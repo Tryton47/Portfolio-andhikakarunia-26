@@ -137,8 +137,8 @@ export default function HeroSection() {
           className="w-full md:w-[40%] flex flex-col items-center gap-6"
           style={{ transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 8}px)`, transition: 'transform 0.3s ease-out' }}
         >
-          {/* Enlarge the container for a much more premium feel */}
-          <div className="w-full max-w-[500px] aspect-square rounded-full flex items-center justify-center relative scale-110 md:scale-125 transition-transform duration-500 hover:scale-125 md:hover:scale-[1.35]">
+          {/* Container size optimized for Chibi Mecha */}
+          <div className="w-full max-w-[350px] aspect-square rounded-full flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
             <RobotScene />
           </div>
           <div className="flex gap-8">

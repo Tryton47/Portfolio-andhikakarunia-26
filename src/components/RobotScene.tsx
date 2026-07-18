@@ -6,14 +6,12 @@ import { Environment, Float, useCursor, Html, RoundedBox, ContactShadows } from 
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 
-// ─── PREMIUM EVE/ASTRO-STYLE ROBOT ───
-function UltraPremiumRobot({ mousePos, colors, onClick }: { mousePos: { x: number; y: number }, colors: { primary: string, secondary: string }, onClick: () => void }) {
+// ─── CHIBI MECHA (BLACK & SILVER) ───
+function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; y: number }, colors: { primary: string, secondary: string }, onClick: () => void }) {
   const groupRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
-  const leftEyeRef = useRef<THREE.Mesh>(null);
-  const rightEyeRef = useRef<THREE.Mesh>(null);
-  const leftHandRef = useRef<THREE.Group>(null);
-  const rightHandRef = useRef<THREE.Group>(null);
+  const leftArmRef = useRef<THREE.Group>(null);
+  const rightArmRef = useRef<THREE.Group>(null);
   
   const target = new THREE.Vector3();
   const [hovered, setHovered] = useState(false);
@@ -23,47 +21,24 @@ function UltraPremiumRobot({ mousePos, colors, onClick }: { mousePos: { x: numbe
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     
-    // 1. Head follows cursor
+    // Head looks at cursor
     if (headRef.current) {
-      // Invert the x and y mapping so it looks at the cursor correctly
-      // Camera is positive Z, so positive X mouse should make head look positive X (right)
-      target.set(mousePos.x * 6, mousePos.y * 4 + 1.5, 6);
-      
+      target.set(mousePos.x * 4, mousePos.y * 3 + 1, 5);
       const dummy = new THREE.Object3D();
       dummy.position.copy(headRef.current.position);
       dummy.lookAt(target);
-      
-      // Extremely smooth slerp for a premium feel
-      headRef.current.quaternion.slerp(dummy.quaternion, 0.08);
+      headRef.current.quaternion.slerp(dummy.quaternion, 0.15);
     }
     
-    // 2. Idle floating animation (body)
+    // Idle floating
     if (groupRef.current) {
       groupRef.current.position.y = Math.sin(t * 2) * 0.05 - 0.2;
     }
     
-    // 3. Hands typing animation on the glass keyboard
-    if (leftHandRef.current && rightHandRef.current) {
-      leftHandRef.current.position.y = Math.sin(t * 12) * 0.03 + 0.1;
-      leftHandRef.current.position.x = -0.7 + Math.sin(t * 4) * 0.05;
-      
-      rightHandRef.current.position.y = Math.sin(t * 12 + Math.PI) * 0.03 + 0.1;
-      rightHandRef.current.position.x = 0.7 + Math.cos(t * 4) * 0.05;
-    }
-
-    // 4. Random Blinking Logic
-    if (leftEyeRef.current && rightEyeRef.current) {
-      // Blink every 3-5 seconds randomly
-      const blinkCycle = Math.sin(t * 3) + Math.cos(t * 2.5);
-      if (blinkCycle > 1.95) {
-        // Blinking (scale Y goes to 0.1)
-        leftEyeRef.current.scale.y = THREE.MathUtils.lerp(leftEyeRef.current.scale.y, 0.1, 0.5);
-        rightEyeRef.current.scale.y = THREE.MathUtils.lerp(rightEyeRef.current.scale.y, 0.1, 0.5);
-      } else {
-        // Open
-        leftEyeRef.current.scale.y = THREE.MathUtils.lerp(leftEyeRef.current.scale.y, 1, 0.2);
-        rightEyeRef.current.scale.y = THREE.MathUtils.lerp(rightEyeRef.current.scale.y, 1, 0.2);
-      }
+    // Typing animation
+    if (leftArmRef.current && rightArmRef.current) {
+      leftArmRef.current.rotation.x = -Math.PI / 4 + Math.sin(t * 15) * 0.1;
+      rightArmRef.current.rotation.x = -Math.PI / 4 + Math.cos(t * 15) * 0.1;
     }
   });
 
@@ -71,65 +46,35 @@ function UltraPremiumRobot({ mousePos, colors, onClick }: { mousePos: { x: numbe
     e.stopPropagation();
     onClick();
     
-    // Expressive Happy Spin & Jump
     if (groupRef.current && headRef.current) {
-      // Jump
       gsap.to(groupRef.current.position, {
-        y: groupRef.current.position.y + 0.8,
-        duration: 0.4,
+        y: groupRef.current.position.y + 0.5,
+        duration: 0.3,
         yoyo: true,
         repeat: 1,
         ease: "power2.out"
       });
-      // Spin
+      // Cool double spin
       gsap.to(groupRef.current.rotation, {
-        y: groupRef.current.rotation.y + Math.PI * 2,
-        duration: 0.8,
-        ease: "back.out(1.5)"
-      });
-      // Happy head nod
-      gsap.to(headRef.current.rotation, {
-        x: -0.5,
-        duration: 0.2,
-        yoyo: true,
-        repeat: 3
+        y: groupRef.current.rotation.y - Math.PI * 2,
+        duration: 0.7,
+        ease: "power3.inOut"
       });
     }
   };
 
-  // ─── PREMIUM MATERIALS ───
-  // High-gloss ceramic/white plastic (Apple/EVE style)
-  const ceramicMaterial = new THREE.MeshPhysicalMaterial({ 
-    color: '#ffffff',
-    metalness: 0.1, 
-    roughness: 0.1, 
-    clearcoat: 1.0, 
-    clearcoatRoughness: 0.1 
+  // Materials: Dominant Black and Silver Glossy
+  const blackMetal = new THREE.MeshPhysicalMaterial({ 
+    color: '#0a0a0a', metalness: 0.8, roughness: 0.2, clearcoat: 0.5 
   });
-  
-  // Glossy Black screen for face
-  const faceGlassMaterial = new THREE.MeshPhysicalMaterial({
-    color: '#000000',
-    metalness: 0.8,
-    roughness: 0.05,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.1
+  const silverMetal = new THREE.MeshPhysicalMaterial({ 
+    color: '#c0c0c0', metalness: 1.0, roughness: 0.1, clearcoat: 1.0 
   });
-
-  // Glowing eyes (changes with theme)
+  const darkGlass = new THREE.MeshPhysicalMaterial({
+    color: '#000000', metalness: 0.9, roughness: 0.05, clearcoat: 1.0
+  });
   const glowMaterial = new THREE.MeshBasicMaterial({ color: colors.primary });
-
-  // Ultra-premium Glass Dashboard (Frosted glass)
-  const glassMaterial = new THREE.MeshPhysicalMaterial({
-    color: '#ffffff',
-    metalness: 0.1,
-    roughness: 0.1,
-    transmission: 0.95, // Glass effect
-    thickness: 0.1,     // Refraction thickness
-    ior: 1.5,
-    transparent: true,
-    opacity: 1
-  });
+  const secondaryGlow = new THREE.MeshBasicMaterial({ color: colors.secondary });
 
   return (
     <group 
@@ -139,138 +84,144 @@ function UltraPremiumRobot({ mousePos, colors, onClick }: { mousePos: { x: numbe
       onPointerOut={() => setHovered(false)}
       onPointerDown={handlePointerDown}
     >
-      {/* ─── BODY (Sleek Pod) ─── */}
-      <group position={[0, 0.4, 0]}>
-        <mesh castShadow receiveShadow material={ceramicMaterial}>
-          <capsuleGeometry args={[0.55, 0.6, 32, 64]} />
+      {/* ─── BODY ─── */}
+      <group position={[0, 0.6, 0]}>
+        {/* Core Chest */}
+        <RoundedBox args={[1.0, 0.9, 0.7]} radius={0.15} material={blackMetal} castShadow />
+        {/* Silver Armor Plates */}
+        <RoundedBox args={[0.8, 0.7, 0.75]} radius={0.1} position={[0, 0.05, 0]} material={silverMetal} />
+        {/* Center Core Reactor */}
+        <mesh position={[0, 0.1, 0.38]} material={secondaryGlow}>
+          <circleGeometry args={[0.15, 32]} />
         </mesh>
-        
-        {/* Core Ring Glow */}
-        <mesh position={[0, -0.1, 0.45]} rotation={[Math.PI/2, 0, 0]}>
-          <torusGeometry args={[0.2, 0.015, 16, 64]} />
-          <meshBasicMaterial color={colors.secondary} />
+        <mesh position={[0, 0.1, 0.385]} material={new THREE.MeshBasicMaterial({color: '#ffffff'})}>
+          <circleGeometry args={[0.08, 32]} />
+        </mesh>
+        {/* Thruster Skirt (Lower Body) */}
+        <mesh position={[0, -0.45, 0]} material={blackMetal}>
+          <cylinderGeometry args={[0.4, 0.6, 0.3, 16]} />
         </mesh>
       </group>
 
-      {/* ─── HEAD (Wide, Cute Screen) ─── */}
-      <group ref={headRef} position={[0, 1.6, 0]}>
-        {/* Main Head Casing (Wide Rounded Box) */}
-        <RoundedBox args={[1.5, 1, 1]} radius={0.3} smoothness={16} castShadow material={ceramicMaterial} />
+      {/* ─── HEAD ─── */}
+      <group ref={headRef} position={[0, 1.4, 0]}>
+        {/* Neck */}
+        <mesh position={[0, -0.25, 0]} material={silverMetal}>
+          <cylinderGeometry args={[0.1, 0.1, 0.2]} />
+        </mesh>
         
-        {/* Glossy Black Faceplate */}
-        <RoundedBox args={[1.4, 0.9, 1.05]} radius={0.25} smoothness={16} position={[0, 0, 0.02]} material={faceGlassMaterial} />
+        {/* Main Head Box (Angular) */}
+        <RoundedBox args={[1.1, 0.9, 1.0]} radius={0.15} material={blackMetal} castShadow />
         
-        {/* Expressive Glowing Eyes */}
-        <group position={[0, 0, 0.54]}>
-          {/* Left Eye */}
-          <mesh ref={leftEyeRef} position={[-0.3, 0.1, 0]} material={glowMaterial}>
-            <capsuleGeometry args={[0.08, 0.15, 16, 16]} />
+        {/* Face Plate (Silver surround) */}
+        <mesh position={[0, -0.05, 0.45]} material={silverMetal}>
+          <boxGeometry args={[0.9, 0.5, 0.15]} />
+        </mesh>
+        
+        {/* Glass Visor (Dark) */}
+        <mesh position={[0, -0.05, 0.51]} material={darkGlass}>
+          <boxGeometry args={[0.8, 0.4, 0.05]} />
+        </mesh>
+        
+        {/* Glowing Eyes */}
+        <group position={[0, -0.05, 0.54]}>
+          <mesh position={[-0.2, 0, 0]} rotation={[0, 0, 0.1]} material={glowMaterial}>
+            <boxGeometry args={[0.25, 0.1, 0.02]} />
           </mesh>
-          {/* Right Eye */}
-          <mesh ref={rightEyeRef} position={[0.3, 0.1, 0]} material={glowMaterial}>
-            <capsuleGeometry args={[0.08, 0.15, 16, 16]} />
-          </mesh>
-          
-          {/* Cute digital blush/cheeks */}
-          <mesh position={[-0.45, -0.15, 0]} material={new THREE.MeshBasicMaterial({ color: colors.secondary, transparent: true, opacity: 0.5 })}>
-            <circleGeometry args={[0.06, 32]} />
-          </mesh>
-          <mesh position={[0.45, -0.15, 0]} material={new THREE.MeshBasicMaterial({ color: colors.secondary, transparent: true, opacity: 0.5 })}>
-            <circleGeometry args={[0.06, 32]} />
+          <mesh position={[0.2, 0, 0]} rotation={[0, 0, -0.1]} material={glowMaterial}>
+            <boxGeometry args={[0.25, 0.1, 0.02]} />
           </mesh>
         </group>
         
-        {/* Little Antenna */}
-        <mesh position={[0, 0.5, -0.2]}>
-          <cylinderGeometry args={[0.02, 0.02, 0.4]} />
-          <meshStandardMaterial color="#888" metalness={0.9} roughness={0.1} />
-        </mesh>
-        <mesh position={[0, 0.7, -0.2]} material={glowMaterial}>
-          <sphereGeometry args={[0.06, 16, 16]} />
-        </mesh>
+        {/* V-Fin (Gundam Antenna) */}
+        <group position={[0, 0.35, 0.52]}>
+          <mesh position={[-0.2, 0.2, 0]} rotation={[0, 0, -0.6]} material={secondaryGlow}>
+            <boxGeometry args={[0.05, 0.5, 0.05]} />
+          </mesh>
+          <mesh position={[0.2, 0.2, 0]} rotation={[0, 0, 0.6]} material={secondaryGlow}>
+            <boxGeometry args={[0.05, 0.5, 0.05]} />
+          </mesh>
+          <mesh position={[0, 0, 0]} material={glowMaterial}>
+            <boxGeometry args={[0.15, 0.15, 0.1]} />
+          </mesh>
+        </group>
       </group>
 
-      {/* ─── FLOATING HANDS ─── */}
-      <group ref={leftHandRef} position={[-0.7, 0.6, 0.6]}>
-        <mesh castShadow material={ceramicMaterial}>
-          <capsuleGeometry args={[0.12, 0.2, 16, 32]} />
-        </mesh>
+      {/* ─── ARMS ─── */}
+      <group position={[-0.7, 0.9, 0]}>
+        <mesh material={silverMetal}><sphereGeometry args={[0.2, 16, 16]} /></mesh>
+        <group ref={leftArmRef} position={[0, -0.1, 0]} rotation={[-Math.PI/4, 0, 0]}>
+          <mesh position={[0, -0.3, 0]} material={blackMetal}>
+            <boxGeometry args={[0.2, 0.6, 0.2]} />
+          </mesh>
+        </group>
       </group>
-      <group ref={rightHandRef} position={[0.7, 0.6, 0.6]}>
-        <mesh castShadow material={ceramicMaterial}>
-          <capsuleGeometry args={[0.12, 0.2, 16, 32]} />
-        </mesh>
+      
+      <group position={[0.7, 0.9, 0]}>
+        <mesh material={silverMetal}><sphereGeometry args={[0.2, 16, 16]} /></mesh>
+        <group ref={rightArmRef} position={[0, -0.1, 0]} rotation={[-Math.PI/4, 0, 0]}>
+          <mesh position={[0, -0.3, 0]} material={blackMetal}>
+            <boxGeometry args={[0.2, 0.6, 0.2]} />
+          </mesh>
+        </group>
       </group>
 
-      {/* ─── GLASS SCI-FI DASHBOARD (Replaces old laptop) ─── */}
-      <group position={[0, 0.2, 1.2]}>
-        {/* Floating Glass Screen */}
-        <group position={[0, 0.4, -0.1]} rotation={[-0.2, 0, 0]}>
-          <RoundedBox args={[2.2, 1.4, 0.05]} radius={0.05} smoothness={8} material={glassMaterial} castShadow />
+      {/* ─── LAPTOP / CONSOLE ─── */}
+      <group position={[0, 0.1, 1.0]}>
+        {/* Laptop Base */}
+        <RoundedBox args={[1.5, 0.05, 1.0]} radius={0.02} material={silverMetal} castShadow />
+        
+        {/* Keyboard Glow */}
+        <mesh position={[0, 0.03, 0.1]} rotation={[-Math.PI/2, 0, 0]}>
+          <planeGeometry args={[1.2, 0.5]} />
+          <meshBasicMaterial color={colors.primary} transparent opacity={0.3} />
+        </mesh>
+
+        {/* Laptop Screen */}
+        <group position={[0, 0.02, -0.45]} rotation={[-0.15, 0, 0]}>
+          {/* Screen Lid */}
+          <RoundedBox args={[1.5, 1.0, 0.05]} radius={0.02} position={[0, 0.5, 0]} material={blackMetal} />
           
-          {/* Holographic glowing edges */}
-          <RoundedBox args={[2.25, 1.45, 0.02]} radius={0.06} smoothness={8} position={[0,0,-0.01]}>
-             <meshBasicMaterial color={colors.primary} transparent opacity={0.15} wireframe />
-          </RoundedBox>
+          {/* Glowing Display Background */}
+          <mesh position={[0, 0.5, 0.03]}>
+            <planeGeometry args={[1.4, 0.9]} />
+            <meshBasicMaterial color="#000000" />
+          </mesh>
           
-          {/* Real HTML UI embedded on the glass */}
-          <Html position={[0, 0, 0.03]} transform distanceFactor={1.2} scale={0.4} rotation={[0, 0, 0]}>
+          {/* HTML UI perfectly matched to screen size */}
+          {/* Screen plane is 1.4 x 0.9 units. With scale={0.01}, width=140px, height=90px */}
+          {/* Let's use scale={0.005} so we can design in 280x180 px for better resolution */}
+          <Html position={[0, 0.5, 0.031]} transform distanceFactor={1} scale={0.005} rotation={[0, 0, 0]}>
             <div 
-              className="w-[450px] h-[280px] rounded-xl flex flex-col p-4 overflow-hidden"
-              style={{ 
-                background: `linear-gradient(135deg, rgba(var(--theme-primary), 0.1), rgba(var(--theme-secondary), 0.05))`
-              }}
+              className="w-[280px] h-[180px] bg-black/90 border border-white/10 rounded flex flex-col p-2 overflow-hidden"
             >
-              {/* Header */}
-              <div className="flex justify-between items-center border-b border-white/20 pb-3 mb-4">
-                <span className="text-white text-sm font-bold tracking-[0.3em] font-mono">SYS.DASHBOARD V2</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-white/70 text-[10px] font-mono">LIVE</span>
-                  <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: colors.secondary }} />
-                </div>
+              <div className="flex justify-between border-b border-white/20 pb-1 mb-2">
+                <span className="text-white/80 text-[8px] font-mono tracking-widest">ANALYTICS.SYS</span>
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: colors.secondary }} />
               </div>
               
-              {/* Premium Charts Grid */}
-              <div className="flex-1 flex gap-4">
-                {/* Main Graph */}
-                <div className="w-2/3 flex flex-col justify-end gap-2 border-l border-b border-white/20 p-2 relative">
-                  <div className="absolute top-2 left-2 text-[10px] text-white/50 font-mono">TRAFFIC YIELD</div>
-                  <div className="flex items-end justify-between w-full h-[120px] gap-1">
-                    {[30, 50, 40, 70, 60, 90, 80, 100].map((h, i) => (
-                      <div 
-                        key={i} 
-                        className="w-full rounded-t-sm transition-all duration-500 hover:opacity-100 opacity-70" 
-                        style={{ height: `${h}%`, backgroundColor: colors.primary, boxShadow: `0 0 10px ${colors.primary}40` }} 
-                      />
-                    ))}
-                  </div>
+              <div className="flex-1 flex gap-2">
+                {/* Bar chart */}
+                <div className="flex-1 flex items-end gap-1">
+                  {[40, 70, 30, 90, 60].map((h, i) => (
+                    <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, backgroundColor: colors.primary }} />
+                  ))}
                 </div>
-                {/* Side Stats */}
-                <div className="w-1/3 flex flex-col gap-3 justify-center">
-                  <div className="bg-black/20 p-2 rounded border border-white/10 backdrop-blur-sm">
-                     <div className="text-[9px] text-white/50 mb-1 font-mono">CPU USAGE</div>
-                     <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: '65%', backgroundColor: colors.secondary }} />
-                     </div>
-                  </div>
-                  <div className="bg-black/20 p-2 rounded border border-white/10 backdrop-blur-sm">
-                     <div className="text-[9px] text-white/50 mb-1 font-mono">MEMORY</div>
-                     <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: '40%', backgroundColor: colors.primary }} />
-                     </div>
-                  </div>
-                  <div className="mt-auto text-right">
-                     <span className="text-3xl font-mono text-white tracking-tighter" style={{ textShadow: `0 0 15px ${colors.primary}` }}>99.9%</span>
-                     <div className="text-[8px] text-white/60 tracking-widest font-mono">SYSTEM OPTIMAL</div>
-                  </div>
+                {/* Stats */}
+                <div className="w-[80px] flex flex-col gap-2 justify-center">
+                   <div className="text-[7px] text-white/50 font-mono">CPU LOAD</div>
+                   <div className="w-full h-1 bg-white/10 rounded-full">
+                     <div className="h-full rounded-full" style={{ width: '70%', backgroundColor: colors.secondary }} />
+                   </div>
+                   <div className="text-[7px] text-white/50 font-mono mt-1">MEM USAGE</div>
+                   <div className="w-full h-1 bg-white/10 rounded-full">
+                     <div className="h-full rounded-full" style={{ width: '45%', backgroundColor: colors.primary }} />
+                   </div>
                 </div>
               </div>
             </div>
           </Html>
         </group>
-        
-        {/* Minimal Glass Keyboard/Base */}
-        <RoundedBox args={[1.8, 0.05, 0.6]} radius={0.02} smoothness={4} position={[0, -0.3, 0.4]} material={glassMaterial} castShadow />
       </group>
     </group>
   );
@@ -312,43 +263,30 @@ export default function RobotScene() {
   };
 
   return (
-    <div className="relative w-full h-full min-h-[450px]">
-      {/* Tooltip hint */}
-      <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-text-dim font-mono tracking-widest opacity-60 animate-pulse pointer-events-none whitespace-nowrap bg-obsidian/50 px-3 py-1 rounded-full border border-border/50 backdrop-blur-md">
-        TRY CLICKING ME
+    <div className="relative w-full h-full min-h-[350px]">
+      <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] text-text-dim font-mono tracking-widest opacity-60 animate-pulse pointer-events-none whitespace-nowrap border-b border-primary/30 pb-1">
+        INTERACTIVE MECHA
       </div>
-      
-      {/* Click counter overlay (easter egg) */}
-      {clickCount > 0 && (
-        <div className="absolute top-2 right-4 text-xs font-mono text-primary z-10 pointer-events-none bg-primary/10 px-3 py-1 rounded-full border border-primary/20 backdrop-blur-md">
-          INTERACTIONS: {clickCount}
-        </div>
-      )}
 
-      <Canvas camera={{ position: [0, 2, 7.5], fov: 40 }} shadows>
-        {/* Lighting setup for premium glossy look */}
-        <ambientLight intensity={1.2} />
+      <Canvas camera={{ position: [0, 1.5, 6], fov: 40 }} shadows>
+        <ambientLight intensity={1.5} />
         <spotLight 
           position={[5, 10, 5]} 
-          angle={0.4} 
+          angle={0.3} 
           penumbra={1} 
-          intensity={3} 
+          intensity={2.5} 
           castShadow 
-          shadow-mapSize={2048}
-          shadow-bias={-0.0001}
+          shadow-mapSize={1024}
         />
-        <pointLight position={[-5, -2, -5]} intensity={1.5} color={colors.secondary} />
-        <pointLight position={[0, 2, 5]} intensity={1.5} color={colors.primary} />
+        <pointLight position={[-3, 2, 4]} intensity={1.5} color={colors.secondary} />
+        <pointLight position={[3, -1, 4]} intensity={1.5} color={colors.primary} />
         
-        <Float speed={2.5} rotationIntensity={0.15} floatIntensity={0.4}>
-          <UltraPremiumRobot mousePos={mousePos} colors={colors} onClick={handleRobotClick} />
+        <Float speed={2} rotationIntensity={0.05} floatIntensity={0.2}>
+          <CoolChibiMecha mousePos={mousePos} colors={colors} onClick={handleRobotClick} />
         </Float>
         
-        {/* Soft, premium contact shadow on the "floor" */}
-        <ContactShadows position={[0, -2, 0]} opacity={0.6} scale={10} blur={2.5} far={4} color="#000000" />
-        
-        {/* Studio environment for high-quality reflections on glass/ceramic */}
-        <Environment preset="studio" />
+        <ContactShadows position={[0, -1.2, 0]} opacity={0.7} scale={5} blur={2} far={4} color="#000000" />
+        <Environment preset="city" />
       </Canvas>
     </div>
   );
