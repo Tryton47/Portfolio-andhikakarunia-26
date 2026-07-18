@@ -2,6 +2,20 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { ExternalLink, Code2, X, ChevronDown, ChevronUp } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+// ─── Dynamic imports to avoid SSR issues with Three.js canvas ───
+const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[520px] flex items-center justify-center border border-border/20 rounded-2xl bg-[#0F172A]/60">
+      <span className="text-text-dim text-xs font-mono tracking-widest animate-pulse">LOADING 3D ENGINE...</span>
+    </div>
+  ),
+});
+
+const CategoryFilter = dynamic(() => import('./Logo3D/CategoryFilter'), { ssr: false });
+
 
 /* ─── DATA ─── */
 const projects = [
@@ -882,28 +896,40 @@ export default function PortfolioSection() {
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
           <div className="space-y-10">
-            {['Web', 'Data', 'Design', 'Video'].map((cat) => (
-              <div key={cat}>
-                <h3 className="text-system text-primary mb-4">
-                  {cat === 'Web' ? 'Web Development' : cat === 'Data' ? 'Data Analytics' : cat === 'Design' ? 'Graphic Design' : 'Video Editing'}
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {techStack
-                    .filter((t) => t.cat === cat)
-                    .map((t, i) => (
-                      <span
-                        key={i}
-                        className="px-4 py-2 glass-panel border border-border rounded-lg text-system text-text-muted hover:border-primary/40 hover:text-primary transition-colors"
-                        style={{
-                          animation: `fadeInUp 0.4s ease-out ${i * 0.05}s both`,
-                        }}
-                      >
-                        {t.name}
-                      </span>
-                    ))}
+            {/* ─── 3D Interactive Logo Section ─── */}
+            <div>
+              <p className="text-center text-text-dim text-xs font-mono tracking-widest mb-4 opacity-60">
+                DRAG TO ORBIT · CLICK TO SELECT · SCROLL TO ZOOM
+              </p>
+              <CategoryFilter />
+              <Logo3DCanvas />
+            </div>
+
+            {/* ─── Static Tech Chips ─── */}
+            <div className="border-t border-border/30 pt-8">
+              {['Web', 'Data', 'Design', 'Video'].map((cat) => (
+                <div key={cat} className="mb-6">
+                  <h3 className="text-system text-primary mb-4">
+                    {cat === 'Web' ? 'Web Development' : cat === 'Data' ? 'Data Analytics' : cat === 'Design' ? 'Graphic Design' : 'Video Editing'}
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {techStack
+                      .filter((t) => t.cat === cat)
+                      .map((t, i) => (
+                        <span
+                          key={i}
+                          className="px-4 py-2 glass-panel border border-border rounded-lg text-system text-text-muted hover:border-primary/40 hover:text-primary transition-colors"
+                          style={{
+                            animation: `fadeInUp 0.4s ease-out ${i * 0.05}s both`,
+                          }}
+                        >
+                          {t.name}
+                        </span>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
