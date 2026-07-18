@@ -74,8 +74,12 @@ function StatCard({
   );
 }
 
-/* ─── ABOUT SECTION ─── */
-export default function AboutSection() {
+function TiltPortrait() {
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [glareX, setGlareX] = useState(50);
+  const [glareY, setGlareY] = useState(50);
+  const [isHovered, setIsHovered] = useState(false);
   const [sweepAngle, setSweepAngle] = useState(0);
 
   useEffect(() => {
@@ -85,6 +89,90 @@ export default function AboutSection() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isHovered) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const maxTilt = 20;
+    const tiltX = -((y - centerY) / centerY) * maxTilt;
+    const tiltY = ((x - centerX) / centerX) * maxTilt;
+
+    setRotateX(tiltX);
+    setRotateY(tiltY);
+    setGlareX((x / rect.width) * 100);
+    setGlareY((y / rect.height) * 100);
+  };
+
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setRotateX(0);
+    setRotateY(0);
+  };
+
+  return (
+    <div
+      className="relative cursor-pointer"
+      style={{ perspective: '1200px' }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div
+        className="relative transition-transform duration-200 ease-out z-10"
+        style={{
+          transform: isHovered
+            ? `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`
+            : 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+          transformStyle: 'preserve-3d',
+        }}
+      >
+        {/* Sweeping Glow Ring */}
+        <div
+          className="absolute inset-[-8px] rounded-2xl opacity-70"
+          style={{
+            background: `conic-gradient(from ${sweepAngle}deg, transparent 0deg, var(--theme-primary-hex) 30deg, transparent 60deg, transparent 360deg)`,
+            filter: 'blur(10px)',
+            transform: 'translateZ(-20px)',
+          }}
+        />
+
+        {/* 3D Card Container */}
+        <div 
+          className="relative w-64 h-80 md:w-72 md:h-96 rounded-2xl overflow-hidden border border-border bg-charcoal shadow-2xl"
+          style={{ transformStyle: 'preserve-3d' }}
+        >
+          <Image
+            src="/foto-pribadi.png"
+            alt="Andhika Karunia Rizqi"
+            fill
+            className="object-cover"
+            priority
+            style={{ transform: 'translateZ(10px) scale(1.05)' }} 
+          />
+          
+          {/* Glare Effect */}
+          <div
+            className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+            style={{
+              opacity: isHovered ? 1 : 0,
+              background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.4) 0%, transparent 60%)`,
+              mixBlendMode: 'overlay',
+              transform: 'translateZ(20px)',
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── ABOUT SECTION ─── */
+export default function AboutSection() {
   return (
     <section
       id="about"
@@ -151,28 +239,9 @@ export default function AboutSection() {
             </div>
           </div>
 
-          {/* Right: Portrait with sweeping glow */}
+          {/* Right: 3D Portrait Card */}
           <div className="w-full lg:w-[40%] flex justify-center">
-            <div className="relative">
-              {/* Sweeping Glow Ring */}
-              <div
-                className="absolute inset-[-8px] rounded-full"
-                style={{
-                  background: `conic-gradient(from ${sweepAngle}deg, transparent 0deg, rgba(var(--theme-primary), 0.5) 30deg, transparent 60deg, transparent 360deg)`,
-                  transition: 'none',
-                }}
-              />
-              {/* Portrait Container */}
-              <div className="relative w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden border-2 border-border bg-charcoal z-10">
-                <Image
-                  src="/foto-pribadi.png"
-                  alt="Andhika Karunia Rizqi"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </div>
+            <TiltPortrait />
           </div>
         </div>
 

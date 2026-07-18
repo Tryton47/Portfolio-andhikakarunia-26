@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import RobotScene from './RobotScene';
 
 /* ─── SVG Social Icons ─── */
 function IconGithub({ size = 20 }: { size?: number }) {
@@ -24,119 +25,6 @@ function IconLinkedIn({ size = 20 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
     </svg>
-  );
-}
-
-/* ─── RADAR WIDGET ─── */
-function RadarWidget() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let angle = 0;
-    let animId: number;
-
-    const draw = () => {
-      const w = canvas.width;
-      const h = canvas.height;
-      const cx = w / 2;
-      const cy = h / 2;
-      const r = Math.min(cx, cy) - 10;
-
-      ctx.clearRect(0, 0, w, h);
-
-      // Outer ring
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.3)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Inner rings
-      for (let i = 1; i <= 3; i++) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, r * (i / 4), 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(99, 102, 241, ${0.08 + i * 0.04})`;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
-      }
-
-      // Crosshair
-      ctx.beginPath();
-      ctx.moveTo(cx - r, cy);
-      ctx.lineTo(cx + r, cy);
-      ctx.moveTo(cx, cy - r);
-      ctx.lineTo(cx, cy + r);
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.1)';
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-
-      // Sweep line
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.7)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Sweep glow cone
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, r, angle - 0.5, angle, false);
-      ctx.closePath();
-      const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-      gradient.addColorStop(0, 'rgba(99, 102, 241, 0.15)');
-      gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
-      ctx.fillStyle = gradient;
-      ctx.fill();
-
-      // Blips
-      const blips = [
-        { a: 0.8, d: 0.6 },
-        { a: 2.5, d: 0.4 },
-        { a: 4.2, d: 0.8 },
-        { a: 5.5, d: 0.3 },
-      ];
-      blips.forEach((b) => {
-        const dist = Math.abs(((angle - b.a + Math.PI) % (Math.PI * 2)) - Math.PI);
-        const alpha = dist < 1.5 ? (1.5 - dist) / 1.5 : 0;
-        if (alpha > 0) {
-          ctx.beginPath();
-          ctx.arc(cx + r * b.d * Math.cos(b.a), cy + r * b.d * Math.sin(b.a), 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(6, 182, 212, ${alpha * 0.8})`;
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(cx + r * b.d * Math.cos(b.a), cy + r * b.d * Math.sin(b.a), 6, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(6, 182, 212, ${alpha * 0.2})`;
-          ctx.fill();
-        }
-      });
-
-      // Center dot
-      ctx.beginPath();
-      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(99, 102, 241, 0.8)';
-      ctx.fill();
-
-      angle += 0.012;
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-    return () => cancelAnimationFrame(animId);
-  }, []);
-
-  return (
-    <div className="relative">
-      <canvas ref={canvasRef} width={280} height={280} className="w-[240px] h-[240px] md:w-[280px] md:h-[280px]" />
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className="text-system text-[10px] text-primary tracking-[0.3em] font-mono">STANDBY</span>
-      </div>
-    </div>
   );
 }
 
@@ -244,12 +132,15 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Right: Radar */}
+        {/* Right: 3D Robot Scene */}
         <div
           className="w-full md:w-[40%] flex flex-col items-center gap-6"
           style={{ transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 8}px)`, transition: 'transform 0.3s ease-out' }}
         >
-          <RadarWidget />
+          {/* Constrain the size to be smaller as requested */}
+          <div className="w-full max-w-[300px] aspect-square rounded-full flex items-center justify-center relative">
+            <RobotScene />
+          </div>
           <div className="flex gap-8">
             <div className="flex flex-col items-center">
               <span className="text-system text-text-dim">Modules</span>
