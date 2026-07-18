@@ -3,18 +3,24 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { ExternalLink, Code2, X, ChevronDown, ChevronUp } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
 // ─── Dynamic imports to avoid SSR issues with Three.js canvas ───
 const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[520px] flex items-center justify-center border border-border/20 rounded-2xl bg-[#0F172A]/60">
-      <span className="text-text-dim text-xs font-mono tracking-widest animate-pulse">LOADING 3D ENGINE...</span>
+    <div className="w-full h-[500px] flex items-center justify-center border border-white/5 rounded-2xl bg-[#0F172A]">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        <span className="text-text-dim text-xs font-mono tracking-widest">LOADING 3D ENGINE...</span>
+      </div>
     </div>
   ),
 });
 
 const CategoryFilter = dynamic(() => import('./Logo3D/CategoryFilter'), { ssr: false });
+const InfoPanel      = dynamic(() => import('./Logo3D/InfoPanel'),       { ssr: false });
+const KeyboardHelper = dynamic(() => import('./Logo3D/KeyboardHelper'),  { ssr: false });
 
 
 /* ─── DATA ─── */
@@ -677,6 +683,12 @@ export default function PortfolioSection() {
   const [selectedProject, setSelectedProject] = useState<(typeof projects)[0] | null>(null);
   const [selectedCert, setSelectedCert] = useState<(typeof certificates)[0] | null>(null);
 
+  // ─── Keyboard Shortcuts (D/F/C/V = category, Space = autoplay) ───
+  // Only active when the techstack tab is open to avoid conflicting with other tabs
+  useKeyboardShortcuts({
+    onShowHelp: () => setRootTab('techstack'),
+  });
+
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => p.category === subFilter);
   }, [subFilter]);
@@ -898,11 +910,10 @@ export default function PortfolioSection() {
           <div className="space-y-10">
             {/* ─── 3D Interactive Logo Section ─── */}
             <div>
-              <p className="text-center text-text-dim text-xs font-mono tracking-widest mb-4 opacity-60">
-                DRAG TO ORBIT · CLICK TO SELECT · SCROLL TO ZOOM
-              </p>
               <CategoryFilter />
               <Logo3DCanvas />
+              <InfoPanel />
+              <KeyboardHelper />
             </div>
 
             {/* ─── Static Tech Chips ─── */}

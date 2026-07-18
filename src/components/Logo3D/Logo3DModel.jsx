@@ -1,25 +1,24 @@
 'use client';
 
-import { useRef, useState, Suspense } from 'react';
+import React, { useRef, useState, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { useLogoState } from '../../hooks/useLogoState';
+import { useLogoState }          from '../../hooks/useLogoState';
+import { useCategoryTransition } from '../../hooks/useCategoryTransition';
+import { useEntranceStagger }    from '../../hooks/useEntranceStagger';
+import { useDragMomentum }       from '../../hooks/useDragMomentum';
+import { useIdleFloat }          from '../../hooks/useIdleFloat';
 
 // ─── FALLBACK SHAPE ───
-// Shown when .glb is missing, failed, or not yet loaded
-function FallbackShape({ color, isSelected, isHovered, name }) {
+function FallbackShape({ color, isSelected, isHovered }) {
   const ref = useRef();
-  
   useFrame(({ clock }) => {
     if (!ref.current) return;
-    ref.current.rotation.y += isSelected ? 0.03 : 0.007;
-    // Subtle scale pulse when selected
     if (isSelected) {
-      ref.current.scale.setScalar(1.3 + Math.sin(clock.elapsedTime * 3) * 0.05);
+      ref.current.scale.setScalar(1.25 + Math.sin(clock.elapsedTime * 3) * 0.04);
     }
   });
-
   return (
     <group>
       <RoundedBox
@@ -27,132 +26,116 @@ function FallbackShape({ color, isSelected, isHovered, name }) {
         args={[1, 1, 1]}
         radius={0.15}
         smoothness={6}
-        scale={isSelected ? 1.3 : 1}
+        scale={isSelected ? 1.25 : 1}
       >
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={isHovered || isSelected ? 0.7 : 0.15}
+          emissiveIntensity={isHovered || isSelected ? 0.8 : 0.15}
           roughness={0.3}
           metalness={0.6}
         />
       </RoundedBox>
-      
-      {/* Glow ring under the logo */}
       {(isSelected || isHovered) && (
         <mesh position={[0, -0.7, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.6, 0.75, 32]} />
-          <meshBasicMaterial color={color} transparent opacity={isSelected ? 0.6 : 0.3} side={THREE.DoubleSide} />
+          <meshBasicMaterial
+            color={color}
+            transparent
+            opacity={isSelected ? 0.6 : 0.25}
+            side={THREE.DoubleSide}
+          />
         </mesh>
       )}
     </group>
   );
 }
 
-// ─── GLB LOADER ───
+// ─── GLB MODEL ───
 function GLBModel({ path, color, isSelected, isHovered }) {
-  // Lazy-require useGLTF only when needed to avoid SSR issues
-  // We use dynamic require pattern for safe Next.js App Router usage
   const { useGLTF } = require('@react-three/drei');
-  const { scene } = useGLTF(path);
+  const { scene }   = useGLTF(path);
   const ref = useRef();
 
-  useFrame(() => {
-    if (ref.current) {
-      ref.current.rotation.y += isSelected ? 0.03 : 0.007;
+  useFrame(({ clock }) => {
+    if (!ref.current) return;
+    if (isSelected) {
+      ref.current.scale.setScalar(1.35 + Math.sin(clock.elapsedTime * 3) * 0.03);
     }
   });
 
   scene.traverse((child) => {
     if (child.isMesh) {
-      if (!child.material._originalEmissive) {
-        child.material._originalEmissive = child.material.emissive?.clone() || new THREE.Color(0, 0, 0);
-      }
       child.material.emissive = new THREE.Color(color);
       child.material.emissiveIntensity = isHovered || isSelected ? 0.5 : 0.05;
     }
   });
 
-  return (
-    <primitive
-      ref={ref}
-      object={scene}
-      scale={isSelected ? 1.35 : 1}
-    />
-  );
+  return <primitive ref={ref} object={scene} scale={isSelected ? 1.35 : 1} />;
 }
 
-// ─── SAFE GLB WRAPPER ───
-// Catches errors so a failed .glb doesn't crash the whole canvas
+// ─── ERROR BOUNDARY ───
 class ErrorBoundaryGLB extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
+  constructor(props) { super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError() { return { hasError: true }; }
   render() {
     if (this.state.hasError) {
-      return (
-        <FallbackShape
-          color={this.props.color}
-          isSelected={this.props.isSelected}
-          isHovered={this.props.isHovered}
-          name={this.props.name}
-        />
-      );
+      return <FallbackShape color={this.props.color} isSelected={this.props.isSelected} isHovered={this.props.isHovered} />;
     }
     return this.props.children;
   }
 }
 
-// Must import React for the class component above
-import React from 'react';
-
-// ─── MAIN LOGO 3D MODEL ───
-export default function Logo3DModel({ logo, position, color, onClick }) {
+// ─── MAIN LOGO 3D MODEL (with all animation hooks) ───
+export default function Logo3DModel({ logo, index, position, color, category, onClick }) {
+  const meshRef    = useRef();
   const [isHovered, setIsHovered] = useState(false);
   const isSelected = useLogoState((s) => s.selectedLogoId === logo.id);
 
+  // ── Animation Hooks ──
+  const delay = useEntranceStagger(index, 90);
+  const { liveRef } = useCategoryTransition(position, category, delay);
+  const { onPointerDown, onPointerMove, onPointerUp, isDragging } = useDragMomentum(meshRef);
+  useIdleFloat(meshRef, { phase: index * 0.7, paused: isHovered || isDragging.current });
+
+  // Sync transition position to mesh every frame (x & z only; y is additive via idle float)
+  useFrame(() => {
+    if (!meshRef.current) return;
+    meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, liveRef.current[0], 0.12);
+    meshRef.current.position.z = THREE.MathUtils.lerp(meshRef.current.position.z, liveRef.current[2], 0.12);
+    // Snap y on first appearance
+    if (Math.abs(meshRef.current.position.y - liveRef.current[1]) > 0.5) {
+      meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, liveRef.current[1], 0.08);
+    }
+    // Slow idle spin when not hovered/selected/dragging
+    if (!isHovered && !isSelected && !isDragging.current) {
+      meshRef.current.rotation.y += 0.006;
+    }
+  });
+
   return (
     <group
-      position={position}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick(logo.id);
-      }}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setIsHovered(true);
-        document.body.style.cursor = 'pointer';
-      }}
-      onPointerOut={() => {
-        setIsHovered(false);
-        document.body.style.cursor = 'auto';
-      }}
+      ref={meshRef}
+      position={[position[0], position[1] - 4, position[2]]} // Start below for entrance
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onClick={(e) => { e.stopPropagation(); onClick(logo.id); }}
+      onPointerOver={(e) => { e.stopPropagation(); setIsHovered(true); document.body.style.cursor = 'pointer'; }}
+      onPointerOut={() => { setIsHovered(false); document.body.style.cursor = 'auto'; }}
     >
-      <ErrorBoundaryGLB color={color} isSelected={isSelected} isHovered={isHovered} name={logo.name}>
-        <Suspense fallback={
-          <FallbackShape color={color} isSelected={isSelected} isHovered={isHovered} name={logo.name} />
-        }>
+      <ErrorBoundaryGLB color={color} isSelected={isSelected} isHovered={isHovered}>
+        <Suspense fallback={<FallbackShape color={color} isSelected={isSelected} isHovered={isHovered} />}>
           {logo.model ? (
-            <GLBModel
-              path={logo.model}
-              color={color}
-              isSelected={isSelected}
-              isHovered={isHovered}
-            />
+            <GLBModel path={logo.model} color={color} isSelected={isSelected} isHovered={isHovered} />
           ) : (
-            <FallbackShape color={color} isSelected={isSelected} isHovered={isHovered} name={logo.name} />
+            <FallbackShape color={color} isSelected={isSelected} isHovered={isHovered} />
           )}
         </Suspense>
       </ErrorBoundaryGLB>
 
       {/* Hover Tooltip */}
-      {isHovered && (
+      {isHovered && !isSelected && (
         <Html distanceFactor={8} position={[0, 1.1, 0]} center>
           <div style={{
             background: 'rgba(15,23,42,0.92)',
@@ -162,36 +145,25 @@ export default function Logo3DModel({ logo, position, color, onClick }) {
             fontSize: 12,
             whiteSpace: 'nowrap',
             border: `1px solid ${color}`,
-            boxShadow: `0 0 12px ${color}55`,
+            boxShadow: `0 0 14px ${color}55`,
             fontFamily: 'monospace',
-            letterSpacing: '0.05em',
+            letterSpacing: '0.06em',
+            userSelect: 'none',
           }}>
             {logo.name}
             {logo.tools?.length > 0 && (
-              <span style={{ color, marginLeft: 6, fontSize: 10 }}>
-                · {logo.tools[0]}
-              </span>
+              <span style={{ color, marginLeft: 6, fontSize: 10 }}>· {logo.tools[0]}</span>
             )}
           </div>
         </Html>
       )}
 
-      {/* Selected Label */}
+      {/* Selected Ring Glow */}
       {isSelected && (
-        <Html distanceFactor={8} position={[0, -1.2, 0]} center>
-          <div style={{
-            background: color,
-            color: '#0F172A',
-            padding: '3px 10px',
-            borderRadius: 20,
-            fontSize: 10,
-            fontWeight: 700,
-            fontFamily: 'monospace',
-            letterSpacing: '0.1em',
-          }}>
-            {logo.tools?.join(' · ') || logo.name}
-          </div>
-        </Html>
+        <mesh position={[0, -0.72, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.7, 0.85, 48]} />
+          <meshBasicMaterial color={color} transparent opacity={0.5} side={THREE.DoubleSide} />
+        </mesh>
       )}
     </group>
   );
