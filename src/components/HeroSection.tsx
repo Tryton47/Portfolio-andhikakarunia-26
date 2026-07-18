@@ -139,7 +139,7 @@ export default function HeroSection() {
           style={{ transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 8}px)`, transition: 'transform 0.3s ease-out' }}
         >
           {/* Container size optimized for Chibi Mecha - taller to prevent clipping */}
-          <div className="w-full max-w-[400px] h-[480px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
+          <div className="w-full max-w-[400px] h-[550px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
             <RobotScene />
           </div>
           <div className="flex justify-around w-full max-w-[400px] mt-2 border-t border-border/30 pt-4">

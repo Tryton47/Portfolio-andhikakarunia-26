@@ -18,7 +18,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
   const target = new THREE.Vector3();
   const [hovered, setHovered] = useState(false);
-  const [phase, setPhase] = useState<RobotPhase>("idle");
+  const [phase, setPhase] = useState<RobotPhase>("running");
   const [phaseTimer, setPhaseTimer] = useState(0);
 
   const triggerWarning = () => {
@@ -35,6 +35,8 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
     if (phaseTimer > 0) {
       setPhaseTimer((prev) => prev - delta);
+    } else if (phase === "warning") {
+      setPhase("running");
     }
 
     // Derived state
@@ -164,9 +166,8 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   return (
     <group
       ref={groupRef}
-      // Lowered slightly to prevent clipping V-Fin at the top of the canvas
-      position={[0, -0.4, 0]}
-      scale={[1.15, 1.15, 1.15]}
+      position={[0, -0.2, 0]}
+      scale={[1.0, 1.0, 1.0]}
       // Straighter perspective
       rotation={[0, -Math.PI / 24, 0]}
       onPointerOver={() => setHovered(true)}
@@ -275,12 +276,13 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
         {/* HTML UI Dashboard - 100% visible now. */}
         {/* Placed slightly further in front of glass so transmission doesn't hide it */}
-        <Html position={[0, 0, 0.05]} transform distanceFactor={1.2} scale={0.011} rotation={[0, 0, 0]} zIndexRange={[100, 0]}>
+        <Html position={[0, 0, 0.08]} transform scale={0.012} rotation={[0, 0, 0]} zIndexRange={[100, 0]}>
           <div
             className="w-[180px] h-[120px] flex flex-col p-2 overflow-hidden rounded-md shadow-2xl"
             style={{
               backgroundColor: "rgba(10, 10, 15, 0.9)", // Highly opaque dark base to ensure visibility
               border: `1px solid ${colors.primary}`,
+              pointerEvents: "none",
             }}
           >
             {/* Header */}
@@ -353,7 +355,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
       {/* Aura Merah saat Marah */}
       {(phase === "warning" || phaseTimer > 0) && (
-        <pointLight position={[0, 1.5, 1]} intensity={5} color="#ff1111" distance={6} decay={2} />
+        <pointLight position={[0, 1.0, 2.5]} intensity={50} color="#ff0000" distance={15} decay={1.5} />
       )}
     </group>
   );
@@ -391,7 +393,7 @@ export default function RobotScene() {
 
   return (
     <div className="relative w-full h-full min-h-[350px]">
-      <Canvas camera={{ position: [0, 1.5, 6.5], fov: 40 }} shadows>
+      <Canvas camera={{ position: [0, 1.2, 7.5], fov: 42 }} shadows>
         <ambientLight intensity={1.5} />
         <spotLight position={[5, 10, 5]} angle={0.3} penumbra={1} intensity={3} castShadow shadow-mapSize={1024} />
         <pointLight position={[-3, 2, 4]} intensity={2} color={colors.secondary} />
