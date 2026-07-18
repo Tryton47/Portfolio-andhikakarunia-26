@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import ScrollReveal from '@/components/Shared/ScrollReveal';
 
 /* ─── Counter Hook ─── */
 function useCountUp(target: number, duration: number = 2000) {
@@ -180,19 +181,21 @@ export default function AboutSection() {
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
-            About <span style={{ color: 'var(--theme-primary-hex)' }}>Me</span>
-          </h2>
-          <p className="text-system" style={{ color: 'var(--theme-secondary-hex)' }}>
-            Transforming ideas into digital experiences
-          </p>
-        </div>
+        <ScrollReveal variant="fade-up" duration={800}>
+          <div className="text-center mb-16">
+            <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
+              About <span style={{ color: 'var(--theme-primary-hex)' }}>Me</span>
+            </h2>
+            <p className="text-system" style={{ color: 'var(--theme-secondary-hex)' }}>
+              Transforming ideas into digital experiences
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Content Grid */}
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20 mb-20">
           {/* Left: Bio */}
-          <div className="w-full lg:w-[55%] flex flex-col">
+          <ScrollReveal variant="slide-left" duration={900} className="w-full lg:w-[55%] flex flex-col">
             <h3 className="text-heading text-xl md:text-2xl text-text-primary mb-4">
               Hello, I'm{' '}
               <span style={{ color: 'var(--theme-primary-hex)' }}>Andhika Karunia Rizqi</span>
@@ -237,19 +240,19 @@ export default function AboutSection() {
                 View Projects
               </a>
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* Right: 3D Portrait Card */}
-          <div className="w-full lg:w-[40%] flex justify-center">
+          <ScrollReveal variant="slide-right" duration={900} delay={150} className="w-full lg:w-[40%] flex justify-center">
             <TiltPortrait />
-          </div>
+          </ScrollReveal>
         </div>
 
         {/* Counter Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard label="Total Projects" sublabel="Web, Data, Design, Video" target={8} />
-          <StatCard label="Certificates" sublabel="Professional credentials" target={7} />
-          <StatCard label="Years Experience" sublabel="Continuous learning" target={2} />
+          <ScrollReveal variant="rise" delay={0}><StatCard label="Total Projects" sublabel="Web, Data, Design, Video" target={8} /></ScrollReveal>
+          <ScrollReveal variant="rise" delay={120}><StatCard label="Certificates" sublabel="Professional credentials" target={7} /></ScrollReveal>
+          <ScrollReveal variant="rise" delay={240}><StatCard label="Years Experience" sublabel="Continuous learning" target={2} /></ScrollReveal>
         </div>
       </div>
     </section>

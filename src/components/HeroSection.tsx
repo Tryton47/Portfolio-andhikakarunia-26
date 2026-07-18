@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import RobotScene from './RobotScene';
 import GlassButton from './Shared/GlassButton';
+import ScrollReveal from '@/components/Shared/ScrollReveal';
 
 /* ─── SVG Social Icons ─── */
 function IconGithub({ size = 20 }: { size?: number }) {
@@ -69,7 +70,7 @@ export default function HeroSection() {
   return (
     <section id="hero" ref={sectionRef} className="relative min-h-screen w-full flex flex-col justify-between overflow-hidden bg-grid">
       {/* TOP HUD STATUS */}
-      <div className="relative z-10 flex justify-between items-start px-6 md:px-12 pt-24 md:pt-28">
+      <ScrollReveal variant="fade-down" duration={600} delay={300} className="relative z-10 flex justify-between items-start px-6 md:px-12 pt-24 md:pt-28">
         <div className="flex flex-col gap-1">
           <span className="text-system text-primary">System Ready</span>
           <span className="text-system text-text-dim">Portfolio 2026</span>
@@ -82,7 +83,7 @@ export default function HeroSection() {
             <span className="text-system text-primary">Online</span>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* MAIN HERO CONTENT */}
       <div className="relative z-10 flex-grow flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-12 md:py-0 gap-12">
@@ -91,15 +92,19 @@ export default function HeroSection() {
           className="w-full md:w-[55%] flex flex-col"
           style={{ transform: `translate(${mousePos.x * -8}px, ${mousePos.y * -5}px)`, transition: 'transform 0.3s ease-out' }}
         >
-          <h1 className="text-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-6 uppercase">
-            Building Modern Digital Experiences through Data, Code, and Visual Design.
-          </h1>
-          <p className="text-text-body font-body text-sm md:text-base leading-relaxed max-w-xl mb-6">
-            Bridging the gap between data insights, creative design, and robust development to deliver reliable and fast web applications.
-          </p>
+          <ScrollReveal variant="fade-left" duration={800} delay={100}>
+            <h1 className="text-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-6 uppercase">
+              Building Modern Digital Experiences through Data, Code, and Visual Design.
+            </h1>
+          </ScrollReveal>
+          <ScrollReveal variant="fade-left" duration={800} delay={300}>
+            <p className="text-text-body font-body text-sm md:text-base leading-relaxed max-w-xl mb-6">
+              Bridging the gap between data insights, creative design, and robust development to deliver reliable and fast web applications.
+            </p>
+          </ScrollReveal>
 
           {/* Social Icons */}
-          <div className="flex items-center gap-3 mb-10">
+          <ScrollReveal variant="fade-up" duration={600} delay={500} className="flex items-center gap-3 mb-10">
             {socialLinks.map((s) => (
               <a
                 key={s.label}
@@ -112,10 +117,10 @@ export default function HeroSection() {
                 {s.icon}
               </a>
             ))}
-          </div>
+          </ScrollReveal>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4 mt-2">
+          <ScrollReveal variant="fade-up" duration={600} delay={600} className="flex flex-wrap gap-4 mt-2">
             <GlassButton
               href="#portfolio"
               isActive={true}
@@ -128,9 +133,9 @@ export default function HeroSection() {
               isActive={false}
               className="px-8 py-3.5"
             >
-              Contact ↗
+              Contact Me
             </GlassButton>
-          </div>
+          </ScrollReveal>
         </div>
 
         {/* Right: 3D Robot Scene */}

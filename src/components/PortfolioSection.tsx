@@ -727,28 +727,32 @@ export default function PortfolioSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
-            Portfolio <span style={{ color: 'var(--theme-primary-hex)' }}>Showcase</span>
-          </h2>
-          <p className="text-system text-text-dim">
-            Explore my journey across disciplines
-          </p>
-        </div>
+        <ScrollReveal variant="fade-up" duration={700}>
+          <div className="text-center mb-12">
+            <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
+              Portfolio <span style={{ color: 'var(--theme-primary-hex)' }}>Showcase</span>
+            </h2>
+            <p className="text-system text-text-dim">
+              Explore my journey across disciplines
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Root Tabs */}
-        <div className="flex justify-center flex-wrap gap-4 mb-10 p-2">
-          {(['projects', 'certificates', 'techstack'] as const).map((tab) => (
-            <GlassButton
-              key={tab}
-              isActive={rootTab === tab}
-              onClick={() => setRootTab(tab)}
-              className="px-8 py-3.5 font-bold tracking-wide text-sm"
-            >
-              {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </GlassButton>
-          ))}
-        </div>
+        <ScrollReveal variant="fade-up" duration={700} delay={150}>
+          <div className="flex justify-center flex-wrap gap-4 mb-10 p-2">
+            {(['projects', 'certificates', 'techstack'] as const).map((tab) => (
+              <GlassButton
+                key={tab}
+                isActive={rootTab === tab}
+                onClick={() => setRootTab(tab)}
+                className="px-8 py-3.5 font-bold tracking-wide text-sm"
+              >
+                {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </GlassButton>
+            ))}
+          </div>
+        </ScrollReveal>
 
         {/* ═══ PROJECTS TAB ═══ */}
         {rootTab === 'projects' && (

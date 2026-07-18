@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Send, Link2, Globe, Video, User, ImagePlus } from 'lucide-react';
+import ScrollReveal from '@/components/Shared/ScrollReveal';
 
 /* ─── CONTACT & COMMENTS SECTION ─── */
 export default function ContactSection() {
@@ -104,18 +105,20 @@ export default function ContactSection() {
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-14">
-          <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
-            Get In <span style={{ color: 'var(--theme-primary-hex)' }}>Touch</span>
-          </h2>
-          <p className="text-system text-text-dim">
-            Open for opportunities & collaboration
-          </p>
-        </div>
+        <ScrollReveal variant="fade-up" duration={700}>
+          <div className="text-center mb-14">
+            <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
+              Get In <span style={{ color: 'var(--theme-primary-hex)' }}>Touch</span>
+            </h2>
+            <p className="text-system text-text-dim">
+              Open for opportunities & collaboration
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div className="flex flex-col lg:flex-row gap-12">
           {/* ═══ LEFT: Contact Form ═══ */}
-          <div className="w-full lg:w-1/2 flex flex-col gap-8">
+          <ScrollReveal variant="slide-left" duration={850} delay={100} className="w-full lg:w-1/2 flex flex-col gap-8">
             <form onSubmit={handleContactSubmit} className="flex flex-col gap-5">
               {/* Name */}
               <div className="flex flex-col gap-1.5">
@@ -217,10 +220,10 @@ export default function ContactSection() {
                 </a>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* ═══ RIGHT: Live Comment Board ═══ */}
-          <div className="w-full lg:w-1/2">
+          <ScrollReveal variant="slide-right" duration={850} delay={150} className="w-full lg:w-1/2">
             <div className="glass-panel border border-border rounded-xl overflow-hidden">
               {/* Header */}
               <div className="px-6 py-4 border-b border-border bg-charcoal flex items-center justify-between">
