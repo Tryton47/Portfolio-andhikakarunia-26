@@ -317,7 +317,7 @@ export default function ContactSection() {
                 )}
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>
