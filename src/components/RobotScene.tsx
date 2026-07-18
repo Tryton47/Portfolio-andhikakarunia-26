@@ -282,14 +282,14 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
           <meshBasicMaterial color={colors.primary} transparent opacity={0.5} />
         </mesh>
 
-        {/* HTML UI Dashboard - 2D HUD Overlay (Guaranteed to be visible) */}
-        <Html position={[0, 0, 0.1]} center zIndexRange={[100, 0]}>
+        {/* HTML UI Dashboard - 3D HUD (Scaled to glass and mirrored to face the robot) */}
+        <Html position={[0, 0, 0.01]} transform scale={0.005} rotation={[0, Math.PI, 0]}>
           <div
             style={{
               width: "320px",
               height: "200px",
-              backgroundColor: isWarning ? "rgba(40, 10, 10, 0.85)" : "rgba(10, 10, 15, 0.75)",
-              border: `1px solid ${isWarning ? "#ff3333" : colors.primary}`,
+              backgroundColor: isWarning ? "rgba(40, 10, 10, 0.65)" : "rgba(10, 10, 15, 0.55)",
+              border: `2px solid ${isWarning ? "#ff3333" : colors.primary}`,
               boxShadow: `0 0 30px ${isWarning ? "rgba(255,20,20,0.5)" : `${colors.primary}44`}`,
               borderRadius: "10px",
               padding: "16px",
@@ -297,7 +297,6 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
               flexDirection: "column",
               fontFamily: "monospace",
               color: "white",
-              transform: "translateY(-15px)", // Align visually with the 3D glass
             }}
           >
             {/* Header */}
