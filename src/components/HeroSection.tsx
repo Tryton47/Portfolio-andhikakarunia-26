@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import RobotScene from './RobotScene';
+import GlassButton from './Shared/GlassButton';
 
 /* ─── SVG Social Icons ─── */
 function IconGithub({ size = 20 }: { size?: number }) {
@@ -114,21 +115,21 @@ export default function HeroSection() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4">
-            <a
+          <div className="flex flex-wrap gap-4 mt-2">
+            <GlassButton
               href="#portfolio"
-              className="px-6 py-3 text-white text-system rounded-md transition-all duration-300 flex items-center gap-2"
-              style={{ background: `linear-gradient(135deg, var(--theme-grad1), var(--theme-grad2))`, boxShadow: '0 0 20px rgba(var(--theme-primary), 0.2)' }}
+              isActive={true}
+              className="px-8 py-3.5"
             >
               Projects ↗
-            </a>
-            <a
+            </GlassButton>
+            <GlassButton
               href="#contact"
-              className="px-6 py-3 border text-system rounded-md transition-colors flex items-center gap-2"
-              style={{ borderColor: 'var(--theme-primary-hex)', color: 'var(--theme-primary-hex)' }}
+              isActive={false}
+              className="px-8 py-3.5"
             >
               Contact ↗
-            </a>
+            </GlassButton>
           </div>
         </div>
 
@@ -137,8 +138,8 @@ export default function HeroSection() {
           className="w-full md:w-[40%] flex flex-col items-center gap-6"
           style={{ transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 8}px)`, transition: 'transform 0.3s ease-out' }}
         >
-          {/* Container size optimized for Chibi Mecha */}
-          <div className="w-full max-w-[350px] aspect-square rounded-full flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
+          {/* Container size optimized for Chibi Mecha - taller to prevent clipping */}
+          <div className="w-full max-w-[400px] h-[480px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
             <RobotScene />
           </div>
           <div className="flex gap-8">

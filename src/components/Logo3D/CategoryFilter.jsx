@@ -3,6 +3,7 @@
 import { useLogoState } from '../../hooks/useLogoState';
 import { CATEGORY_LIST } from '../../config/categories';
 import { THEME }         from '../../config/colors';
+import GlassButton       from '../Shared/GlassButton';
 
 export default function CategoryFilter() {
   const activeCategory = useLogoState((s) => s.activeCategory);
@@ -19,21 +20,16 @@ export default function CategoryFilter() {
           const glow     = THEME.categories[cat.id]?.glow   || 'rgba(6,182,212,0.3)';
           const isActive = activeCategory === cat.id;
           return (
-            <button
+            <GlassButton
               key={cat.id}
               onClick={() => setCategory(cat.id)}
-              className="px-5 py-2 rounded-full text-sm font-medium tracking-wide transition-all duration-300 border"
-              style={{
-                borderColor: isActive ? color           : 'rgba(148,163,184,0.2)',
-                background:  isActive ? `${color}22`   : 'transparent',
-                color:       isActive ? color           : THEME.base.textMuted,
-                boxShadow:   isActive ? `0 0 22px ${glow}` : 'none',
-                transform:   isActive ? 'scale(1.07)'  : 'scale(1)',
-              }}
+              isActive={isActive}
+              activeColor={color}
+              className="px-6 py-2.5 text-xs font-bold tracking-widest whitespace-nowrap"
             >
-              {cat.label}
-              <span className="opacity-40 text-xs ml-2 font-mono">[{cat.key}]</span>
-            </button>
+              {cat.label.toUpperCase()}
+              <span className="opacity-40 text-[10px] ml-2">[{cat.key}]</span>
+            </GlassButton>
           );
         })}
       </div>

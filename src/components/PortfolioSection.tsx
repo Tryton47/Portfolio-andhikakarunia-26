@@ -5,6 +5,7 @@ import { ExternalLink, Code2, ChevronDown, ChevronUp } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useScrollReveal }     from '../hooks/useScrollReveal';
+import GlassButton from './Shared/GlassButton';
 
 // ─── Dynamic imports to avoid SSR issues with Three.js canvas ───
 const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
@@ -736,73 +737,34 @@ export default function PortfolioSection() {
         </div>
 
         {/* Root Tabs */}
-        <div className="flex justify-center gap-3 mb-10">
-          {(['projects', 'certificates', 'techstack'] as const).map((tab) => {
-            const isActive = rootTab === tab;
-            return (
-              <button
-                key={tab}
-                onClick={() => setRootTab(tab)}
-                className={`relative px-8 py-3.5 rounded-full font-bold tracking-wide text-sm transition-all duration-500 overflow-hidden ${
-                  isActive
-                    ? 'text-white scale-105 backdrop-blur-2xl'
-                    : 'text-slate-300 hover:text-white hover:scale-105 backdrop-blur-md'
-                }`}
-                style={{
-                  border: isActive 
-                    ? '1px solid rgba(255, 255, 255, 0.4)' 
-                    : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderBottomColor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  borderRightColor:  isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                  background: isActive 
-                    ? `linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05))` 
-                    : 'rgba(255, 255, 255, 0.03)',
-                  boxShadow: isActive 
-                    ? `0 8px 32px 0 rgba(0,0,0,0.3), inset 0 0 20px rgba(var(--theme-primary), 0.4)` 
-                    : '0 4px 20px rgba(0,0,0,0.1)',
-                  textShadow: isActive ? '0 2px 10px rgba(0,0,0,0.3)' : 'none',
-                }}
-              >
-                {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            );
-          })}
+        <div className="flex justify-center flex-wrap gap-4 mb-10 p-2">
+          {(['projects', 'certificates', 'techstack'] as const).map((tab) => (
+            <GlassButton
+              key={tab}
+              isActive={rootTab === tab}
+              onClick={() => setRootTab(tab)}
+              className="px-8 py-3.5 font-bold tracking-wide text-sm"
+            >
+              {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </GlassButton>
+          ))}
         </div>
 
         {/* ═══ PROJECTS TAB ═══ */}
         {rootTab === 'projects' && (
           <>
             {/* Sub-filter */}
-            <div className="flex justify-center gap-4 mb-12 overflow-x-auto pb-4 hide-scrollbar">
-              {subCategories.map((cat) => {
-                const isActive = subFilter === cat;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => { setSubFilter(cat); setShowMore(false); }}
-                    className={`relative px-6 py-2.5 rounded-full text-xs font-bold tracking-widest whitespace-nowrap transition-all duration-400 ${
-                      isActive
-                        ? 'text-white scale-105 backdrop-blur-2xl'
-                        : 'text-slate-400 hover:text-white hover:scale-105 backdrop-blur-md'
-                    }`}
-                    style={{
-                      border: isActive 
-                        ? '1px solid rgba(255, 255, 255, 0.35)' 
-                        : '1px solid rgba(255, 255, 255, 0.08)',
-                      borderBottomColor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.04)',
-                      borderRightColor:  isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.04)',
-                      background: isActive 
-                        ? `linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.03))` 
-                        : 'rgba(255, 255, 255, 0.02)',
-                      boxShadow: isActive 
-                        ? `0 8px 32px 0 rgba(0,0,0,0.3), inset 0 0 15px rgba(var(--theme-primary), 0.3)` 
-                        : '0 4px 15px rgba(0,0,0,0.1)',
-                    }}
-                  >
-                    {cat.toUpperCase()}
-                  </button>
-                );
-              })}
+            <div className="flex justify-center flex-wrap gap-4 mb-12 p-3">
+              {subCategories.map((cat) => (
+                <GlassButton
+                  key={cat}
+                  isActive={subFilter === cat}
+                  onClick={() => { setSubFilter(cat); setShowMore(false); }}
+                  className="px-6 py-2.5 text-xs font-bold tracking-widest whitespace-nowrap"
+                >
+                  {cat.toUpperCase()}
+                </GlassButton>
+              ))}
             </div>
 
             {/* Project Grid */}
