@@ -1,367 +1,394 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Environment, Float, useCursor, Html, RoundedBox, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 
-// ─── CHIBI MECHA (BLACK & SILVER) ───
-type RobotPhase = "idle" | "parsing" | "running" | "results" | "warning";
+type RobotPhase = "idle" | "running" | "warning";
 
-function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; y: number }; colors: { primary: string; secondary: string }; onClick: () => void }) {
+/* ════════════════════════════════════════════════════════════
+   CHIBI MECHA v3 — Premium Overhaul
+   ════════════════════════════════════════════════════════════ */
+function ChibiMecha({ mousePos, colors }: { mousePos: { x: number; y: number }; colors: { primary: string; secondary: string } }) {
   const groupRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
   const leftArmRef = useRef<THREE.Group>(null);
   const rightArmRef = useRef<THREE.Group>(null);
   const eyeLeftRef = useRef<THREE.Mesh>(null);
   const eyeRightRef = useRef<THREE.Mesh>(null);
+  const auraRef = useRef<THREE.PointLight>(null);
 
-  const target = new THREE.Vector3();
+  const target = useMemo(() => new THREE.Vector3(), []);
   const [hovered, setHovered] = useState(false);
   const [phase, setPhase] = useState<RobotPhase>("running");
-  const [phaseTimer, setPhaseTimer] = useState(0);
-
-  const triggerWarning = () => {
-    onClick();
-    setPhase("warning");
-    // Bikin marahnya 6 detik lalu normal
-    setPhaseTimer(6.0);
-  };
+  const phaseTimerRef = useRef(0);
 
   useCursor(hovered, "pointer", "auto");
+
+  const triggerWarning = () => {
+    setPhase("warning");
+    phaseTimerRef.current = 6.0;
+  };
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
 
-    if (phaseTimer > 0) {
-      setPhaseTimer((prev) => prev - delta);
-    } else if (phase === "warning") {
-      setPhase("running");
-    }
-
-    // Derived state
-    const isWarning = phase === "warning" || phaseTimer > 0;
-    const isParsing = phase === "parsing";
-    const isRunning = phase === "running";
-    const isResults = phase === "results";
-
-    // Head looks at cursor (Restricted and smooth)
-    if (headRef.current) {
-      target.set(mousePos.x * 2.5, mousePos.y * 1.5 + 1.2, 6);
-      const dummy = new THREE.Object3D();
-      dummy.position.copy(headRef.current.position);
-      dummy.lookAt(target);
-
-      if (isWarning) {
-        // Warning: head down + heavy stare
-        dummy.rotation.x -= 0.28;
-        headRef.current.quaternion.slerp(dummy.quaternion, 0.04);
-      } else {
-        // Normal smooth tracking, slightly faster on active
-        const lookSlerp = isRunning ? 0.075 : isParsing ? 0.06 : 0.06;
-        headRef.current.quaternion.slerp(dummy.quaternion, lookSlerp);
+    // Timer countdown (no setState in useFrame for performance)
+    if (phaseTimerRef.current > 0) {
+      phaseTimerRef.current -= delta;
+      if (phaseTimerRef.current <= 0) {
+        phaseTimerRef.current = 0;
+        setPhase("running");
       }
     }
 
-    // Body Animation
-    if (groupRef.current) {
-      // Smooth floating only. No shaking.
-      groupRef.current.position.y = Math.sin(t * 2) * 0.05 - 0.2;
+    const isWarning = phase === "warning";
+    const isRunning = phase === "running";
+
+    // ─── HEAD TRACKING ───
+    if (headRef.current) {
+      target.set(mousePos.x * 2, mousePos.y * 1.2 + 1.4, 5);
+      const dummy = new THREE.Object3D();
+      dummy.position.set(0, 1.55, 0);
+      dummy.lookAt(target);
+      // Clamp rotation so head doesn't spin wildly
+      dummy.rotation.x = THREE.MathUtils.clamp(dummy.rotation.x, -0.3, 0.25);
+      dummy.rotation.y = THREE.MathUtils.clamp(dummy.rotation.y, -0.4, 0.4);
+
+      if (isWarning) {
+        dummy.rotation.x -= 0.15; // slight glare down
+        headRef.current.quaternion.slerp(dummy.quaternion, 0.06);
+      } else {
+        headRef.current.quaternion.slerp(dummy.quaternion, 0.07);
+      }
     }
 
-    // Analytics arm animation
+    // ─── BODY FLOAT ───
+    if (groupRef.current) {
+      groupRef.current.position.y = Math.sin(t * 1.8) * 0.04;
+      if (isWarning) {
+        // Subtle vibration
+        groupRef.current.position.x = Math.sin(t * 45) * 0.008;
+      } else {
+        groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, 0, 0.1);
+      }
+    }
+
+    // ─── ARM ANIMATION ───
     if (leftArmRef.current && rightArmRef.current) {
       if (isWarning) {
-        // Stop working, arms reset to defensive pose
-        leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, -Math.PI / 4, 0.12);
-        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, -Math.PI / 4, 0.12);
-      } else if (isParsing) {
-        // “Parsing CSV / cleaning data” slow precise moves
-        const base = -Math.PI / 4;
-        const intensity = 0.06;
-        leftArmRef.current.rotation.x = base + Math.sin(t * 6) * intensity;
-        rightArmRef.current.rotation.x = base + Math.cos(t * 6 + Math.PI / 3) * intensity;
+        // Fists clenched, arms tense
+        leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, -0.3, 0.08);
+        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, -0.3, 0.08);
+        leftArmRef.current.rotation.z = THREE.MathUtils.lerp(leftArmRef.current.rotation.z, 0.2, 0.08);
+        rightArmRef.current.rotation.z = THREE.MathUtils.lerp(rightArmRef.current.rotation.z, -0.2, 0.08);
       } else if (isRunning) {
-        // “Running model / SQL query” faster elegant work
-        const base = -Math.PI / 4;
-        const intensity = 0.12;
-        leftArmRef.current.rotation.x = base + Math.sin(t * 18) * intensity;
-        rightArmRef.current.rotation.x = base + Math.cos(t * 18 + Math.PI / 3) * intensity;
-      } else if (isResults) {
-        // “Result visualization” calmer, slight nod
-        const base = -Math.PI / 4;
-        leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, base + 0.05 * Math.sin(t * 2), 0.06);
-        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, base + 0.05 * Math.cos(t * 2), 0.06);
+        // Typing / working animation
+        const base = -Math.PI / 5;
+        leftArmRef.current.rotation.x = base + Math.sin(t * 12) * 0.15;
+        rightArmRef.current.rotation.x = base + Math.cos(t * 12 + 1) * 0.15;
+        leftArmRef.current.rotation.z = THREE.MathUtils.lerp(leftArmRef.current.rotation.z, 0, 0.1);
+        rightArmRef.current.rotation.z = THREE.MathUtils.lerp(rightArmRef.current.rotation.z, 0, 0.1);
       } else {
-        // idle breathing
-        const base = -Math.PI / 4;
-        leftArmRef.current.rotation.x = base + Math.sin(t * 2) * 0.03;
-        rightArmRef.current.rotation.x = base + Math.cos(t * 2) * 0.03;
+        const base = -Math.PI / 6;
+        leftArmRef.current.rotation.x = base + Math.sin(t * 1.5) * 0.03;
+        rightArmRef.current.rotation.x = base + Math.cos(t * 1.5) * 0.03;
       }
     }
 
-    // Natural Expressions (Eyes)
+    // ─── EYES EXPRESSION ───
     if (eyeLeftRef.current && eyeRightRef.current) {
-      const warn = isWarning;
-      const activeBoost = hovered && !warn && (isParsing || isRunning);
+      const warnColor = new THREE.Color("#ff2222");
+      const normalColor = new THREE.Color(colors.primary);
 
-      const currentEyeColor = warn ? new THREE.Color("#ff3333") : new THREE.Color(activeBoost ? colors.secondary : colors.primary);
-      (eyeLeftRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.1);
-      (eyeRightRef.current.material as THREE.MeshBasicMaterial).color.lerp(currentEyeColor, 0.1);
+      const targetColor = isWarning ? warnColor : normalColor;
+      (eyeLeftRef.current.material as THREE.MeshBasicMaterial).color.lerp(targetColor, 0.08);
+      (eyeRightRef.current.material as THREE.MeshBasicMaterial).color.lerp(targetColor, 0.08);
 
-      // Expression targets
-      const targetZLeft = warn ? -0.3 : isResults ? 0.12 : isRunning ? -0.1 : 0.05;
-      const targetZRight = warn ? 0.3 : isResults ? -0.12 : isRunning ? 0.1 : -0.05;
+      // Eye shape: angry = narrow V shape, running = focused, idle = relaxed
+      const scaleY = isWarning ? 0.35 : isRunning ? 0.7 : 1.0;
+      const rotL = isWarning ? -0.35 : isRunning ? -0.08 : 0;
+      const rotR = isWarning ? 0.35 : isRunning ? 0.08 : 0;
 
-      const targetScaleY = warn ? 0.4 : isRunning ? 0.75 : isParsing ? 0.9 : 1.0;
+      eyeLeftRef.current.scale.y = THREE.MathUtils.lerp(eyeLeftRef.current.scale.y, scaleY, 0.08);
+      eyeRightRef.current.scale.y = THREE.MathUtils.lerp(eyeRightRef.current.scale.y, scaleY, 0.08);
+      eyeLeftRef.current.rotation.z = THREE.MathUtils.lerp(eyeLeftRef.current.rotation.z, rotL, 0.08);
+      eyeRightRef.current.rotation.z = THREE.MathUtils.lerp(eyeRightRef.current.rotation.z, rotR, 0.08);
 
-      eyeLeftRef.current.rotation.z = THREE.MathUtils.lerp(eyeLeftRef.current.rotation.z, targetZLeft, 0.1);
-      eyeRightRef.current.rotation.z = THREE.MathUtils.lerp(eyeRightRef.current.rotation.z, targetZRight, 0.1);
+      // Blink every ~4s
+      if (Math.sin(t * 1.6) > 0.995 && !isWarning) {
+        eyeLeftRef.current.scale.y = 0.05;
+        eyeRightRef.current.scale.y = 0.05;
+      }
+    }
 
-      eyeLeftRef.current.scale.y = THREE.MathUtils.lerp(eyeLeftRef.current.scale.y, targetScaleY, 0.1);
-      eyeRightRef.current.scale.y = THREE.MathUtils.lerp(eyeRightRef.current.scale.y, targetScaleY, 0.1);
+    // ─── AURA LIGHT ───
+    if (auraRef.current) {
+      if (isWarning) {
+        auraRef.current.intensity = THREE.MathUtils.lerp(auraRef.current.intensity, 8 + Math.sin(t * 8) * 4, 0.1);
+      } else {
+        auraRef.current.intensity = THREE.MathUtils.lerp(auraRef.current.intensity, 0, 0.08);
+      }
     }
   });
 
   const handlePointerDown = (e: unknown) => {
-    // react-three-fiber passes a pointer event-like object; keep typing safe.
     (e as { stopPropagation?: () => void } | null)?.stopPropagation?.();
     triggerWarning();
   };
 
-  // Materials: Dominant Black and Silver Glossy
-  const blackMetal = new THREE.MeshPhysicalMaterial({
-    color: "#0a0a0a",
-    metalness: 0.8,
-    roughness: 0.15,
-    clearcoat: 0.8,
-  });
-  const silverMetal = new THREE.MeshPhysicalMaterial({
-    color: "#d0d0d0",
-    metalness: 1.0,
-    roughness: 0.1,
-    clearcoat: 1.0,
-  });
-  const darkGlass = new THREE.MeshPhysicalMaterial({
-    color: "#000000",
-    metalness: 0.9,
-    roughness: 0.02,
-    clearcoat: 1.0,
-  });
-  const secondaryGlow = new THREE.MeshBasicMaterial({ color: colors.secondary });
-  const eyeMaterial = new THREE.MeshBasicMaterial({ color: colors.primary });
+  // ─── MATERIALS ───
+  const blackMetal = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: "#0d0d0d", metalness: 0.85, roughness: 0.12, clearcoat: 1.0, clearcoatRoughness: 0.05,
+  }), []);
+  const silverMetal = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: "#c8c8c8", metalness: 1.0, roughness: 0.08, clearcoat: 1.0,
+  }), []);
+  const darkGlass = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: "#050510", metalness: 0.9, roughness: 0.02, clearcoat: 1.0,
+  }), []);
 
-  // Premium transparent glass screen for hologram
-  const hologramGlass = new THREE.MeshPhysicalMaterial({
-    color: "#ffffff",
-    metalness: 0.2,
-    roughness: 0.05,
-    transmission: 1.0, // Fully glass-like
-    thickness: 0.05,
-    ior: 1.4,
-    transparent: true,
-    opacity: 1,
-  });
+  const secondaryGlow = useMemo(() => new THREE.MeshBasicMaterial({ color: colors.secondary }), [colors.secondary]);
+  const primaryGlow = useMemo(() => new THREE.MeshBasicMaterial({ color: colors.primary }), [colors.primary]);
+
+  const isWarning = phase === "warning";
 
   return (
     <group
       ref={groupRef}
-      position={[0, -0.2, 0]}
-      scale={[1.0, 1.0, 1.0]}
-      // Straighter perspective
-      rotation={[0, -Math.PI / 24, 0]}
+      scale={[0.95, 0.95, 0.95]}
+      rotation={[0, -0.08, 0]}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
       onPointerDown={handlePointerDown}
     >
       {/* ─── BODY ─── */}
       <group position={[0, 0.6, 0]}>
-        <RoundedBox args={[1.0, 0.9, 0.7]} radius={0.15} material={blackMetal} castShadow />
-        <RoundedBox args={[0.8, 0.7, 0.75]} radius={0.1} position={[0, 0.05, 0]} material={silverMetal} />
-        {/* Center Core Reactor */}
-        <mesh position={[0, 0.1, 0.38]} material={secondaryGlow}>
-          <circleGeometry args={[0.15, 32]} />
+        {/* Main torso */}
+        <RoundedBox args={[1.05, 0.95, 0.75]} radius={0.18} material={blackMetal} castShadow />
+        {/* Chest plate */}
+        <RoundedBox args={[0.75, 0.65, 0.78]} radius={0.12} position={[0, 0.05, 0]} material={silverMetal} />
+        {/* Core reactor glow */}
+        <mesh position={[0, 0.08, 0.4]} material={secondaryGlow}>
+          <circleGeometry args={[0.14, 32]} />
         </mesh>
-        <mesh position={[0, 0.1, 0.385]} material={new THREE.MeshBasicMaterial({ color: "#ffffff" })}>
-          <circleGeometry args={[0.08, 32]} />
+        <mesh position={[0, 0.08, 0.405]}>
+          <circleGeometry args={[0.07, 32]} />
+          <meshBasicMaterial color="#ffffff" />
         </mesh>
-        {/* Thruster Skirt (Lower Body) */}
-        <mesh position={[0, -0.45, 0]} material={blackMetal}>
-          <cylinderGeometry args={[0.4, 0.6, 0.3, 16]} />
+        {/* Core reactor ring */}
+        <mesh position={[0, 0.08, 0.395]}>
+          <ringGeometry args={[0.12, 0.15, 32]} />
+          <meshBasicMaterial color={colors.secondary} transparent opacity={0.5} />
+        </mesh>
+        {/* Waist / hip plate */}
+        <RoundedBox args={[0.85, 0.2, 0.6]} radius={0.08} position={[0, -0.55, 0]} material={blackMetal} />
+        {/* Thruster skirt */}
+        <mesh position={[0, -0.72, 0]} material={silverMetal}>
+          <cylinderGeometry args={[0.32, 0.48, 0.22, 16]} />
+        </mesh>
+        {/* Thruster glow */}
+        <mesh position={[0, -0.84, 0]}>
+          <circleGeometry args={[0.28, 16]} />
+          <meshBasicMaterial color={isWarning ? "#ff2222" : colors.primary} transparent opacity={0.3} side={THREE.DoubleSide} />
         </mesh>
       </group>
 
       {/* ─── HEAD ─── */}
-      <group ref={headRef} position={[0, 1.4, 0]}>
-        <mesh position={[0, -0.25, 0]} material={silverMetal}>
-          <cylinderGeometry args={[0.1, 0.1, 0.2]} />
+      <group ref={headRef} position={[0, 1.55, 0]}>
+        {/* Neck cylinder */}
+        <mesh position={[0, -0.3, 0]} material={silverMetal}>
+          <cylinderGeometry args={[0.08, 0.12, 0.25]} />
+        </mesh>
+        {/* Main head block */}
+        <RoundedBox args={[1.0, 0.8, 0.9]} radius={0.15} material={blackMetal} castShadow />
+        {/* Face plate */}
+        <mesh position={[0, -0.02, 0.42]} material={silverMetal}>
+          <boxGeometry args={[0.85, 0.48, 0.1]} />
+        </mesh>
+        {/* Visor glass */}
+        <mesh position={[0, -0.02, 0.48]} material={darkGlass}>
+          <boxGeometry args={[0.78, 0.38, 0.04]} />
+        </mesh>
+        {/* Visor edge glow */}
+        <mesh position={[0, -0.02, 0.505]}>
+          <boxGeometry args={[0.8, 0.4, 0.005]} />
+          <meshBasicMaterial color={isWarning ? "#ff2222" : colors.primary} transparent opacity={0.15} />
         </mesh>
 
-        <RoundedBox args={[1.1, 0.9, 1.0]} radius={0.15} material={blackMetal} castShadow />
-
-        <mesh position={[0, -0.05, 0.45]} material={silverMetal}>
-          <boxGeometry args={[0.9, 0.5, 0.15]} />
-        </mesh>
-
-        <mesh position={[0, -0.05, 0.51]} material={darkGlass}>
-          <boxGeometry args={[0.8, 0.4, 0.05]} />
-        </mesh>
-
-        {/* Eyes Group */}
-        <group position={[0, -0.05, 0.54]}>
-          <mesh ref={eyeLeftRef} position={[-0.2, 0, 0]} material={eyeMaterial.clone()}>
-            <boxGeometry args={[0.25, 0.12, 0.02]} />
+        {/* Eyes */}
+        <group position={[0, -0.02, 0.51]}>
+          <mesh ref={eyeLeftRef} position={[-0.18, 0, 0]}>
+            <boxGeometry args={[0.22, 0.1, 0.015]} />
+            <meshBasicMaterial color={colors.primary} />
           </mesh>
-          <mesh ref={eyeRightRef} position={[0.2, 0, 0]} material={eyeMaterial.clone()}>
-            <boxGeometry args={[0.25, 0.12, 0.02]} />
+          <mesh ref={eyeRightRef} position={[0.18, 0, 0]}>
+            <boxGeometry args={[0.22, 0.1, 0.015]} />
+            <meshBasicMaterial color={colors.primary} />
           </mesh>
         </group>
 
-        {/* V-Fin (Gundam Antenna) - Scaled down slightly to prevent clipping */}
-        <group position={[0, 0.35, 0.52]} scale={[0.8, 0.8, 0.8]}>
-          <mesh position={[-0.2, 0.2, 0]} rotation={[0, 0, -0.6]} material={secondaryGlow}>
-            <boxGeometry args={[0.05, 0.5, 0.05]} />
+        {/* Ear panels */}
+        <mesh position={[-0.52, 0, 0]} material={silverMetal}>
+          <boxGeometry args={[0.06, 0.3, 0.4]} />
+        </mesh>
+        <mesh position={[0.52, 0, 0]} material={silverMetal}>
+          <boxGeometry args={[0.06, 0.3, 0.4]} />
+        </mesh>
+
+        {/* V-Fin antenna */}
+        <group position={[0, 0.32, 0.3]} scale={[0.85, 0.85, 0.85]}>
+          <mesh position={[-0.18, 0.18, 0]} rotation={[0, 0, -0.55]} material={secondaryGlow}>
+            <boxGeometry args={[0.04, 0.42, 0.04]} />
           </mesh>
-          <mesh position={[0.2, 0.2, 0]} rotation={[0, 0, 0.6]} material={secondaryGlow}>
-            <boxGeometry args={[0.05, 0.5, 0.05]} />
+          <mesh position={[0.18, 0.18, 0]} rotation={[0, 0, 0.55]} material={secondaryGlow}>
+            <boxGeometry args={[0.04, 0.42, 0.04]} />
           </mesh>
-          <mesh position={[0, 0, 0]} material={eyeMaterial}>
-            <boxGeometry args={[0.15, 0.15, 0.1]} />
+          <mesh position={[0, 0.02, 0]} material={primaryGlow}>
+            <boxGeometry args={[0.12, 0.12, 0.08]} />
           </mesh>
         </group>
       </group>
 
       {/* ─── ARMS ─── */}
-      <group position={[-0.7, 0.9, 0]}>
-        <mesh material={silverMetal}>
-          <sphereGeometry args={[0.2, 16, 16]} />
-        </mesh>
-        <group ref={leftArmRef} position={[0, -0.1, 0]} rotation={[-Math.PI / 4, 0, 0]}>
-          <mesh position={[0, -0.3, 0]} material={blackMetal}>
-            <boxGeometry args={[0.2, 0.6, 0.2]} />
+      {/* Left */}
+      <group position={[-0.68, 0.95, 0]}>
+        <mesh material={silverMetal}><sphereGeometry args={[0.18, 16, 16]} /></mesh>
+        <group ref={leftArmRef} position={[0, -0.08, 0]} rotation={[-Math.PI / 5, 0, 0]}>
+          <mesh position={[0, -0.22, 0]} material={blackMetal}>
+            <boxGeometry args={[0.17, 0.42, 0.17]} />
+          </mesh>
+          {/* Forearm */}
+          <mesh position={[0, -0.48, 0]} material={silverMetal}>
+            <boxGeometry args={[0.14, 0.12, 0.14]} />
+          </mesh>
+          {/* Hand */}
+          <mesh position={[0, -0.58, 0]} material={blackMetal}>
+            <sphereGeometry args={[0.08, 8, 8]} />
+          </mesh>
+        </group>
+      </group>
+      {/* Right */}
+      <group position={[0.68, 0.95, 0]}>
+        <mesh material={silverMetal}><sphereGeometry args={[0.18, 16, 16]} /></mesh>
+        <group ref={rightArmRef} position={[0, -0.08, 0]} rotation={[-Math.PI / 5, 0, 0]}>
+          <mesh position={[0, -0.22, 0]} material={blackMetal}>
+            <boxGeometry args={[0.17, 0.42, 0.17]} />
+          </mesh>
+          <mesh position={[0, -0.48, 0]} material={silverMetal}>
+            <boxGeometry args={[0.14, 0.12, 0.14]} />
+          </mesh>
+          <mesh position={[0, -0.58, 0]} material={blackMetal}>
+            <sphereGeometry args={[0.08, 8, 8]} />
           </mesh>
         </group>
       </group>
 
-      <group position={[0.7, 0.9, 0]}>
-        <mesh material={silverMetal}>
-          <sphereGeometry args={[0.2, 16, 16]} />
-        </mesh>
-        <group ref={rightArmRef} position={[0, -0.1, 0]} rotation={[-Math.PI / 4, 0, 0]}>
-          <mesh position={[0, -0.3, 0]} material={blackMetal}>
-            <boxGeometry args={[0.2, 0.6, 0.2]} />
-          </mesh>
-        </group>
-      </group>
-
-      {/* ─── PURE HOLOGRAM ANALYTICS ─── */}
-      <group position={[0, 0.4, 1.2]} rotation={[-0.05, 0, 0]}>
-        {/* Physical Transparent Glass Screen to catch reflections */}
-        <RoundedBox args={[1.7, 1.1, 0.02]} radius={0.05} smoothness={4} material={hologramGlass} />
-
-        {/* Holographic Glowing Border */}
-        <RoundedBox args={[1.72, 1.12, 0.01]} radius={0.06} smoothness={4}>
-          <meshBasicMaterial color={colors.primary} transparent opacity={0.4} wireframe />
+      {/* ─── HOLOGRAM SCREEN ─── */}
+      <group position={[0, 0.55, 1.15]} rotation={[-0.08, 0, 0]}>
+        {/* Glass panel */}
+        <RoundedBox args={[1.6, 1.05, 0.015]} radius={0.04} smoothness={4}>
+          <meshPhysicalMaterial color="#0a0a20" metalness={0.1} roughness={0.05} transmission={0.6} thickness={0.02} ior={1.5} transparent opacity={0.85} />
+        </RoundedBox>
+        {/* Glowing border */}
+        <RoundedBox args={[1.62, 1.07, 0.008]} radius={0.05} smoothness={4}>
+          <meshBasicMaterial color={isWarning ? "#ff2222" : colors.primary} transparent opacity={isWarning ? 0.7 : 0.35} wireframe />
         </RoundedBox>
 
-        {/* Base Projection Pad */}
-        <mesh position={[0, -0.7, 0.2]} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[0.6, 32]} />
-          <meshBasicMaterial color={colors.secondary} transparent opacity={0.15} />
-        </mesh>
-        <mesh position={[0, -0.7, 0.2]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[0.55, 0.6, 32]} />
-          <meshBasicMaterial color={colors.primary} transparent opacity={0.5} />
-        </mesh>
-
-        {/* HTML UI Dashboard - 100% visible now. */}
-        {/* Placed slightly further in front of glass so transmission doesn't hide it */}
-        <Html position={[0, 0, 0.08]} transform scale={0.012} rotation={[0, 0, 0]} zIndexRange={[100, 0]}>
+        {/* HTML Dashboard */}
+        <Html position={[0, 0, 0.02]} transform scale={0.012} zIndexRange={[100, 0]}>
           <div
-            className="w-[180px] h-[120px] flex flex-col p-2 overflow-hidden rounded-md shadow-2xl"
+            className="w-[180px] h-[115px] flex flex-col p-2 overflow-hidden rounded-md"
             style={{
-              backgroundColor: "rgba(10, 10, 15, 0.9)", // Highly opaque dark base to ensure visibility
-              border: `1px solid ${colors.primary}`,
+              backgroundColor: "rgba(8, 8, 18, 0.95)",
+              border: `1px solid ${isWarning ? "#ff2222" : colors.primary}`,
+              boxShadow: `0 0 20px ${isWarning ? "rgba(255,34,34,0.4)" : `${colors.primary}33`}`,
               pointerEvents: "none",
             }}
           >
             {/* Header */}
-            <div className="flex justify-between items-center border-b border-white/20 pb-1 mb-1.5">
-              <span className="text-white text-[5px] font-mono tracking-[0.2em]">ANALYTICS.SYS</span>
-              <div className="flex items-center gap-1">
-                <span
-                  className="w-1 h-1 rounded-full animate-pulse"
-                  style={
-                    phase === "warning" || phaseTimer > 0
-                      ? {
-                          backgroundColor: "#ff3333",
-                          boxShadow: "0 0 12px rgba(255,51,51,0.8)",
-                        }
-                      : { backgroundColor: colors.secondary }
-                  }
-                />
-              </div>
+            <div className="flex justify-between items-center border-b border-white/20 pb-1 mb-1">
+              <span className="text-white text-[5px] font-mono tracking-[0.2em]">
+                {isWarning ? "⚠ SYSTEM.ALERT" : "ANALYTICS.SYS"}
+              </span>
+              <span
+                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{
+                  backgroundColor: isWarning ? "#ff2222" : colors.secondary,
+                  boxShadow: `0 0 6px ${isWarning ? "#ff2222" : colors.secondary}`,
+                }}
+              />
             </div>
 
             {/* Analytics Grid */}
-            {(() => {
-              const isWarning = phase === "warning" || phaseTimer > 0;
-              return (
-                <div className="flex-1 flex gap-2">
-                  {/* Bar chart */}
-                  <div className="flex-[2] flex flex-col justify-end gap-0.5 relative border-l border-b border-white/10 p-1">
-                    <span className="absolute top-0 left-1 text-[4px] text-white/50 font-mono">TRAFFIC YIELD</span>
-                    <div className="flex items-end justify-between w-full h-[60px] gap-0.5">
-                      {[40, 70, 30, 90, 60, 80].map((h, i) => (
-                        <div
-                          key={i}
-                          className="w-full rounded-t-sm transition-all duration-200"
-                          style={{
-                            height: isWarning ? `${Math.max(8, h * 0.18 + (phaseTimer / 6.0) * 55)}%` : `${h}%`,
-                            backgroundColor: isWarning ? "#ff3333" : colors.primary,
-                            opacity: 0.92,
-                            filter: isWarning ? "brightness(1.25)" : "none",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  {/* Side Stats */}
-                  <div className="flex-[1] flex flex-col gap-1 justify-center">
-                    <div className="bg-black/50 p-1 rounded border border-white/10">
-                      <div className="text-[4px] text-white/60 mb-0.5 font-mono">CPU LOAD</div>
-                      <div className="w-full h-[2px] bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: isWarning ? "100%" : "65%", backgroundColor: isWarning ? "#ff3333" : colors.secondary }} />
-                      </div>
-                    </div>
-                    <div className="bg-black/50 p-1 rounded border border-white/10">
-                      <div className="text-[4px] text-white/60 mb-0.5 font-mono">MEMORY</div>
-                      <div className="w-full h-[2px] bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: isWarning ? "100%" : "45%", backgroundColor: isWarning ? "#ff3333" : colors.primary }} />
-                      </div>
-                    </div>
-                    <div className="mt-auto text-right">
-                      <span className="text-lg font-mono text-white tracking-tighter block leading-none" style={{ textShadow: `0 0 5px ${isWarning ? "#ff3333" : colors.primary}` }}>
-                        {isWarning ? "ERR" : "99%"}
-                      </span>
-                    </div>
+            <div className="flex-1 flex gap-1.5">
+              {/* Bar chart area */}
+              <div className="flex-[2] flex flex-col relative border-l border-b border-white/15 p-1 pt-2">
+                <span className="absolute top-0 left-1 text-[3.5px] text-white/40 font-mono uppercase">
+                  {isWarning ? "Error Rate" : "Traffic Yield"}
+                </span>
+                <div className="flex items-end justify-between w-full flex-1 gap-[2px]">
+                  {[40, 70, 30, 90, 55, 80, 45, 65].map((h, i) => (
+                    <div
+                      key={i}
+                      className="w-full rounded-t-sm"
+                      style={{
+                        height: isWarning ? `${20 + Math.random() * 70}%` : `${h}%`,
+                        backgroundColor: isWarning ? "#ff2222" : colors.primary,
+                        opacity: 0.85,
+                        transition: "height 0.3s, background-color 0.3s",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Side stats */}
+              <div className="flex-[1] flex flex-col gap-1 justify-center">
+                <div className="bg-white/5 p-1 rounded border border-white/10">
+                  <div className="text-[3.5px] text-white/50 font-mono">CPU</div>
+                  <div className="w-full h-[3px] bg-white/10 rounded-full overflow-hidden mt-0.5">
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: isWarning ? "98%" : "62%", backgroundColor: isWarning ? "#ff2222" : colors.secondary }} />
                   </div>
                 </div>
-              );
-            })()}
+                <div className="bg-white/5 p-1 rounded border border-white/10">
+                  <div className="text-[3.5px] text-white/50 font-mono">MEM</div>
+                  <div className="w-full h-[3px] bg-white/10 rounded-full overflow-hidden mt-0.5">
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: isWarning ? "95%" : "44%", backgroundColor: isWarning ? "#ff2222" : colors.primary }} />
+                  </div>
+                </div>
+                <div className="text-right mt-auto">
+                  <span
+                    className="text-[14px] font-mono text-white font-bold block leading-none"
+                    style={{ textShadow: `0 0 8px ${isWarning ? "#ff2222" : colors.primary}` }}
+                  >
+                    {isWarning ? "ERR!" : "99%"}
+                  </span>
+                  <span className="text-[3.5px] text-white/40 font-mono">{isWarning ? "OVERLOAD" : "UPTIME"}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </Html>
       </group>
 
-      {/* Aura Merah saat Marah */}
-      {(phase === "warning" || phaseTimer > 0) && (
-        <pointLight position={[0, 1.0, 2.5]} intensity={50} color="#ff0000" distance={15} decay={1.5} />
+      {/* ─── ANGER AURA (always-mounted, intensity controlled in useFrame) ─── */}
+      <pointLight ref={auraRef} position={[0, 1.0, 1.5]} intensity={0} color="#ff0000" distance={12} decay={1.5} />
+
+      {/* Extra anger effects */}
+      {isWarning && (
+        <>
+          <pointLight position={[0, 0.5, 0.8]} intensity={3} color="#ff0000" distance={5} decay={2} />
+          <pointLight position={[0, 2.0, 0]} intensity={4} color="#ff2222" distance={6} decay={2} />
+        </>
       )}
     </group>
   );
 }
 
-// ─── MAIN COMPONENT ───
+/* ════════════════════════════════════════════════════════════
+   MAIN COMPONENT (Canvas + Lights)
+   ════════════════════════════════════════════════════════════ */
 export default function RobotScene() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -385,25 +412,24 @@ export default function RobotScene() {
       const secondary = getComputedStyle(root).getPropertyValue("--theme-secondary-hex").trim() || "#06B6D4";
       setColors({ primary, secondary });
     };
-
     updateColors();
     const interval = setInterval(updateColors, 500);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="relative w-full h-full min-h-[350px]">
-      <Canvas camera={{ position: [0, 1.2, 7.5], fov: 42 }} shadows>
-        <ambientLight intensity={1.5} />
-        <spotLight position={[5, 10, 5]} angle={0.3} penumbra={1} intensity={3} castShadow shadow-mapSize={1024} />
-        <pointLight position={[-3, 2, 4]} intensity={2} color={colors.secondary} />
-        <pointLight position={[3, -1, 4]} intensity={2} color={colors.primary} />
+    <div className="relative w-full h-full min-h-[400px]">
+      <Canvas camera={{ position: [0, 1.0, 5.8], fov: 45 }} shadows>
+        <ambientLight intensity={1.2} />
+        <spotLight position={[5, 8, 5]} angle={0.25} penumbra={1} intensity={2.5} castShadow shadow-mapSize={1024} />
+        <pointLight position={[-3, 3, 4]} intensity={1.5} color={colors.secondary} />
+        <pointLight position={[3, 0, 4]} intensity={1.5} color={colors.primary} />
 
-        <Float speed={2} rotationIntensity={0.05} floatIntensity={0.2}>
-          <CoolChibiMecha mousePos={mousePos} colors={colors} onClick={() => {}} />
+        <Float speed={1.8} rotationIntensity={0.03} floatIntensity={0.15}>
+          <ChibiMecha mousePos={mousePos} colors={colors} />
         </Float>
 
-        <ContactShadows position={[0, -1.8, 0]} opacity={0.8} scale={6} blur={2.5} far={4} color="#000000" />
+        <ContactShadows position={[0, -0.95, 0]} opacity={0.6} scale={5} blur={2.5} far={3} color="#000000" />
         <Environment preset="city" />
       </Canvas>
     </div>
