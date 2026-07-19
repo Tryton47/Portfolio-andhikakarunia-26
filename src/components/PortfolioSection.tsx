@@ -721,13 +721,27 @@ export default function PortfolioSection() {
 
   const AmbientBg = useMemo(() => {
     if (rootTab !== 'projects') return null;
+    let CanvasComp = null;
     switch (subFilter) {
-      case 'Web Dev': return <MatrixCanvas />;
-      case 'Data Analysis': return <DataAnalystCanvas />;
-      case 'Graphic Design': return <BezierCanvas />;
-      case 'Video Editing': return <VideoCanvas />;
-      default: return null;
+      case 'Web Dev': CanvasComp = <MatrixCanvas />; break;
+      case 'Data Analysis': CanvasComp = <DataAnalystCanvas />; break;
+      case 'Graphic Design': CanvasComp = <BezierCanvas />; break;
+      case 'Video Editing': CanvasComp = <VideoCanvas />; break;
     }
+    
+    return (
+      <div 
+        key={subFilter}
+        className="absolute top-0 left-0 w-full h-[700px] pointer-events-none opacity-40 mix-blend-screen"
+        style={{ 
+          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', 
+          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)',
+          animation: 'fadeIn 1s ease-out forwards'
+        }}
+      >
+        {CanvasComp}
+      </div>
+    );
   }, [rootTab, subFilter]);
 
   return (
@@ -791,15 +805,16 @@ export default function PortfolioSection() {
             </div>
 
             {/* Project Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visibleProjects.map((project, idx) => (
-                <div
-                  key={project.id}
-                  className="glass-panel border border-border rounded-xl overflow-hidden group hover:border-primary/40 transition-all duration-300"
-                  style={{
-                    animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`,
-                  }}
-                >
+            <div key={subFilter} className="animate-[fadeIn_0.4s_ease-out]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {visibleProjects.map((project, idx) => (
+                  <div
+                    key={project.id}
+                    className="glass-panel border border-border rounded-xl overflow-hidden group hover:border-primary/40 transition-all duration-300"
+                    style={{
+                      animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`,
+                    }}
+                  >
                   {/* Card Image Area */}
                   <div className="w-full h-44 bg-obsidian flex items-center justify-center relative overflow-hidden">
                     <span className="text-system text-text-dim">{project.category}</span>
@@ -860,6 +875,7 @@ export default function PortfolioSection() {
                   </div>
                 </div>
               ))}
+              </div>
             </div>
 
             {/* See More / Less */}

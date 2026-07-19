@@ -293,7 +293,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   const secondaryGlow = new THREE.MeshBasicMaterial({ color: colors.secondary });
   const eyeMaterial = new THREE.MeshBasicMaterial({ color: colors.primary });
 
-  const isWarning = phase === "warning" || phaseTimer > 0;
+  const isWarning = phase === "warning" || phaseTimer.current > 0;
 
   return (
     <group
@@ -440,7 +440,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
               {isWarning ? "ERROR RATE" : "TRAFFIC YIELD"}
             </Text>
             {[40, 70, 30, 90, 60, 80, 50].map((val, i) => {
-              const baseH = isWarning ? Math.max(20, val * 0.18 + (phaseTimer / 6.0) * 80) : val;
+              const baseH = isWarning ? Math.max(20, val * 0.18 + (phaseTimer.current / 6.0) * 80) : val;
               const h = (baseH / 100) * 0.55;
               return (
                 <mesh key={i} position={[i * 0.12 + 0.05, h / 2, 0]}>
