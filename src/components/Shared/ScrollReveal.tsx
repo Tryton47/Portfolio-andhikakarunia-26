@@ -25,7 +25,7 @@ interface ScrollRevealProps {
   style?: CSSProperties;
   threshold?: number;
   once?: boolean;
-  as?: keyof JSX.IntrinsicElements;
+  as?: React.ElementType;
 }
 
 const hiddenStyles: Record<RevealVariant, CSSProperties> = {

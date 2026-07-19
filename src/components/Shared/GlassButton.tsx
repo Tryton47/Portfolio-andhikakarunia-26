@@ -22,7 +22,7 @@ export default function GlassButton({
   const [coords, setCoords] = useState({ x: -100, y: -100 });
   const [isHovering, setIsHovering] = useState(false);
 
-  const handleMouseMove = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
     if (!btnRef.current) return;
     const rect = btnRef.current.getBoundingClientRect();
     setCoords({
