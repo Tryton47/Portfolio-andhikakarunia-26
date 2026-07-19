@@ -25,6 +25,17 @@ const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
 const CategoryFilter = dynamic(() => import('./Logo3D/CategoryFilter'), { ssr: false });
 const InfoPanel      = dynamic(() => import('./Logo3D/InfoPanel'),       { ssr: false });
 const KeyboardHelper = dynamic(() => import('./Logo3D/KeyboardHelper'),  { ssr: false });
+const Playground3D   = dynamic(() => import('./Portfolio3DPlayground/Playground3D'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[600px] flex items-center justify-center rounded-2xl" style={{ background: '#090A0F', border: '1px solid #1E293B' }}>
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        <span className="text-text-dim text-xs font-mono tracking-widest">LOADING 3D PLAYGROUND...</span>
+      </div>
+    </div>
+  ),
+});
 
 
 /* ─── DATA ─── */
@@ -113,105 +124,24 @@ const projects = [
   },
 ];
 
-const certificates = [
-  { 
-    title: 'Data Analyst Capstone', 
-    issuer: 'Coursera', 
-    date: '2023',
-    file: '/E-Sertif/Coursera_Data_Analyst.pdf',
-    desc: 'Sertifikasi kompetensi analisis data Google Capstone dari Coursera.'
-  },
-  { 
-    title: 'Data Analyst Batch 6', 
-    issuer: 'Karirnex', 
-    date: '2023',
-    file: '/E-Sertif/Karirnex_Data_Analyst.pdf',
-    desc: 'Program intensif penguasaan analisis data komprehensif.'
-  },
-  { 
-    title: 'Sertifikat Excel Batch 8', 
-    issuer: 'Karirnex', 
-    date: '2023',
-    file: '/E-Sertif/Excel_Batch_8.pdf',
-    desc: 'Penguasaan pemrosesan data menggunakan Microsoft Excel pada tingkat mahir.'
-  },
-  { 
-    title: 'Rekomendasi Keahlian Excel', 
-    issuer: 'Karirnex', 
-    date: '2023',
-    file: '/E-Sertif/Karirnex_Excel.pdf',
-    desc: 'Surat rekomendasi keahlian Excel yang diakui oleh Karirnex.'
-  },
-  { 
-    title: 'AI Fundamental', 
-    issuer: 'NVIDIA', 
-    date: '2024',
-    file: '/E-Sertif/NVIDIA_Sertif.pdf',
-    desc: 'Sertifikasi pengenalan Artificial Intelligence.'
-  },
-  { 
-    title: 'Huawei Certificate', 
-    issuer: 'Huawei', 
-    date: '2024',
-    file: '/E-Sertif/Huawei_Sertif.pdf',
-    desc: 'Sertifikasi pengembangan inovasi teknologi dari Huawei.'
-  },
-  { 
-    title: 'Data Scientist', 
-    issuer: 'KT&G Career Prep', 
-    date: '2023',
-    file: '/E-Sertif/KTG_Data_Science.pdf',
-    desc: 'Pelatihan persiapan karir spesialisasi Data Science.'
-  },
-  { 
-    title: 'Graphic Designer', 
-    issuer: 'KT&G Career Prep', 
-    date: '2023',
-    file: '/E-Sertif/KTG_Graphic_Designer.pdf',
-    desc: 'Pelatihan persiapan karir spesialisasi Graphic Design.'
-  },
-  { 
-    title: 'Digital Marketing', 
-    issuer: 'KT&G Career Prep', 
-    date: '2023',
-    file: '/E-Sertif/KTG_Digital_Marketing.pdf',
-    desc: 'Pelatihan persiapan karir spesialisasi Digital Marketing.'
-  },
-  { 
-    title: 'Personal Branding', 
-    issuer: 'KT&G Career Prep', 
-    date: '2023',
-    file: '/E-Sertif/KTG_Personal_Branding.pdf',
-    desc: 'Pengembangan personal branding yang kuat dalam platform profesional.'
-  },
-  { 
-    title: 'Career Preparation', 
-    issuer: 'KT&G Career Prep', 
-    date: '2023',
-    file: '/E-Sertif/KTG_Career_Prep.pdf',
-    desc: 'Sertifikat kelulusan persiapan karier komprehensif.'
-  },
-  { 
-    title: 'IT Fundamental', 
-    issuer: 'SmartPath', 
-    date: '2024',
-    file: '/E-Sertif/SmartPath_IT.pdf',
-    desc: 'Keahlian dasar IT dan pengenalan ke industri teknologi digital.'
-  },
-  { 
-    title: 'Ngangsu Kawruh MH', 
-    issuer: 'Event Organiser', 
-    date: '2023',
-    file: '/E-Sertif/Ngangsu_MH.pdf',
-    desc: 'Sertifikat apresiasi partisipasi dalam acara kemahasiswaan atau event terkait.'
-  },
-  { 
-    title: 'Panitia FTI', 
-    issuer: 'Universitas', 
-    date: '2023',
-    file: '/E-Sertif/Panitia_FTI.pdf',
-    desc: 'Penghargaan dedikasi dan kontribusi sebagai panitia kegiatan FTI.'
-  },
+  // orientation: 'landscape' (tidur) | 'portrait' (berdiri)
+  { title: 'Google Data Analytics Certificate',   issuer: 'Google / Coursera',     date: '2023', file: '/E-Sertif/Coursera_Data_Analyst.pdf',  orientation: 'landscape', desc: 'Program sertifikasi resmi Google Data Analytics yang mencakup pembersihan, analisis, dan visualisasi data menggunakan SQL, R, dan Tableau.' },
+  { title: 'Data Analyst Batch 6',                issuer: 'Karirnex',               date: '2023', file: '/E-Sertif/Karirnex_Data_Analyst.pdf', orientation: 'landscape', desc: 'Program intensif penguasaan analisis data end-to-end: Python, SQL, Power BI, dan machine learning dasar.' },
+  { title: 'Microsoft Excel Expert — Batch 8',    issuer: 'Karirnex',               date: '2023', file: '/E-Sertif/Excel_Batch_8.pdf',          orientation: 'landscape', desc: 'Sertifikasi keahlian Microsoft Excel tingkat mahir mencakup pivot, VLOOKUP, macro, dan dashboard interaktif.' },
+  { title: 'Rekomendasi Keahlian Excel',           issuer: 'Karirnex',               date: '2023', file: '/E-Sertif/Karirnex_Excel.pdf',         orientation: 'landscape', desc: 'Surat rekomendasi resmi yang menyatakan keahlian Excel tingkat lanjut, diakui oleh Karirnex untuk keperluan profesional.' },
+  { title: 'Generative AI with Diffusion Models', issuer: 'NVIDIA',                  date: '2024', file: '/E-Sertif/NVIDIA_Sertif.pdf',          orientation: 'landscape', desc: 'Sertifikasi pemahaman dan implementasi Generative AI menggunakan model difusi dari NVIDIA Deep Learning Institute.' },
+  { title: 'AI Fundamentals',                      issuer: 'NVIDIA',                  date: '2024', file: '/E-Sertif/NVIDIA_Sertif_2.pdf',        orientation: 'landscape', desc: 'Pengenalan konsep-konsep fundamental kecerdasan buatan dan machine learning dari NVIDIA.' },
+  { title: 'Huawei ICT Competition Certificate',   issuer: 'Huawei',                  date: '2024', file: '/E-Sertif/Huawei_Sertif.pdf',          orientation: 'portrait',  desc: 'Sertifikat partisipasi kompetisi Huawei ICT, mencakup jaringan, cloud, dan AI.' },
+  { title: 'Data Scientist Bootcamp',              issuer: 'KT&G Career Prep',        date: '2023', file: '/E-Sertif/KTG_Data_Science.pdf',       orientation: 'portrait',  desc: 'Program intensif persiapan karir Data Scientist mencakup Python, statistik, machine learning, dan storytelling data.' },
+  { title: 'Graphic Designer Bootcamp',            issuer: 'KT&G Career Prep',        date: '2023', file: '/E-Sertif/KTG_Graphic_Designer.pdf',   orientation: 'portrait',  desc: 'Pelatihan desain grafis profesional mencakup prinsip desain, Canva, Adobe, dan branding visual.' },
+  { title: 'Digital Marketing Bootcamp',           issuer: 'KT&G Career Prep',        date: '2023', file: '/E-Sertif/KTG_Digital_Marketing.pdf',  orientation: 'portrait',  desc: 'Pelatihan pemasaran digital meliputi SEO, social media marketing, content strategy, dan Google Ads.' },
+  { title: 'Personal Branding Bootcamp',           issuer: 'KT&G Career Prep',        date: '2023', file: '/E-Sertif/KTG_Personal_Branding.pdf',  orientation: 'portrait',  desc: 'Pengembangan personal brand yang kuat di LinkedIn dan platform profesional lainnya.' },
+  { title: 'Career Preparation Certificate',       issuer: 'KT&G Career Prep',        date: '2023', file: '/E-Sertif/KTG_Career_Prep.pdf',        orientation: 'portrait',  desc: 'Sertifikat kelulusan program persiapan karier komprehensif KT&G meliputi CV, interview, dan soft skills.' },
+  { title: 'IT Fundamental Bootcamp',              issuer: 'SmartPath',               date: '2024', file: '/E-Sertif/SmartPath_IT.pdf',           orientation: 'portrait',  desc: 'Penguasaan dasar-dasar IT: jaringan komputer, sistem operasi, cloud computing, dan keamanan siber.' },
+  { title: 'Ngangsu Kawruh MH',                    issuer: 'Mahkamah Hukum (MH)',     date: '2023', file: '/E-Sertif/Ngangsu_MH.pdf',             orientation: 'landscape', desc: 'Sertifikat apresiasi sebagai peserta aktif dalam seminar hukum kemahasiswaan Ngangsu Kawruh.' },
+  { title: 'Panitia Kegiatan FTI',                 issuer: 'Universitas UNMER Malang', date: '2023', file: '/E-Sertif/Panitia_FTI.pdf',            orientation: 'portrait',  desc: 'Penghargaan atas dedikasi dan kontribusi sebagai panitia dalam kegiatan kemahasiswaan Fakultas Teknologi Industri.' },
+  { title: 'Sertifikat Prestasi',                  issuer: 'Institusi Pendidikan',    date: '2023', file: '/E-Sertif/Certificate_Andhika.pdf',    orientation: 'landscape', desc: 'Sertifikat penghargaan atas prestasi akademis dan non-akademis yang dicapai selama masa studi.' },
+  { title: 'Sertifikat Partisipasi',               issuer: 'Institusi Pendidikan',    date: '2024', file: '/E-Sertif/Certificate_Andhika_2.pdf',  orientation: 'landscape', desc: 'Sertifikat apresiasi atas partisipasi aktif dalam kegiatan akademis dan kemahasiswaan.' },
 ];
 
 const techStack = [
@@ -654,8 +584,8 @@ function CertModal({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[200] bg-obsidian/95 backdrop-blur-md flex items-start justify-center overflow-y-auto pt-8 pb-12 px-4">
-      <div className="w-full max-w-3xl glass-panel border border-border rounded-xl overflow-hidden">
+    <div className="fixed inset-0 z-[200] bg-obsidian/95 backdrop-blur-md flex items-start justify-center overflow-y-auto pt-6 pb-12 px-4">
+      <div className="w-full max-w-4xl glass-panel border border-border rounded-xl overflow-hidden">
         {/* Top Bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-charcoal">
           <button
@@ -668,25 +598,30 @@ function CertModal({
         </div>
 
         {/* Body */}
-        <div className="flex flex-col md:flex-row">
-          {/* Left: Info */}
-          <div className="w-full md:w-1/2 p-8 flex flex-col">
-            <h3 className="text-heading text-xl text-text-primary mb-2">
-              {cert.title}
-            </h3>
-            <p className="text-system text-secondary mb-6">{cert.issuer}</p>
-            <p className="text-text-body text-sm leading-relaxed mb-6">
-              {cert.desc}
-            </p>
+        <div className="flex flex-col">
+          {/* Info strip */}
+          <div className="px-8 pt-6 pb-4 flex flex-col gap-1">
+            <h3 className="text-heading text-xl text-text-primary">{cert.title}</h3>
+            <p className="text-system text-secondary text-xs">{cert.issuer} · {cert.date}</p>
+            <p className="text-text-body text-sm leading-relaxed mt-2 text-text-muted max-w-2xl">{cert.desc}</p>
           </div>
 
-          {/* Right: PDF Preview */}
-          <div className="w-full md:w-1/2 bg-charcoal flex items-center justify-center p-4">
-            <div className="w-full h-[300px] md:h-full relative rounded-lg overflow-hidden border border-border bg-obsidian flex items-center justify-center">
+          {/* PDF Viewer — responsive aspect ratio based on orientation */}
+          <div className="px-6 pb-6">
+            <div
+              className="w-full relative rounded-lg overflow-hidden border border-border bg-white"
+              style={{ aspectRatio: cert.orientation === 'portrait' ? '210/297' : '297/210' }}
+            >
               {cert.file ? (
-                <iframe src={`${cert.file}#toolbar=0&navpanes=0`} className="w-full h-full border-0 bg-white" />
+                <iframe
+                  src={`${cert.file}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                  className="absolute inset-0 w-full h-full border-0"
+                  title={cert.title}
+                />
               ) : (
-                <span className="text-system text-text-dim">No File Available</span>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-system text-text-dim">No File Available</span>
+                </div>
               )}
             </div>
           </div>
@@ -933,40 +868,14 @@ export default function PortfolioSection() {
 
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
-          <div className="space-y-10">
-            {/* ─── 3D Interactive Logo Section ─── */}
-            <div>
-              <CategoryFilter />
-              <Logo3DCanvas />
-              <InfoPanel />
-              <KeyboardHelper />
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="text-center">
+              <p className="text-system text-primary mb-2">Interactive 3D Playground</p>
+              <p className="text-text-muted text-sm">Explore all 25+ tools in my stack — click to learn more, drag to play around</p>
             </div>
-
-            {/* ─── Static Tech Chips ─── */}
-            <div className="border-t border-border/30 pt-8">
-              {['Web', 'Data', 'Design', 'Video'].map((cat) => (
-                <div key={cat} className="mb-6">
-                  <h3 className="text-system text-primary mb-4">
-                    {cat === 'Web' ? 'Web Development' : cat === 'Data' ? 'Data Analytics' : cat === 'Design' ? 'Graphic Design' : 'Video Editing'}
-                  </h3>
-                  <div className="flex flex-wrap gap-3">
-                    {techStack
-                      .filter((t) => t.cat === cat)
-                      .map((t, i) => (
-                        <span
-                          key={i}
-                          className="px-4 py-2 glass-panel border border-border rounded-lg text-system text-text-muted hover:border-primary/40 hover:text-primary transition-colors"
-                          style={{
-                            animation: `fadeInUp 0.4s ease-out ${i * 0.05}s both`,
-                          }}
-                        >
-                          {t.name}
-                        </span>
-                      ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* 3D Scene */}
+            <Playground3D />
           </div>
         )}
       </div>
