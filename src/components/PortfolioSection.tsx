@@ -302,7 +302,7 @@ function DataAnalystCanvas() {
     // Scatter points
     const scatter = Array.from({ length: 40 }, () => ({
       x: Math.random() * W * 0.6 + W * 0.3,
-      y: Math.random() * H * 0.5 + H * 0.1,
+      y: Math.random() * H * 0.8 + H * 0.1,
       r: Math.random() * 2.5 + 1,
       pulse: Math.random() * Math.PI * 2,
     }));
@@ -326,7 +326,7 @@ function DataAnalystCanvas() {
       // ── Bar chart (left side) ──
       const barW = 16;
       const barGap = 10;
-      const barBaseY = H * 0.85;
+      const barBaseY = H * 0.95;
       bars.forEach((v, i) => {
         const x = 20 + i * (barW + barGap);
         const barH = v * H * 0.55;
@@ -344,7 +344,7 @@ function DataAnalystCanvas() {
       // ── Animated line chart (top right area) ──
       const lineStartX = W * 0.45;
       const lineEndX = W * 0.98;
-      const lineBaseY = H * 0.7;
+      const lineBaseY = H * 0.85;
       ctx.beginPath();
       lineData.forEach((v, i) => {
         const x = lineStartX + (i / (lineData.length - 1)) * (lineEndX - lineStartX);
@@ -416,7 +416,7 @@ function VideoCanvas() {
       ctx.clearRect(0, 0, W, H);
 
       // ── Timeline track (horizontal bar) ──
-      const trackY = H * 0.55;
+      const trackY = H * 0.75;
       const trackH = 28;
       ctx.fillStyle = `rgba(${pRGB}, 0.05)`;
       ctx.fillRect(0, trackY, W, trackH);
@@ -453,7 +453,7 @@ function VideoCanvas() {
       ctx.fill();
 
       // ── Audio waveform ──
-      const waveY = H * 0.75;
+      const waveY = H * 0.90;
       ctx.strokeStyle = `rgba(${pRGB}, 0.3)`;
       ctx.lineWidth = 1;
       ctx.beginPath();
