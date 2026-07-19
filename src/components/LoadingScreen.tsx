@@ -68,18 +68,18 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
             <div className="w-6 h-6 bg-primary/20 shadow-[0_0_15px_rgba(var(--theme-primary),0.5)] rotate-45 backdrop-blur-md" />
           </div>
 
-          <span className="font-mono text-secondary text-[0.65rem] tracking-[0.4em] mb-1 opacity-80">
+          <span className="font-mono text-secondary text-[9px] md:text-[0.65rem] tracking-widest md:tracking-[0.4em] mb-1 opacity-80 text-center">
             [ SECURE CONNECTION ESTABLISHED ]
           </span>
-          <h1 className="text-heading text-4xl md:text-5xl text-white tracking-[0.5em] font-black drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] ml-4">
+          <h1 className="text-heading text-3xl sm:text-4xl md:text-5xl text-white tracking-[0.2em] md:tracking-[0.5em] font-black drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] ml-2 md:ml-4 text-center">
             ANDHIKA
           </h1>
-          <div className="flex items-center gap-4 mt-1 opacity-60">
-            <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-text-dim" />
-            <span className="font-body text-text-muted tracking-[0.3em] text-[10px] font-medium uppercase">
+          <div className="flex items-center gap-2 md:gap-4 mt-1 opacity-60">
+            <div className="h-[1px] w-8 md:w-12 bg-gradient-to-r from-transparent to-text-dim" />
+            <span className="font-body text-text-muted tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[10px] font-medium uppercase whitespace-nowrap">
               PORTFOLIO 2026
             </span>
-            <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-text-dim" />
+            <div className="h-[1px] w-8 md:w-12 bg-gradient-to-l from-transparent to-text-dim" />
           </div>
         </div>
 

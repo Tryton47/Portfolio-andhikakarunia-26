@@ -8,7 +8,7 @@ export default function ThemeSwitcher() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed right-5 top-[72px] z-[200]">
+    <div className="fixed right-4 md:right-5 top-20 md:top-[72px] z-[200]">
       {/* Toggle Button */}
       <button
         onClick={() => setOpen((p) => !p)}
@@ -29,8 +29,12 @@ export default function ThemeSwitcher() {
       {/* Dropdown Panel */}
       {open && (
         <div
-          className="absolute right-0 top-12 w-48 rounded-xl border border-[var(--color-border)] overflow-hidden shadow-2xl"
-          style={{ background: 'rgba(9, 10, 15, 0.92)', backdropFilter: 'blur(20px)' }}
+          className="absolute right-0 top-12 w-48 rounded-xl border border-[var(--color-border)] overflow-hidden shadow-2xl origin-top-right"
+          style={{ 
+            background: 'rgba(9, 10, 15, 0.92)', 
+            backdropFilter: 'blur(20px)',
+            animation: 'fadeIn 0.2s ease-out forwards'
+          }}
         >
           {/* Header */}
           <div className="px-4 py-3 border-b border-[var(--color-border)]">

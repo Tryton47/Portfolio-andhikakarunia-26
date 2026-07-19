@@ -40,11 +40,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${jakarta.variable} ${inter.variable} ${jetbrains.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-charcoal text-text-muted overflow-x-hidden">
+      <html
+        lang="en"
+        className={`${jakarta.variable} ${inter.variable} ${jetbrains.variable} h-full antialiased overflow-x-hidden w-full`}
+      >
+        <body className="min-h-full flex flex-col bg-charcoal text-text-muted overflow-x-hidden w-full">
         <ThemeProvider>
           {/* STICKY GLASSMORPHIC NAVBAR */}
           <header className="fixed top-0 left-0 w-full z-[100] backdrop-blur-xl bg-obsidian/60 border-b border-border/80 transition-all duration-300">
@@ -52,9 +52,10 @@ export default function RootLayout({
               {/* Logo / Name */}
               <a
                 href="#hero"
-                className="text-heading text-sm md:text-base text-text-primary hover:text-primary transition-colors tracking-[0.1em]"
+                className="text-heading text-sm md:text-base text-text-primary hover:text-primary transition-colors tracking-[0.1em] truncate mr-2"
               >
-                Andhika Karunia Rizqi
+                <span className="hidden sm:inline">Andhika Karunia Rizqi</span>
+                <span className="sm:hidden">Andhika K.R.</span>
               </a>
 
               {/* Desktop Nav */}
@@ -75,15 +76,14 @@ export default function RootLayout({
                 ))}
               </nav>
 
-              {/* Mobile Menu Toggle */}
               <button
-                className="md:hidden flex flex-col gap-1.5 group"
+                className="md:hidden flex flex-col gap-1.5 group p-2 -mr-2"
                 aria-label="Menu"
                 id="mobile-menu-toggle"
               >
-                <span className="w-6 h-[1.5px] bg-text-primary transition-all group-hover:bg-primary" />
-                <span className="w-4 h-[1.5px] bg-text-muted group-hover:bg-primary transition-colors" />
-                <span className="w-6 h-[1.5px] bg-text-primary transition-all group-hover:bg-primary" />
+                <span className="w-6 h-[2px] bg-text-primary transition-all group-hover:bg-primary" />
+                <span className="w-4 h-[2px] bg-text-muted group-hover:bg-primary transition-colors" />
+                <span className="w-6 h-[2px] bg-text-primary transition-all group-hover:bg-primary" />
               </button>
             </div>
           </header>
