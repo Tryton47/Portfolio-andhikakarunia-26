@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import ScrollReveal from './Shared/ScrollReveal';
 
 const logLines = [
   '> initializing portfolio_core...',
@@ -186,25 +187,35 @@ export default function ConsoleWidget() {
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-start gap-12 lg:gap-16">
         {/* LEFT: Headline + Badges */}
         <div className="w-full lg:w-[55%] flex flex-col">
-          <p className="text-system text-primary mb-4">Multi-Disciplinary Creator</p>
+          <ScrollReveal variant="fade-right" duration={600}>
+            <p className="text-system text-primary mb-4">Multi-Disciplinary Creator</p>
+          </ScrollReveal>
 
           {/* Fix text overflow — block layout, profession on its own line */}
-          <h2 className="text-heading text-2xl sm:text-3xl md:text-4xl text-text-primary leading-tight mb-4">
-            I am a
-          </h2>
-          <h2 className="text-heading text-2xl sm:text-3xl md:text-4xl text-primary leading-tight mb-4 min-h-[1.4em]">
-            {displayText}
-            <span className="inline-block w-[2px] h-[0.9em] bg-primary ml-1 animate-pulse align-middle" />
-          </h2>
+          <ScrollReveal variant="fade-up" delay={150} duration={600}>
+            <h2 className="text-heading text-2xl sm:text-3xl md:text-4xl text-text-primary leading-tight mb-4">
+              I am a
+            </h2>
+          </ScrollReveal>
 
-          <p className="text-text-body text-sm md:text-base leading-relaxed max-w-lg mb-10">
-            A creative and multidisciplinary digital professional with a passion
-            for transforming ideas into exceptional visual and functional
-            experiences across development, analytics, and design.
-          </p>
+          <ScrollReveal variant="fade-right" delay={300} duration={600}>
+            <h2 className="text-heading text-2xl sm:text-3xl md:text-4xl text-primary leading-tight mb-4 min-h-[1.4em]">
+              {displayText}
+              <span className="inline-block w-[2px] h-[0.9em] bg-primary ml-1 animate-pulse align-middle" />
+            </h2>
+          </ScrollReveal>
+
+          <ScrollReveal variant="fade-up" delay={450} duration={600}>
+            <p className="text-text-body text-sm md:text-base leading-relaxed max-w-lg mb-10">
+              A creative and multidisciplinary digital professional with a passion
+              for transforming ideas into exceptional visual and functional
+              experiences across development, analytics, and design.
+            </p>
+          </ScrollReveal>
 
           {/* Tech Logo Badges */}
-          <div className="flex flex-wrap gap-3">
+          <ScrollReveal variant="fade-up" delay={600} duration={600}>
+            <div className="flex flex-wrap gap-3">
             {techLogos.map((badge, i) => (
               <div
                 key={badge.name}
@@ -223,11 +234,12 @@ export default function ConsoleWidget() {
                 </span>
               </div>
             ))}
-          </div>
+            </div>
+          </ScrollReveal>
         </div>
 
         {/* RIGHT: Terminal Widget */}
-        <div className="w-full lg:w-[45%]">
+        <ScrollReveal variant="slide-left" delay={200} duration={700} className="w-full lg:w-[45%]">
           <div className="glass-panel rounded-lg overflow-hidden border border-border">
             {/* Terminal Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-charcoal">
@@ -280,7 +292,7 @@ export default function ConsoleWidget() {
               <span className="text-system text-secondary text-[10px]">Runtime Active</span>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
