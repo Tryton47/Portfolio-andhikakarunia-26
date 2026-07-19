@@ -1,8 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Send, Link2, Globe, Video, User, ImagePlus } from 'lucide-react';
+import { Link2, Globe, Video, User, ImagePlus } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import ScrollReveal from '@/components/Shared/ScrollReveal';
+
+const SmartContactForm = dynamic(() => import('./Contact/SmartContactForm'), { ssr: false });
 
 /* ─── CONTACT & COMMENTS SECTION ─── */
 export default function ContactSection() {
@@ -117,80 +120,13 @@ export default function ContactSection() {
         </ScrollReveal>
 
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* ═══ LEFT: Contact Form ═══ */}
-          <ScrollReveal variant="slide-left" duration={850} delay={100} className="w-full lg:w-1/2 flex flex-col gap-8">
-            <form onSubmit={handleContactSubmit} className="flex flex-col gap-5">
-              {/* Name */}
-              <div className="flex flex-col gap-1.5">
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => {
-                    setFormData({ ...formData, name: e.target.value });
-                    if (errors.name) setErrors({ ...errors, name: '' });
-                  }}
-                  className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors ${
-                    errors.name ? 'border-primary' : 'border-border focus:border-primary/50'
-                  }`}
-                  placeholder="Nama Anda"
-                />
-                {errors.name && (
-                  <span className="text-primary text-xs">{errors.name}</span>
-                )}
-              </div>
-
-              {/* Email */}
-              <div className="flex flex-col gap-1.5">
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => {
-                    setFormData({ ...formData, email: e.target.value });
-                    if (errors.email) setErrors({ ...errors, email: '' });
-                  }}
-                  className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors ${
-                    errors.email ? 'border-primary' : 'border-border focus:border-primary/50'
-                  }`}
-                  placeholder="Email Anda"
-                />
-                {errors.email && (
-                  <span className="text-primary text-xs">{errors.email}</span>
-                )}
-              </div>
-
-              {/* Message */}
-              <div className="flex flex-col gap-1.5">
-                <textarea
-                  rows={4}
-                  value={formData.message}
-                  onChange={(e) => {
-                    setFormData({ ...formData, message: e.target.value });
-                    if (errors.message) setErrors({ ...errors, message: '' });
-                  }}
-                  className={`w-full bg-charcoal border rounded-lg p-3.5 text-sm text-text-primary focus:outline-none transition-colors resize-none ${
-                    errors.message ? 'border-primary' : 'border-border focus:border-primary/50'
-                  }`}
-                  placeholder="Tulis pesan Anda disini..."
-                />
-                {errors.message && (
-                  <span className="text-primary text-xs">{errors.message}</span>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3.5 text-white text-system rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
-                style={{ background: `linear-gradient(135deg, var(--theme-grad1), var(--theme-grad2))`, boxShadow: '0 0 20px rgba(var(--theme-primary), 0.25)' }}
-              >
-                <Send size={14} /> Kirim Pesan
-              </button>
-
-              {submitStatus === 'success' && (
-                <p className="text-secondary text-xs text-center">
-                  ✓ Pesan berhasil terkirim!
-                </p>
-              )}
-            </form>
+          {/* LEFT: Smart Contact Form + Social Links */}
+          <ScrollReveal variant="slide-left" duration={850} delay={100} className="w-full lg:w-1/2 flex flex-col gap-6">
+            <div>
+              <p className="text-system text-primary mb-1">Send a Message</p>
+              <p className="text-text-muted text-xs">Chat-style guided form — takes less than a minute.</p>
+            </div>
+            <SmartContactForm />
 
             {/* Social Links */}
             <div>

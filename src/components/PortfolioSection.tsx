@@ -125,7 +125,8 @@ const projects = [
 ];
 
   // orientation: 'landscape' (tidur) | 'portrait' (berdiri)
-  { title: 'Google Data Analytics Certificate',   issuer: 'Google / Coursera',     date: '2023', file: '/E-Sertif/Coursera_Data_Analyst.pdf',  orientation: 'landscape', desc: 'Program sertifikasi resmi Google Data Analytics yang mencakup pembersihan, analisis, dan visualisasi data menggunakan SQL, R, dan Tableau.' },
+const certificates = [
+  { title: 'Google Data Analytics Certificate',   issuer: 'Google / Coursera',      date: '2023', file: '/E-Sertif/Coursera_Data_Analyst.pdf',  orientation: 'landscape', desc: 'Program sertifikasi resmi Google Data Analytics yang mencakup pembersihan, analisis, dan visualisasi data menggunakan SQL, R, dan Tableau.' },
   { title: 'Data Analyst Batch 6',                issuer: 'Karirnex',               date: '2023', file: '/E-Sertif/Karirnex_Data_Analyst.pdf', orientation: 'landscape', desc: 'Program intensif penguasaan analisis data end-to-end: Python, SQL, Power BI, dan machine learning dasar.' },
   { title: 'Microsoft Excel Expert — Batch 8',    issuer: 'Karirnex',               date: '2023', file: '/E-Sertif/Excel_Batch_8.pdf',          orientation: 'landscape', desc: 'Sertifikasi keahlian Microsoft Excel tingkat mahir mencakup pivot, VLOOKUP, macro, dan dashboard interaktif.' },
   { title: 'Rekomendasi Keahlian Excel',           issuer: 'Karirnex',               date: '2023', file: '/E-Sertif/Karirnex_Excel.pdf',         orientation: 'landscape', desc: 'Surat rekomendasi resmi yang menyatakan keahlian Excel tingkat lanjut, diakui oleh Karirnex untuk keperluan profesional.' },
