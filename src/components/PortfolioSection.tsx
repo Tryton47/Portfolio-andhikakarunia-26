@@ -779,7 +779,7 @@ export default function PortfolioSection() {
                 key={tab}
                 isActive={rootTab === tab}
                 onClick={() => setRootTab(tab)}
-                className="px-8 py-3.5 font-bold tracking-wide text-sm"
+                className="px-4 md:px-8 py-2 md:py-3.5 font-bold tracking-wide text-xs md:text-sm"
               >
                 {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </GlassButton>
@@ -797,7 +797,7 @@ export default function PortfolioSection() {
                   key={cat}
                   isActive={subFilter === cat}
                   onClick={() => { setSubFilter(cat); setShowMore(false); }}
-                  className="px-6 py-2.5 text-xs font-bold tracking-widest whitespace-nowrap"
+                  className="px-3 md:px-6 py-2 md:py-2.5 text-[10px] md:text-xs font-bold tracking-widest whitespace-nowrap"
                 >
                   {cat.toUpperCase()}
                 </GlassButton>

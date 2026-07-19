@@ -68,9 +68,9 @@ export default function HeroSection() {
   }, [handleMouseMove]);
 
   return (
-    <section id="hero" ref={sectionRef} className="relative min-h-screen w-full flex flex-col justify-between overflow-hidden bg-grid">
+    <section id="hero" ref={sectionRef} className="relative min-h-[100dvh] w-full flex flex-col justify-between overflow-hidden bg-grid">
       {/* TOP HUD STATUS */}
-      <ScrollReveal variant="fade-down" duration={600} delay={300} className="relative z-10 flex justify-between items-start px-6 md:px-12 pt-24 md:pt-28">
+      <ScrollReveal variant="fade-down" duration={600} delay={300} className="relative z-10 flex justify-between items-start px-6 md:px-12 pt-20 md:pt-28">
         <div className="flex flex-col gap-1">
           <span className="text-system text-primary">System Ready</span>
           <span className="text-system text-text-dim">Portfolio 2026</span>
@@ -86,14 +86,14 @@ export default function HeroSection() {
       </ScrollReveal>
 
       {/* MAIN HERO CONTENT */}
-      <div className="relative z-10 flex-grow flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-12 md:py-0 gap-12">
+      <div className="relative z-10 flex-grow flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-12 md:py-0 gap-6 md:gap-12">
         {/* Left: Text */}
         <div
           className="w-full md:w-[55%] flex flex-col"
           style={{ transform: `translate(${mousePos.x * -8}px, ${mousePos.y * -5}px)`, transition: 'transform 0.3s ease-out' }}
         >
           <ScrollReveal variant="fade-left" duration={800} delay={100}>
-            <h1 className="text-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-6 uppercase">
+            <h1 className="text-heading text-[2.2rem] sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-4 md:mb-6 uppercase">
               Building Modern Digital Experiences through Data, Code, and Visual Design.
             </h1>
           </ScrollReveal>
@@ -140,11 +140,11 @@ export default function HeroSection() {
 
         {/* Right: 3D Robot Scene */}
         <div
-          className="w-full md:w-[40%] flex flex-col items-center gap-6"
+          className="w-full md:w-[40%] flex flex-col items-center gap-4 md:gap-6"
           style={{ transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 8}px)`, transition: 'transform 0.3s ease-out' }}
         >
           {/* Container size optimized for Chibi Mecha - taller to prevent clipping */}
-          <div className="w-full max-w-[400px] h-[550px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
+          <div className="w-full max-w-[400px] h-[350px] md:h-[550px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
             <RobotScene />
           </div>
           <div className="flex justify-around w-full max-w-[400px] mt-2 border-t border-border/30 pt-4">
