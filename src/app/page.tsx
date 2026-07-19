@@ -15,8 +15,10 @@ export default function Home() {
     <>
       <LoadingScreen onDone={() => setLoaded(true)} />
       <div
-        className={`transition-opacity duration-700 ${
-          loaded ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        className={`transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          loaded 
+            ? 'opacity-100 translate-y-0 scale-100 blur-0' 
+            : 'opacity-0 translate-y-12 scale-[0.98] blur-sm pointer-events-none'
         }`}
       >
         <HeroSection />

@@ -156,13 +156,13 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   const target = new THREE.Vector3();
   const [hovered, setHovered] = useState(false);
   const [phase, setPhase] = useState<RobotPhase>("running");
-  const [phaseTimer, setPhaseTimer] = useState(0);
+  const phaseTimer = useRef(0);
 
   const triggerWarning = () => {
     onClick();
     setPhase("warning");
     // Bikin marahnya 6 detik lalu normal
-    setPhaseTimer(6.0);
+    phaseTimer.current = 6.0;
   };
 
   useCursor(hovered, "pointer", "auto");
@@ -170,14 +170,14 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
 
-    if (phaseTimer > 0) {
-      setPhaseTimer((prev) => prev - delta);
+    if (phaseTimer.current > 0) {
+      phaseTimer.current -= delta;
     } else if (phase === "warning") {
       setPhase("running");
     }
 
     // Derived state
-    const isWarning = phase === "warning" || phaseTimer > 0;
+    const isWarning = phase === "warning" || phaseTimer.current > 0;
     const isParsing = phase === "parsing";
     const isRunning = phase === "running";
     const isResults = phase === "results";
@@ -524,7 +524,11 @@ export default function RobotScene() {
       const root = document.documentElement;
       const primary = getComputedStyle(root).getPropertyValue("--theme-primary-hex").trim() || "#6366F1";
       const secondary = getComputedStyle(root).getPropertyValue("--theme-secondary-hex").trim() || "#06B6D4";
-      setColors({ primary, secondary });
+      setColors((prev) => 
+        prev.primary === primary && prev.secondary === secondary
+          ? prev
+          : { primary, secondary }
+      );
     };
 
     updateColors();
