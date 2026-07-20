@@ -63,8 +63,12 @@ export default function ToolTooltip({ tool, onClose }) {
       >×</button>
 
       {/* Icon */}
-      <div style={{ fontSize: '36px', marginBottom: '12px', lineHeight: 1 }}>
-        {tool.icon}
+      <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        <img 
+          src={tool.slug ? `https://cdn.simpleicons.org/${tool.slug}/${colors.primary.replace('#', '')}` : `https://cdn.simpleicons.org/react/${colors.primary.replace('#', '')}`}
+          alt={tool.name}
+          style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+        />
       </div>
 
       {/* Name */}

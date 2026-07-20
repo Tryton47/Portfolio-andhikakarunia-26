@@ -2,7 +2,7 @@
 
 import { useRef, useState, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { RoundedBox, Text, Icosahedron, Cylinder, Torus, Octahedron, Sphere } from '@react-three/drei';
+import { RoundedBox, Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 const CATEGORY_COLORS = {
@@ -101,52 +101,6 @@ export default function ToolCube({ tool, index, total, onSelect }) {
     onSelect(active ? null : tool);
   };
 
-  // Define different 3D shapes for each category
-  const renderShape = () => {
-    const materialProps = {
-      color: color,
-      emissive: color,
-      emissiveIntensity: hovered || active ? 1.2 : 0.25, // Stronger glow when active
-      metalness: 0.5,
-      roughness: 0.35,
-      envMapIntensity: 1.2
-    };
-
-    switch (tool.category) {
-      case 'Data':
-        return (
-          <Icosahedron args={[0.7, 0]} smoothness={4}>
-            <meshStandardMaterial {...materialProps} />
-          </Icosahedron>
-        );
-      case 'Dev':
-        // A hexagon-like cylinder (coin)
-        return (
-          <Cylinder args={[0.7, 0.7, 0.4, 6]} rotation={[Math.PI / 2, 0, 0]}>
-            <meshStandardMaterial {...materialProps} />
-          </Cylinder>
-        );
-      case 'Design':
-        return (
-          <Torus args={[0.55, 0.2, 16, 32]}>
-            <meshStandardMaterial {...materialProps} />
-          </Torus>
-        );
-      case 'Video':
-        return (
-          <Octahedron args={[0.75, 0]}>
-            <meshStandardMaterial {...materialProps} />
-          </Octahedron>
-        );
-      default:
-        return (
-          <Sphere args={[0.7, 32, 32]}>
-            <meshStandardMaterial {...materialProps} />
-          </Sphere>
-        );
-    }
-  };
-
   return (
     <group
       ref={groupRef}
@@ -158,18 +112,43 @@ export default function ToolCube({ tool, index, total, onSelect }) {
       onPointerOver={(e) => { e.stopPropagation(); setHovered(true);  document.body.style.cursor = 'grab'; }}
       onPointerOut={()  => { setHovered(false); document.body.style.cursor = 'default'; }}
     >
-      {renderShape()}
+      {/* Keycap Base */}
+      <RoundedBox args={[1.2, 0.7, 1.2]} radius={0.15} smoothness={4}>
+        <meshStandardMaterial
+          color="#1E293B" // Dark sleek keycap
+          emissive={color}
+          emissiveIntensity={hovered || active ? 0.6 : 0.05} // Subtle edge glow, intense on hover
+          metalness={0.6}
+          roughness={0.2}
+          envMapIntensity={1.2}
+        />
+      </RoundedBox>
 
-      {/* Emoji icon protruding slightly */}
-      <Text
-        position={[0, 0.06, 0.58]}
-        fontSize={0.38}
-        anchorX="center"
-        anchorY="middle"
-        renderOrder={1}
+      {/* SVG Logo projected onto the top face using Html transform */}
+      <Html
+        transform
+        position={[0, 0.36, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        occlude="blending"
+        style={{
+          width: '45px',
+          height: '45px',
+          pointerEvents: 'none',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          opacity: hovered || active ? 1 : 0.85,
+          filter: (hovered || active) ? `drop-shadow(0 0 10px ${color})` : 'none',
+          transition: 'all 0.3s'
+        }}
       >
-        {tool.icon}
-      </Text>
+        <img 
+          src={tool.slug ? `https://cdn.simpleicons.org/${tool.slug}/${color.replace('#', '')}` : `https://cdn.simpleicons.org/react/${color.replace('#', '')}`} 
+          alt={tool.name}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+        />
+      </Html>
+
 
       {/* Name label below cube when hovered */}
       {hovered && (
