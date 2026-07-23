@@ -100,7 +100,6 @@ function Scene({ logos, color, category, isAllView, hoveredId, setHoveredId, sel
 
   const arrangement = getArrangement(category);
 
-  // Generate safe floating offsets
   const floatOffsets = useMemo(() => {
     return logos.map((_, i) => ({
       x: Math.sin(i * 1.3) * 2.5,
@@ -116,7 +115,6 @@ function Scene({ logos, color, category, isAllView, hoveredId, setHoveredId, sel
     <>
       <Lighting color={color} />
       <GroundShadow />
-
       <ConnectionLines activeLogo={activeLogo} positions={positionsRef} color={color} />
 
       {logos.map((logo, idx) => {

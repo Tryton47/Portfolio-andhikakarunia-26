@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import { RoundedBox, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Icon mapping - using simpleicons
+// Icon mapping
 const ICON_MAP = {
   python: 'python', javascript: 'javascript', typescript: 'typescript',
   react: 'react', nextjs: 'nextdotjs', nodejs: 'nodedotjs', php: 'php',
@@ -73,7 +73,7 @@ function NameTooltip({ name, color, visible }) {
   );
 }
 
-// ─── ICON ──────────────────────────────────────────────────────
+// ─── ICON ────────────────────────────────────────────────────────
 function Icon({ logo, color, highlighted }) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -148,7 +148,7 @@ function GlowRing({ color, visible }) {
   );
 }
 
-// ─── CUBE ────────────────────────────────────────────────────
+// ─── CUBE ───────────────────────────────────────────────────
 function Cube({ logo, color, isHovered, isSelected, isDimmed, onHover, onClick, onPositionUpdate }) {
   const groupRef = useRef();
   const scaleRef = useRef(1);
@@ -180,7 +180,6 @@ function Cube({ logo, color, isHovered, isSelected, isDimmed, onHover, onClick, 
       onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; onHover && onHover(true); }}
       onPointerOut={() => { document.body.style.cursor = 'auto'; onHover && onHover(false); }}
     >
-      {/* Main cube */}
       <RoundedBox args={[2.2, 2.2, 0.22]} radius={0.22} smoothness={12}>
         <meshPhysicalMaterial
           color={isHovered || isSelected ? '#1a2545' : '#0c1220'}
@@ -194,7 +193,6 @@ function Cube({ logo, color, isHovered, isSelected, isDimmed, onHover, onClick, 
         />
       </RoundedBox>
 
-      {/* Border glow */}
       <RoundedBox args={[2.32, 2.32, 0.12]} radius={0.24} smoothness={12}>
         <meshBasicMaterial
           color={glColor}
@@ -204,19 +202,14 @@ function Cube({ logo, color, isHovered, isSelected, isDimmed, onHover, onClick, 
         />
       </RoundedBox>
 
-      {/* Icon */}
       <Icon logo={logo} color={color} highlighted={isHovered || isSelected} />
-
-      {/* Glow ring */}
       <GlowRing color={color} visible={isHovered || isSelected} />
-
-      {/* Name tooltip */}
       <NameTooltip name={logo.name} color={color} visible={isHovered || isSelected} />
     </group>
   );
 }
 
-// ─── MAIN ─────────────────────────────────────────────────────
+// ─── MAIN ────────────────────────────────────────────────────
 export default function Logo3DModel({
   logo,
   basePosition,
@@ -238,7 +231,6 @@ export default function Logo3DModel({
     const speed = Math.min(delta * 3, 1);
 
     if (floatOffset && isAllView) {
-      // Natural floating animation - no collision
       const t = clock.getElapsedTime();
       const offsetX = Math.sin(t * floatOffset.speed + floatOffset.phaseX) * floatOffset.x;
       const offsetY = Math.cos(t * floatOffset.speed * 0.8 + floatOffset.phaseY) * floatOffset.y;
