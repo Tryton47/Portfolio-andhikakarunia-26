@@ -972,7 +972,10 @@ export default function PortfolioSection() {
 
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
-          <div className="relative w-full h-[85vh] bg-[#020408]">
+          <div className="relative w-full h-[85vh]" style={{ background: 'linear-gradient(180deg, #0a1628 0%, #0f172a 50%, #1e293b 100%)' }}>
+            {/* Blue tint overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-blue-900/10 via-transparent to-indigo-900/20 pointer-events-none" />
+
             {/* Category filter */}
             <div className="absolute top-6 left-0 right-0 z-20 flex justify-center">
               <CategoryFilter />

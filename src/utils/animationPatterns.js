@@ -1,7 +1,7 @@
 import { CATEGORIES } from '../config/categories';
 
-// Clean grid layout
-function grid(i, total, cols = 4, spacing = 4.5) {
+// Grid layout for category views (no floating)
+function grid(i, total, cols = 4, spacing = 5) {
   const col = i % cols;
   const row = Math.floor(i / cols);
   const actualCols = Math.min(cols, total);
@@ -9,22 +9,34 @@ function grid(i, total, cols = 4, spacing = 4.5) {
   return [col * spacing - offsetX, -row * spacing, 0];
 }
 
-// Constellation for all view
+// Constellation layout for "all" view - evenly distributed sphere
 function constellation(i, total) {
-  const angle = (i / Math.max(total - 1, 1)) * Math.PI * 2;
-  const radius = 10 + (i / Math.max(total - 1, 1)) * 18;
-  const y = Math.sin(i * 0.8) * 3;
-  return [Math.cos(angle) * radius, y, Math.sin(angle) * radius];
+  if (total === 0) return [0, 0, 0];
+
+  // Golden angle for even distribution
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  const t = i / Math.max(total - 1, 1);
+  const angle = i * goldenAngle;
+
+  // Fibonacci sphere distribution
+  const radius = 14 + (i / Math.max(total - 1, 1)) * 16;
+  const y = (i - (total - 1) / 2) * 1.5; // Vertical spread
+
+  return [
+    Math.cos(angle) * radius,
+    y,
+    Math.sin(angle) * radius,
+  ];
 }
 
 export const ARRANGEMENTS = {
-  // Category grids
-  [CATEGORIES.FULLSTACK]: (i, t) => grid(i, t, 4, 4.8),
-  [CATEGORIES.DATA]: (i, t) => grid(i, t, 4, 4.5),
-  [CATEGORIES.DESIGN]: (i, t) => grid(i, t, 3, 5.5),
-  [CATEGORIES.VIDEO]: (i, t) => grid(i, t, 3, 5.5),
+  // Category grids (static, no floating)
+  [CATEGORIES.FULLSTACK]: (i, t) => grid(i, t, 4, 5),
+  [CATEGORIES.DATA]: (i, t) => grid(i, t, 4, 5),
+  [CATEGORIES.DESIGN]: (i, t) => grid(i, t, 3, 6),
+  [CATEGORIES.VIDEO]: (i, t) => grid(i, t, 3, 6),
 
-  // All view - constellation
+  // All view - sphere constellation
   all: constellation,
 };
 
