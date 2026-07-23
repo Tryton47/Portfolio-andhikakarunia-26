@@ -974,30 +974,20 @@ export default function PortfolioSection() {
 
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
-          <div className="relative w-full h-[90vh] bg-[#010203] overflow-hidden">
-            {/* Dark gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#010203] via-[#020408] to-[#010305] pointer-events-none z-0" />
-
-            {/* Category Navigation overlayed at the top */}
-            <div className="absolute top-8 left-0 w-full z-30 flex flex-col items-center justify-center pointer-events-none">
-              <div className="pointer-events-auto">
-                <CategoryFilter />
-              </div>
+          <div className="relative w-full h-[85vh] bg-[#010204]">
+            {/* Category filter */}
+            <div className="absolute top-6 left-0 right-0 z-20 flex justify-center">
+              <CategoryFilter />
             </div>
 
-            {/* 3D Canvas Scene */}
+            {/* 3D Canvas */}
             <div className="absolute inset-0 z-10">
               <Logo3DCanvas />
             </div>
 
-            {/* InfoPanel positioned absolutely on the right */}
-            <div className="absolute top-0 right-10 bottom-0 flex items-center pointer-events-none z-40">
+            {/* Info Panel */}
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 z-30">
               <InfoPanel />
-            </div>
-
-            {/* Keyboard Helper positioned bottom left */}
-            <div className="absolute bottom-8 left-8 z-30 pointer-events-none opacity-50">
-              <KeyboardHelper />
             </div>
           </div>
         )}
