@@ -24,7 +24,7 @@ function Lighting({ color }) {
 }
 
 // ─── GROUND SHADOW ──────────────────────────────────────────────────
-function GroundShadow({ color }) {
+function GroundShadow() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -15, 0]}>
       <planeGeometry args={[100, 100]} />
@@ -100,7 +100,7 @@ function Scene({ logos, color, category, isAllView, hoveredId, setHoveredId, sel
 
   const arrangement = getArrangement(category);
 
-  // Generate safe floating offsets (no collision)
+  // Generate safe floating offsets
   const floatOffsets = useMemo(() => {
     return logos.map((_, i) => ({
       x: Math.sin(i * 1.3) * 2.5,
@@ -115,12 +115,10 @@ function Scene({ logos, color, category, isAllView, hoveredId, setHoveredId, sel
   return (
     <>
       <Lighting color={color} />
-      <GroundShadow color={color} />
+      <GroundShadow />
 
-      {/* Connection lines when hovering */}
       <ConnectionLines activeLogo={activeLogo} positions={positionsRef} color={color} />
 
-      {/* Logo cubes */}
       {logos.map((logo, idx) => {
         const basePos = arrangement(idx, logos.length);
         const float = isAllView ? floatOffsets[idx] : null;

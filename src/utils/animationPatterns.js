@@ -19,8 +19,8 @@ function constellation(i, total) {
   const angle = i * goldenAngle;
 
   // Fibonacci sphere distribution
-  const radius = 14 + (i / Math.max(total - 1, 1)) * 16;
-  const y = (i - (total - 1) / 2) * 1.5; // Vertical spread
+  const radius = 14 + t * 16;
+  const y = (i - (total - 1) / 2) * 1.5;
 
   return [
     Math.cos(angle) * radius,

@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import { RoundedBox, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Icon mapping
+// Icon mapping - using simpleicons
 const ICON_MAP = {
   python: 'python', javascript: 'javascript', typescript: 'typescript',
   react: 'react', nextjs: 'nextdotjs', nodejs: 'nodedotjs', php: 'php',
@@ -96,7 +96,7 @@ function Icon({ logo, color, highlighted }) {
           transition: 'filter 0.3s ease',
         }}
       >
-        {!failed ? (
+        {!failed && (
           <img
             key={logo.id}
             src={getIconUrl(logo.id)}
@@ -111,9 +111,10 @@ function Icon({ logo, color, highlighted }) {
             onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
           />
-        ) : (
+        )}
+        {failed && (
           <span style={{ fontSize: 45 }}>
-            {logo.name?.[0] || '?'}
+            {logo.name && logo.name[0] ? logo.name[0] : '?'}
           </span>
         )}
       </div>
@@ -175,9 +176,9 @@ function Cube({ logo, color, isHovered, isSelected, isDimmed, onHover, onClick, 
   return (
     <group
       ref={groupRef}
-      onClick={(e) => { e.stopPropagation(); onClick?.(); }}
-      onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; onHover?.(true); }}
-      onPointerOut={() => { document.body.style.cursor = 'auto'; onHover?.(false); }}
+      onClick={(e) => { e.stopPropagation(); onClick && onClick(); }}
+      onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; onHover && onHover(true); }}
+      onPointerOut={() => { document.body.style.cursor = 'auto'; onHover && onHover(false); }}
     >
       {/* Main cube */}
       <RoundedBox args={[2.2, 2.2, 0.22]} radius={0.22} smoothness={12}>
