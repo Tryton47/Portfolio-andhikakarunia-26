@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useMemo, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Stars, PointMaterial } from '@react-three/drei';
+import { QuadraticBezierLine } from '@react-three/drei';
 import * as THREE from 'three';
 import Logo3DModel from './Logo3DModel';
 import { LOGOS_DATA } from '../../config/logoData';
@@ -11,80 +11,175 @@ import { CATEGORIES } from '../../config/categories';
 import { useLogoState } from '../../hooks/useLogoState';
 import { getArrangement } from '../../utils/animationPatterns';
 
-// ─── PARTICLES ─────────────────────────────────────────────────────────
-function Particles() {
+// ─── FLOATING POSITION ─────────────────────────────────────────────────
+function FloatingPosition({ index, isAllView }) {
   const ref = useRef();
-  const count = 50;
-
-  const positions = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 50;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
-  }
 
   useFrame(({ clock }) => {
-    if (ref.current) ref.current.rotation.y = clock.getElapsedTime() * 0.02;
+    if (!ref.current || !isAllView) return;
+    const t = clock.getElapsedTime();
+    const speed = 0.3 + (index % 5) * 0.1;
+    const offset = index * 0.8;
+    ref.current.x = Math.sin(t * speed + offset) * 2;
+    ref.current.y = Math.cos(t * speed * 0.7 + offset) * 1.5;
+  });
+
+  return ref;
+}
+
+// ─── CONNECTION LINES ──────────────────────────────────────────────────
+function ConnectionLines({ activeLogo, positions, color }) {
+  const linesData = useRef([]);
+
+  useFrame(() => {
+    if (!activeLogo?.related?.length) {
+      linesData.current = [];
+      return;
+    }
+
+    const newLines = [];
+    activeLogo.related.forEach((relName) => {
+      const relPos = positions.current[relName];
+      const actPos = positions.current[activeLogo.id];
+      if (relPos && actPos) {
+        const mid = new THREE.Vector3().addVectors(actPos, relPos).multiplyScalar(0.5);
+        mid.y += 1.5;
+        newLines.push({
+          id: `${activeLogo.id}-${relName}`,
+          start: actPos.clone(),
+          end: relPos.clone(),
+          mid,
+        });
+      }
+    });
+    linesData.current = newLines;
   });
 
   return (
-    <points ref={ref} positions={positions} stride={3}>
-      <PointMaterial color="#6366F1" size={0.05} transparent opacity={0.4} />
-    </points>
+    <group>
+      {linesData.current.map((line) => (
+        <QuadraticBezierLine
+          key={line.id}
+          start={line.start}
+          end={line.end}
+          mid={line.mid}
+          color={color}
+          lineWidth={2}
+          transparent
+          opacity={0.5}
+        />
+      ))}
+    </group>
   );
 }
 
-// ─── LIGHTING ──────────────────────────────────────────────────────────
+// ─── SHADOW PLANE ───────────────────────────────────────────────────
+function ShadowPlane({ hoveredPos, color }) {
+  const meshRef = useRef();
+  const opacityRef = useRef(0);
+  const scaleRef = useRef(0);
+
+  useFrame((_, delta) => {
+    if (hoveredPos) {
+      opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, 0.3, delta * 5);
+      scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, 1, delta * 5);
+    } else {
+      opacityRef.current = THREE.MathUtils.lerp(opacityRef.current, 0, delta * 5);
+      scaleRef.current = THREE.MathUtils.lerp(scaleRef.current, 0, delta * 5);
+    }
+
+    if (meshRef.current) {
+      meshRef.current.material.opacity = opacityRef.current;
+      meshRef.current.scale.x = scaleRef.current * 3;
+      meshRef.current.scale.z = scaleRef.current * 3;
+      if (hoveredPos) {
+        meshRef.current.position.x = hoveredPos.x;
+        meshRef.current.position.z = hoveredPos.z;
+      }
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -12, 0]}>
+      <circleGeometry args={[1, 32]} />
+      <meshBasicMaterial color={color} transparent opacity={0} />
+    </mesh>
+  );
+}
+
+// ─── LIGHTING ────────────────────────────────────────────────────────
 function Lighting({ color }) {
   return (
     <>
       <ambientLight intensity={0.8} />
-      <directionalLight position={[20, 20, 20]} intensity={1} color="#ffffff" />
-      <pointLight position={[0, 10, 15]} intensity={0.5} color={color} />
-      <pointLight position={[-10, -5, 10]} intensity={0.3} color="#6366F1" />
+      <directionalLight position={[20, 25, 20]} intensity={1} />
+      <directionalLight position={[-15, 10, -10]} intensity={0.4} color={color} />
+      <pointLight position={[0, 10, 15]} intensity={0.4} color={color} />
     </>
   );
 }
 
-// ─── SCENE ────────────────────────────────────────────────────────────
-function Scene({ logos, color, category, hoveredId, setHoveredId, selectLogo }) {
+// ─── SCENE ──────────────────────────────────────────────────────────
+function Scene({ logos, color, category, isAllView, hoveredId, setHoveredId, selectLogo, positionsRef, setHoveredPos }) {
   const { selectedLogoId } = useLogoState();
-  const positionsRef = useRef({});
 
-  const handleHover = (id, isHovered) => {
-    if (isHovered) setHoveredId(id);
-    else if (hoveredId === id) setHoveredId(null);
-  };
+  const handleHover = useCallback((id, isHovered, pos) => {
+    if (isHovered) {
+      setHoveredId(id);
+      setHoveredPos(pos);
+    } else if (hoveredId === id) {
+      setHoveredId(null);
+      setHoveredPos(null);
+    }
+  }, [hoveredId, setHoveredId, setHoveredPos]);
 
-  const activeLogo = logos.find(l => l.id === (selectedLogoId || hoveredId));
+  const activeLogo = useMemo(() => {
+    return logos.find(l => l.id === (hoveredId || selectedLogoId));
+  }, [hoveredId, selectedLogoId, logos]);
 
-  const dimmedIds = (() => {
+  const dimmedIds = useMemo(() => {
     if (!activeLogo) return [];
     const related = activeLogo.related || [];
     return logos.map(l => l.id).filter(id => id !== activeLogo.id && !related.includes(id));
-  })();
+  }, [activeLogo, logos]);
 
   const arrangement = getArrangement(category);
 
+  // Floating offsets for "all" view
+  const floatOffsets = useMemo(() => {
+    return logos.map((_, i) => ({
+      x: Math.sin(i * 0.7) * 1.5,
+      y: Math.cos(i * 0.5) * 1,
+      phase: i * 0.5,
+    }));
+  }, [logos.length]);
+
   return (
     <>
-      <fog attach="fog" args={['#010204', 20, 60]} />
       <Lighting color={color} />
-      <Stars radius={80} depth={40} count={1500} factor={3} fade speed={0.3} />
-      <Particles />
 
+      {/* Shadow underneath */}
+      <ShadowPlane hoveredPos={positionsRef.hoveredPos} color={color} />
+
+      {/* Connection lines */}
+      <ConnectionLines activeLogo={activeLogo} positions={positionsRef} color={color} />
+
+      {/* Logo cubes */}
       {logos.map((logo, idx) => {
-        const pos = arrangement(idx, logos.length);
+        const basePos = arrangement(idx, logos.length);
+        const float = floatOffsets[idx];
+
         return (
           <Logo3DModel
             key={`${category}-${logo.id}`}
             logo={logo}
             index={idx}
-            position={pos}
+            basePosition={basePos}
+            floatOffset={isAllView ? float : null}
             color={logo.color || color}
             onClick={selectLogo}
             onHover={handleHover}
-            onPositionUpdate={(p) => { positionsRef.current[logo.id] = p; }}
+            onPositionUpdate={(pos) => { positionsRef.current[logo.id] = pos; }}
             dimmedIds={dimmedIds}
             isHovered={hoveredId === logo.id}
             isSelected={selectedLogoId === logo.id}
@@ -95,11 +190,14 @@ function Scene({ logos, color, category, hoveredId, setHoveredId, selectLogo }) 
   );
 }
 
-// ─── MAIN CANVAS ────────────────────────────────────────────────────────
+// ─── MAIN CANVAS ────────────────────────────────────────────────────
 export default function Logo3DCanvas() {
   const activeCategory = useLogoState((s) => s.activeCategory);
   const selectLogo = useLogoState((s) => s.selectLogo);
   const [hoveredId, setHoveredId] = useState(null);
+  const [hoveredPos, setHoveredPos] = useState(null);
+  const positionsRef = useRef({ hoveredPos: null });
+  positionsRef.current.hoveredPos = hoveredPos;
 
   const isAllView = !activeCategory;
   const logos = isAllView ? Object.values(LOGOS_DATA).flat() : (LOGOS_DATA[activeCategory] || []);
@@ -110,9 +208,9 @@ export default function Logo3DCanvas() {
 
   const cameraPos = isAllView
     ? [0, 0, 50]
-    : activeCategory === CATEGORIES.FULLSTACK ? [0, -12, 38]
-    : activeCategory === CATEGORIES.DATA ? [0, -10, 34]
-    : [0, -8, 32];
+    : activeCategory === CATEGORIES.FULLSTACK ? [0, -10, 38]
+    : activeCategory === CATEGORIES.DATA ? [0, -8, 34]
+    : [0, -6, 32];
 
   const categoryKey = isAllView ? 'all' : activeCategory;
 
@@ -127,9 +225,12 @@ export default function Logo3DCanvas() {
         logos={logos}
         color={color}
         category={categoryKey}
+        isAllView={isAllView}
         hoveredId={hoveredId}
         setHoveredId={setHoveredId}
         selectLogo={selectLogo}
+        positionsRef={positionsRef}
+        setHoveredPos={setHoveredPos}
       />
     </Canvas>
   );

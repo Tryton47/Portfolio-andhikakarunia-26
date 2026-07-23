@@ -24,8 +24,6 @@ const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
 });
 
 const CategoryFilter = dynamic(() => import('./Logo3D/CategoryFilter'), { ssr: false });
-const InfoPanel      = dynamic(() => import('./Logo3D/InfoPanel'),       { ssr: false });
-const KeyboardHelper = dynamic(() => import('./Logo3D/KeyboardHelper'),  { ssr: false });
 
 
 /* ─── DATA ─── */
@@ -974,21 +972,14 @@ export default function PortfolioSection() {
 
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
-          <div className="relative w-full h-[85vh] bg-[#010204]">
+          <div className="relative w-full h-[85vh] bg-[#020408]">
             {/* Category filter */}
             <div className="absolute top-6 left-0 right-0 z-20 flex justify-center">
               <CategoryFilter />
             </div>
 
             {/* 3D Canvas */}
-            <div className="absolute inset-0 z-10">
-              <Logo3DCanvas />
-            </div>
-
-            {/* Info Panel */}
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 z-30">
-              <InfoPanel />
-            </div>
+            <Logo3DCanvas />
           </div>
         )}
       </div>

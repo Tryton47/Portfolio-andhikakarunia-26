@@ -1,7 +1,7 @@
 import { CATEGORIES } from '../config/categories';
 
 // Clean grid layout
-function grid(i, total, cols = 4, spacing = 4) {
+function grid(i, total, cols = 4, spacing = 4.5) {
   const col = i % cols;
   const row = Math.floor(i / cols);
   const actualCols = Math.min(cols, total);
@@ -9,24 +9,23 @@ function grid(i, total, cols = 4, spacing = 4) {
   return [col * spacing - offsetX, -row * spacing, 0];
 }
 
-// Wide grid for small categories
-function wideGrid(i, total, cols = 3, spacing = 5) {
-  return grid(i, total, cols, spacing);
-}
-
 // Constellation for all view
 function constellation(i, total) {
-  const angle = (i / total) * Math.PI * 2 * 3;
-  const radius = 12 + (i / total) * 20;
-  return [Math.cos(angle) * radius, Math.sin(angle * 0.7) * 6, Math.sin(angle) * radius];
+  const angle = (i / Math.max(total - 1, 1)) * Math.PI * 2;
+  const radius = 10 + (i / Math.max(total - 1, 1)) * 18;
+  const y = Math.sin(i * 0.8) * 3;
+  return [Math.cos(angle) * radius, y, Math.sin(angle) * radius];
 }
 
 export const ARRANGEMENTS = {
-  [CATEGORIES.FULLSTACK]: (i, t) => grid(i, t, 4, 4.5),
-  [CATEGORIES.DATA]: (i, t) => grid(i, t, 4, 4.2),
-  [CATEGORIES.DESIGN]: (i, t) => wideGrid(i, t, 3, 5),
-  [CATEGORIES.VIDEO]: (i, t) => wideGrid(i, t, 3, 5),
-  all: (i, t) => constellation(i, t),
+  // Category grids
+  [CATEGORIES.FULLSTACK]: (i, t) => grid(i, t, 4, 4.8),
+  [CATEGORIES.DATA]: (i, t) => grid(i, t, 4, 4.5),
+  [CATEGORIES.DESIGN]: (i, t) => grid(i, t, 3, 5.5),
+  [CATEGORIES.VIDEO]: (i, t) => grid(i, t, 3, 5.5),
+
+  // All view - constellation
+  all: constellation,
 };
 
 export function getArrangement(category) {
