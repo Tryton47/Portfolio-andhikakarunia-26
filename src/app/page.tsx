@@ -1,31 +1,91 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import HeroSection from '@/components/HeroSection';
 import ConsoleWidget from '@/components/ConsoleWidget';
 import AboutSection from '@/components/AboutSection';
 import PortfolioSection from '@/components/PortfolioSection';
-import ContactSection from '@/components/ContactSection';
-import LoadingScreen from '@/components/LoadingScreen';
+import ContactSection from '@/components/Contact/ContactSection';
+import LoadingScreen3D from '@/components/LoadingScreen3D';
+
+// Dynamic import for 3D Playground
+const Playground3D = dynamic(() => import('@/components/Portfolio3DPlayground/Playground3D'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-screen flex items-center justify-center bg-[#0F172A]">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <span className="text-slate-400 text-sm font-medium tracking-wider">Loading...</span>
+      </div>
+    </div>
+  ),
+});
 
 export default function Home() {
   const [loaded, setLoaded] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+
+  // Disable scroll during loading
+  useEffect(() => {
+    if (!loaded) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      const timer = setTimeout(() => {
+        document.body.style.overflow = '';
+        setShowContent(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loaded]);
+
+  const handleLoadingDone = () => {
+    setLoaded(true);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
 
   return (
     <>
-      <LoadingScreen onDone={() => setLoaded(true)} />
+      {/* 3D Loading Screen */}
+      {!loaded && (
+        <LoadingScreen3D onDone={handleLoadingDone} minDuration={3000} />
+      )}
+
+      {/* Main Content */}
       <div
         className={`transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          loaded 
-            ? 'opacity-100 translate-y-0 scale-100 blur-0' 
-            : 'opacity-0 translate-y-12 scale-[0.98] blur-sm pointer-events-none'
+          loaded && showContent
+            ? 'opacity-100 translate-y-0 scale-100 blur-0'
+            : loaded
+              ? 'opacity-100 translate-y-0 scale-100 blur-0 pointer-events-none'
+              : 'opacity-0 pointer-events-none'
         }`}
       >
         <HeroSection />
         <ConsoleWidget />
         <AboutSection />
+
+        {/* 3D Interactive Playground */}
+        <section style={{ height: '100vh', position: 'relative' }}>
+          <Playground3D />
+        </section>
+
         <PortfolioSection />
         <ContactSection />
+
+        {/* Footer */}
+        <footer style={{ background: '#02040A', borderTop: '1px solid rgba(99,102,241,0.1)' }}>
+          <div className="max-w-7xl mx-auto px-6 py-8 text-center">
+            <p style={{
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontSize: '12px',
+              letterSpacing: '0.1em',
+              color: '#64748B',
+            }}>
+              © 2025 Andhika Karunia Rizqi. Crafted with passion.
+            </p>
+          </div>
+        </footer>
       </div>
     </>
   );

@@ -1,60 +1,203 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// ── Validation ────────────────────────────────────────────────────────────────
+// ── Validation ─────────────────────────────────────────────────────────────────
 const validateName    = (v) => !v.trim() ? 'Your name is required' : v.trim().length < 2 ? 'At least 2 characters' : null;
 const validateEmail   = (v) => !v.trim() ? 'Email is required' : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? 'Enter a valid email address' : null;
 const validateMessage = (v) => !v.trim() ? 'Message is required' : v.trim().length < 10 ? 'At least 10 characters' : null;
 
-// ── Assistant messages ────────────────────────────────────────────────────────
-const getAssistantMsg = (step, name, submitted) => {
-  if (submitted) return `Thanks ${name.split(' ')[0]}! 🎉 I'll get back to you within 24–48 hours.`;
-  return [
-    "Hey! Let's connect. What's your name?",
-    `Nice to meet you, ${name || '...'} ! What's your email address?`,
-    "Perfect! Now tell me — what's on your mind?",
-  ][step - 1] ?? '';
-};
-
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Sub-components ──────────────────────────────────────────────────────────────
 function AssistantBubble({ emoji, text, variant = 'default' }) {
-  const colours = {
+  const colors = {
     default: { bg: 'rgba(99,102,241,0.12)', border: '#6366F1' },
     success: { bg: 'rgba(34,197,94,0.12)',  border: '#22C55E' },
   };
-  const c = colours[variant];
+  const c = colors[variant];
+
   return (
-    <div style={{ display: 'flex', gap: '10px', animation: 'scfSlideIn 0.35s ease-out' }}>
-      <span style={{ fontSize: '20px', minWidth: '28px', lineHeight: '1.6' }}>{emoji}</span>
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}
+    >
+      <span style={{ fontSize: '22px', minWidth: '32px', lineHeight: '1.5', filter: 'drop-shadow(0 0 8px rgba(99,102,241,0.5))' }}>{emoji}</span>
       <div style={{
-        flex: 1, padding: '12px 16px', borderRadius: '10px',
-        background: c.bg, borderLeft: `2px solid ${c.border}`,
-        color: '#E2E8F0', fontSize: '14px', lineHeight: '1.6',
-        fontFamily: 'var(--font-inter, sans-serif)',
+        flex: 1,
+        padding: '14px 18px',
+        borderRadius: '14px',
+        background: c.bg,
+        borderLeft: `3px solid ${c.border}`,
+        color: '#E2E8F0',
+        fontSize: '14px',
+        lineHeight: '1.6',
+        fontFamily: 'var(--font-body, sans-serif)',
+        boxShadow: `0 4px 20px rgba(0,0,0,0.2)`,
       }}>
         {text}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function UserBubble({ text }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', animation: 'scfSlideIn 0.3s ease-out' }}>
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      style={{ display: 'flex', justifyContent: 'flex-end' }}
+    >
       <div style={{
-        maxWidth: '75%', padding: '10px 16px', borderRadius: '10px',
-        background: 'rgba(99,102,241,0.18)', borderRight: '2px solid #818CF8',
-        color: '#E2E8F0', fontSize: '14px', lineHeight: '1.6',
-        fontFamily: 'var(--font-inter, sans-serif)',
+        maxWidth: '75%',
+        padding: '12px 16px',
+        borderRadius: '14px',
+        background: 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2))',
+        borderRight: '3px solid #8B5CF6',
+        color: '#F1F5F9',
+        fontSize: '14px',
+        lineHeight: '1.6',
+        fontFamily: 'var(--font-body, sans-serif)',
+        boxShadow: `0 4px 20px rgba(0,0,0,0.2)`,
       }}>
         {text}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-// ── Main ─────────────────────────────────────────────────────────────────────
+function ChatInput({ value, onChange, onKeyDown, placeholder, autoFocus, type = 'text' }) {
+  return (
+    <motion.input
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onKeyDown={onKeyDown}
+      placeholder={placeholder}
+      autoFocus={autoFocus}
+      style={{
+        width: '100%',
+        boxSizing: 'border-box',
+        padding: '14px 18px',
+        background: 'rgba(30,41,59,0.8)',
+        border: '1.5px solid rgba(99,102,241,0.3)',
+        borderRadius: '12px',
+        color: '#F1F5F9',
+        fontSize: '14px',
+        fontFamily: 'var(--font-body, sans-serif)',
+        outline: 'none',
+        transition: 'all 0.3s ease',
+      }}
+      onFocus={(e) => {
+        e.target.style.borderColor = '#6366F1';
+        e.target.style.boxShadow = '0 0 0 4px rgba(99,102,241,0.15), 0 0 20px rgba(99,102,241,0.1)';
+      }}
+      onBlur={(e) => {
+        e.target.style.borderColor = 'rgba(99,102,241,0.3)';
+        e.target.style.boxShadow = 'none';
+      }}
+    />
+  );
+}
+
+function TextareaInput({ value, onChange, placeholder, rows = 4 }) {
+  return (
+    <motion.textarea
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      rows={rows}
+      style={{
+        width: '100%',
+        boxSizing: 'border-box',
+        padding: '14px 18px',
+        background: 'rgba(30,41,59,0.8)',
+        border: '1.5px solid rgba(99,102,241,0.3)',
+        borderRadius: '12px',
+        color: '#F1F5F9',
+        fontSize: '14px',
+        fontFamily: 'var(--font-body, sans-serif)',
+        outline: 'none',
+        resize: 'vertical',
+        minHeight: '100px',
+        lineHeight: '1.6',
+        transition: 'all 0.3s ease',
+      }}
+      onFocus={(e) => {
+        e.target.style.borderColor = '#6366F1';
+        e.target.style.boxShadow = '0 0 0 4px rgba(99,102,241,0.15), 0 0 20px rgba(99,102,241,0.1)';
+      }}
+      onBlur={(e) => {
+        e.target.style.borderColor = 'rgba(99,102,241,0.3)';
+        e.target.style.boxShadow = 'none';
+      }}
+    />
+  );
+}
+
+function Button({ children, onClick, variant = 'primary', disabled = false, loading = false }) {
+  const baseStyle = {
+    padding: '12px 24px',
+    borderRadius: '10px',
+    fontWeight: 700,
+    fontSize: '12px',
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+    cursor: disabled || loading ? 'not-allowed' : 'pointer',
+    border: 'none',
+    transition: 'all 0.25s ease',
+    fontFamily: 'var(--font-jetbrains, monospace)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    opacity: disabled || loading ? 0.5 : 1,
+  };
+
+  const variants = {
+    primary: {
+      background: 'linear-gradient(135deg, #6366F1, #818CF8)',
+      color: '#fff',
+      boxShadow: '0 4px 15px rgba(99,102,241,0.3)',
+    },
+    ghost: {
+      background: 'rgba(148,163,184,0.08)',
+      color: '#94A3B8',
+      border: '1px solid rgba(148,163,184,0.2)',
+    },
+    success: {
+      background: 'linear-gradient(135deg, #22C55E, #4ADE80)',
+      color: '#fff',
+      boxShadow: '0 4px 15px rgba(34,197,94,0.3)',
+    },
+  };
+
+  return (
+    <motion.button
+      onClick={onClick}
+      disabled={disabled || loading}
+      whileHover={!disabled && !loading ? { scale: 1.02 } : {}}
+      whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
+      style={{ ...baseStyle, ...variants[variant] }}
+    >
+      {loading ? (
+        <>
+          <span style={{ animation: 'spin 1s linear infinite' }}>⏳</span>
+          Processing...
+        </>
+      ) : children}
+    </motion.button>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────────
 export default function SmartContactForm() {
   const [step,      setStep]      = useState(1);
   const [data,      setData]      = useState({ name: '', email: '', message: '' });
@@ -64,8 +207,8 @@ export default function SmartContactForm() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [step, submitted]);
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [step, submitted, data]);
 
   const clearErr = (k) => setErrors((e) => ({ ...e, [k]: null }));
 
@@ -73,7 +216,16 @@ export default function SmartContactForm() {
     const validators = { 1: validateName, 2: validateEmail };
     const field      = { 1: 'name',       2: 'email' };
     const err = validators[s]?.(data[field[s]]);
-    if (err) { setErrors((e) => ({ ...e, [field[s]]: err })); return; }
+    if (err) {
+      setErrors((e) => ({ ...e, [field[s]]: err }));
+      // Shake animation
+      const input = document.querySelector(`[data-field="${field[s]}"]`);
+      if (input) {
+        input.style.animation = 'shake 0.4s ease';
+        setTimeout(() => input.style.animation = '', 400);
+      }
+      return;
+    }
     setErrors({});
     setStep(s + 1);
   };
@@ -87,7 +239,6 @@ export default function SmartContactForm() {
       return;
     }
     setSending(true);
-    // Persist to API
     try {
       await fetch('/api/comments', {
         method: 'POST',
@@ -97,72 +248,74 @@ export default function SmartContactForm() {
     } catch { /* silently fail */ }
     setSending(false);
     setSubmitted(true);
-    setTimeout(() => { setData({ name: '', email: '', message: '' }); setStep(1); setSubmitted(false); }, 4000);
+    setTimeout(() => {
+      setData({ name: '', email: '', message: '' });
+      setStep(1);
+      setSubmitted(false);
+    }, 4000);
   };
-
-  // Shared input style
-  const inputStyle = (errKey) => ({
-    width: '100%', boxSizing: 'border-box',
-    padding: '11px 14px',
-    background: 'rgba(30, 41, 59, 0.8)',
-    border: `1.5px solid ${errors[errKey] ? '#EF4444' : 'rgba(99,102,241,0.3)'}`,
-    borderRadius: '8px', color: '#F1F5F9', fontSize: '14px',
-    fontFamily: 'var(--font-inter, sans-serif)',
-    outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s',
-  });
-
-  const btnBase = {
-    padding: '10px 22px', borderRadius: '8px', fontWeight: 700,
-    fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase',
-    cursor: 'pointer', border: 'none', transition: 'all 0.25s',
-    fontFamily: 'var(--font-jetbrains, monospace)',
-  };
-
-  const primaryBtn = { ...btnBase, background: 'linear-gradient(135deg, #6366F1, #818CF8)', color: '#fff' };
-  const ghostBtn   = { ...btnBase, background: 'rgba(148,163,184,0.1)', color: '#94A3B8', border: '1px solid rgba(148,163,184,0.25)' };
 
   return (
     <div>
-      {/* ── Style injection ── */}
+      {/* Style injection */}
       <style>{`
-        @keyframes scfSlideIn { from { opacity:0; transform:translateX(-14px); } to { opacity:1; transform:translateX(0); } }
-        @keyframes scfSlideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes scfPop     { from { opacity:0; transform:scale(0.6); }      to { opacity:1; transform:scale(1); } }
-        @keyframes scfShake   { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
-        .scf-input:focus { border-color:#6366F1 !important; box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-8px); }
+          75% { transform: translateX(8px); }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes confetti {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
       `}</style>
 
-      {/* ── Chat window ── */}
+      {/* Chat window */}
       <div style={{
-        display: 'flex', flexDirection: 'column', gap: '16px',
-        maxHeight: '520px', overflowY: 'auto', overflowX: 'hidden',
-        padding: '20px', marginBottom: '0',
-        background: 'rgba(9,10,15,0.6)',
-        border: '1px solid rgba(99,102,241,0.12)',
-        borderRadius: '14px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        maxHeight: '500px',
+        overflowY: 'auto',
+        padding: '24px',
+        background: 'rgba(9,10,15,0.7)',
+        border: '1px solid rgba(99,102,241,0.15)',
+        borderRadius: '20px',
+        backdropFilter: 'blur(20px)',
         scrollbarWidth: 'thin',
         scrollbarColor: 'rgba(99,102,241,0.3) transparent',
       }}>
-
         {/* Greeting */}
-        <AssistantBubble emoji="👋" text="Hi! I'm Andhika's assistant. Let's get you connected." />
+        <AssistantBubble emoji="👋" text="Hi there! I'm Andhika's digital assistant. Let's have a conversation and get you connected! ✨" />
 
         {/* ── STEP 1: Name ── */}
-        <AssistantBubble emoji="💬" text={step === 1 ? "What's your name?" : `Got it — ${data.name}!`} />
+        <AssistantBubble emoji="💬" text={step === 1 ? "First things first — what's your name?" : `Nice to meet you, ${data.name.split(' ')[0]}!`} />
         {step === 1 && (
-          <div style={{ animation: 'scfSlideUp 0.35s ease-out' }}>
-            <input
-              className="scf-input"
-              style={inputStyle('name')} type="text"
-              placeholder="e.g. Budi Santoso"
+          <div data-field="name">
+            <ChatInput
               value={data.name}
-              autoFocus
-              onChange={(e) => { setData((d) => ({ ...d, name: e.target.value })); clearErr('name'); }}
+              onChange={(v) => { setData((d) => ({ ...d, name: v })); clearErr('name'); }}
               onKeyDown={(e) => e.key === 'Enter' && handleNext(1)}
+              placeholder="e.g. Sarah Chen"
+              autoFocus
             />
-            {errors.name && <p style={{ color:'#EF4444', fontSize:'12px', margin:'6px 0 0', animation:'scfShake 0.3s' }}>⚠ {errors.name}</p>}
-            <div style={{ display:'flex', justifyContent:'flex-end', marginTop:'10px' }}>
-              <button style={{ ...primaryBtn, opacity: data.name.trim() ? 1 : 0.5 }} onClick={() => handleNext(1)}>Next →</button>
+            {errors.name && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{ color: '#EF4444', fontSize: '12px', margin: '8px 0 0', fontFamily: 'var(--font-body)' }}
+              >
+                ⚠️ {errors.name}
+              </motion.p>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
+              <Button onClick={() => handleNext(1)} disabled={!data.name.trim()}>
+                Next <span>→</span>
+              </Button>
             </div>
           </div>
         )}
@@ -171,22 +324,31 @@ export default function SmartContactForm() {
         {/* ── STEP 2: Email ── */}
         {step >= 2 && (
           <>
-            <AssistantBubble emoji="📧" text={step === 2 ? `Nice, ${data.name}! What's your email address?` : `Email saved: ${data.email}`} />
+            <AssistantBubble emoji="📧" text={step === 2 ? `Great ${data.name.split(' ')[0]}! What's your email address?` : `Email confirmed: ${data.email}`} />
             {step === 2 && (
-              <div style={{ animation: 'scfSlideUp 0.35s ease-out' }}>
-                <input
-                  className="scf-input"
-                  style={inputStyle('email')} type="email"
-                  placeholder="your@email.com"
+              <div data-field="email">
+                <ChatInput
+                  type="email"
                   value={data.email}
-                  autoFocus
-                  onChange={(e) => { setData((d) => ({ ...d, email: e.target.value })); clearErr('email'); }}
+                  onChange={(v) => { setData((d) => ({ ...d, email: v })); clearErr('email'); }}
                   onKeyDown={(e) => e.key === 'Enter' && handleNext(2)}
+                  placeholder="your@email.com"
+                  autoFocus
                 />
-                {errors.email && <p style={{ color:'#EF4444', fontSize:'12px', margin:'6px 0 0', animation:'scfShake 0.3s' }}>⚠ {errors.email}</p>}
-                <div style={{ display:'flex', gap:'10px', justifyContent:'flex-end', marginTop:'10px' }}>
-                  <button style={ghostBtn} onClick={() => setStep(1)}>← Back</button>
-                  <button style={{ ...primaryBtn, opacity: data.email.trim() ? 1 : 0.5 }} onClick={() => handleNext(2)}>Next →</button>
+                {errors.email && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ color: '#EF4444', fontSize: '12px', margin: '8px 0 0', fontFamily: 'var(--font-body)' }}
+                  >
+                    ⚠️ {errors.email}
+                  </motion.p>
+                )}
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '12px' }}>
+                  <Button variant="ghost" onClick={() => setStep(1)}>← Back</Button>
+                  <Button onClick={() => handleNext(2)} disabled={!data.email.trim()}>
+                    Next <span>→</span>
+                  </Button>
                 </div>
               </div>
             )}
@@ -197,32 +359,38 @@ export default function SmartContactForm() {
         {/* ── STEP 3: Message ── */}
         {step >= 3 && (
           <>
-            <AssistantBubble emoji="✍️" text="What would you like to discuss? A project, opportunity, or collaboration?" />
+            <AssistantBubble emoji="✍️" text="Awesome! Now tell me — what would you like to discuss? A project idea, job opportunity, or just saying hello?" />
             {step === 3 && !submitted && (
-              <div style={{ animation: 'scfSlideUp 0.35s ease-out' }}>
-                <textarea
-                  className="scf-input"
-                  style={{ ...inputStyle('message'), resize: 'vertical', minHeight: '100px', lineHeight: '1.6' }}
-                  placeholder="Tell me about your idea, project, or question..."
+              <div data-field="message">
+                <TextareaInput
                   value={data.message}
+                  onChange={(v) => { setData((d) => ({ ...d, message: v })); clearErr('message'); }}
+                  placeholder="Share your thoughts, questions, or ideas..."
                   rows={4}
-                  autoFocus
-                  onChange={(e) => { setData((d) => ({ ...d, message: e.target.value })); clearErr('message'); }}
                 />
-                {errors.message && <p style={{ color:'#EF4444', fontSize:'12px', margin:'6px 0 0', animation:'scfShake 0.3s' }}>⚠ {errors.message}</p>}
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'6px' }}>
-                  <span style={{ color:'#475569', fontSize:'11px', fontFamily:'var(--font-jetbrains,monospace)' }}>
-                    {data.message.length} chars {data.message.length < 10 ? `(${10 - data.message.length} more needed)` : '✓'}
+                {errors.message && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ color: '#EF4444', fontSize: '12px', margin: '8px 0 0', fontFamily: 'var(--font-body)' }}
+                  >
+                    ⚠️ {errors.message}
+                  </motion.p>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+                  <span style={{ color: data.message.length >= 10 ? '#22C55E' : '#64748B', fontSize: '11px', fontFamily: 'var(--font-jetbrains, monospace)' }}>
+                    {data.message.length} chars {data.message.length >= 10 ? '✓' : `(${10 - data.message.length} more needed)`}
                   </span>
-                  <div style={{ display:'flex', gap:'10px' }}>
-                    <button style={ghostBtn} onClick={() => setStep(2)}>← Back</button>
-                    <button
-                      style={{ ...primaryBtn, opacity: (sending || data.message.trim().length < 10) ? 0.5 : 1 }}
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <Button variant="ghost" onClick={() => setStep(2)}>← Back</Button>
+                    <Button
+                      variant="success"
                       onClick={handleSubmit}
                       disabled={sending || data.message.trim().length < 10}
+                      loading={sending}
                     >
-                      {sending ? '⏳ Sending…' : 'Send 🚀'}
-                    </button>
+                      Send <span>🚀</span>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -232,10 +400,21 @@ export default function SmartContactForm() {
 
         {/* ── Success ── */}
         {submitted && (
-          <>
-            <AssistantBubble emoji="✨" text={getAssistantMsg(3, data.name, true)} variant="success" />
-            <div style={{ textAlign:'center', fontSize:'40px', animation:'scfPop 0.5s cubic-bezier(0.34,1.56,0.64,1)' }}>🎉</div>
-          </>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, type: 'spring' }}
+          >
+            <AssistantBubble emoji="🎉" text={`Perfect! I've received your message, ${data.name.split(' ')[0]}! I'll get back to you within 24-48 hours.`} variant="success" />
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px', fontSize: '40px' }}>
+              <span style={{ animation: 'confetti 1s ease forwards', animationDelay: '0s' }}>🎊</span>
+              <span style={{ animation: 'confetti 1s ease forwards', animationDelay: '0.1s' }}>✨</span>
+              <span style={{ animation: 'confetti 1s ease forwards', animationDelay: '0.2s' }}>🌟</span>
+            </div>
+            <p style={{ textAlign: 'center', color: '#64748B', fontSize: '12px', marginTop: '12px', fontFamily: 'var(--font-body)' }}>
+              Your conversation will reset shortly...
+            </p>
+          </motion.div>
         )}
 
         <div ref={bottomRef} />

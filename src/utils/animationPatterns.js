@@ -1,71 +1,74 @@
 import { CATEGORIES } from '../config/categories';
 
 /**
- * Arrangement functions per category.
- * Each returns [x, y, z] for logo at index `i` of `total` logos.
+ * Clean grid arrangement - neat rows and columns
  */
-export const ARRANGEMENTS = {
-  // ─── DATA ANALYST: Circular "data flow" ring ───
-  [CATEGORIES.DATA]: (i, total) => {
-    const angle = (i / total) * Math.PI * 2;
-    const radius = 2.6;
-    return [
-      Math.cos(angle) * radius,
-      Math.sin(i * 0.6) * 0.25,   // slight vertical wave
-      Math.sin(angle) * radius,
-    ];
-  },
-
-  // ─── FULL STACK: 3-layer stack (frontend top / backend mid / DB bottom) ───
-  [CATEGORIES.FULLSTACK]: (i, total) => {
-    const layer = i % 3;
-    const col   = Math.floor(i / 3);
-    const cols  = Math.ceil(total / 3);
-    return [
-      (col - (cols - 1) / 2) * 2.0,
-      1.4 - layer * 1.4,
-      0,
-    ];
-  },
-
-  // ─── DESIGNER: Organic scatter using golden angle ───
-  [CATEGORIES.DESIGN]: (i) => {
-    const seed = i * 137.508; // golden angle (degrees)
-    const r    = 1.6 + (i % 3) * 0.6;
-    const rad  = (seed * Math.PI) / 180;
-    return [
-      Math.cos(rad) * r,
-      ((i % 2) - 0.5) * 1.2,
-      Math.sin(rad) * r,
-    ];
-  },
-
-  // ─── VIDEOGRAPHER: Horizontal timeline (left → right like a playhead) ───
-  [CATEGORIES.VIDEO]: (i, total) => [
-    (i - (total - 1) / 2) * 2.0,
-    0,
-    0,
-  ],
-};
-
-/**
- * Returns the arrangement function for a given category.
- * Falls back to the circular DATA arrangement.
- */
-export function getArrangement(category) {
-  return ARRANGEMENTS[category] || ARRANGEMENTS[CATEGORIES.DATA];
+function gridLayout(i, total, cols = 4, spacing = 4.2) {
+  const col = i % cols;
+  const row = Math.floor(i / cols);
+  const actualCols = Math.min(cols, total);
+  const offsetX = ((actualCols - 1) / 2) * spacing;
+  const x = col * spacing - offsetX;
+  const y = -row * spacing;
+  return [x, y, 0];
 }
 
 /**
- * Returns camera position best suited for each arrangement.
+ * Wide grid for smaller categories
  */
+function wideGrid(i, total, cols = 3, spacing = 5) {
+  return gridLayout(i, total, cols, spacing);
+}
+
+/**
+ * Constellation for all logos view
+ */
+function constellation(i, total, opts = {}) {
+  const { radiusMin = 12, radiusMax = 28, seed = 7 } = opts;
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  const t = total > 1 ? (i + seed * 0.1) / (total - 1) : 0.5;
+  const angle = i * goldenAngle + seed;
+  const radius = radiusMin + t * (radiusMax - radiusMin);
+  const y = (t - 0.5) * 8;
+
+  return [
+    Math.cos(angle) * radius,
+    y,
+    Math.sin(angle) * radius,
+  ];
+}
+
+// Arrangements per category
+export const ARRANGEMENTS = {
+  // Full Stack - 16 items, 4 columns
+  [CATEGORIES.FULLSTACK]: (i, total) => gridLayout(i, total, 4, 4.5),
+
+  // Data Analyst - 12 items, 4 columns
+  [CATEGORIES.DATA]: (i, total) => gridLayout(i, total, 4, 4.3),
+
+  // Designer - 6 items, 3 columns
+  [CATEGORIES.DESIGN]: (i, total) => wideGrid(i, total, 3, 5),
+
+  // Videographer - 6 items, 3 columns
+  [CATEGORIES.VIDEO]: (i, total) => wideGrid(i, total, 3, 5),
+
+  // All logos - constellation
+  all: (i, total) => constellation(i, total, { radiusMin: 14, radiusMax: 30, seed: 7 }),
+};
+
+export function getArrangement(category) {
+  return ARRANGEMENTS[category] || ARRANGEMENTS[CATEGORIES.FULLSTACK];
+}
+
+// Camera positions
 export const CAMERA_PRESETS = {
-  [CATEGORIES.DATA]:      [0, 2.5, 8.5],
-  [CATEGORIES.FULLSTACK]: [0, 1.5, 8.0],
-  [CATEGORIES.DESIGN]:    [0, 2.0, 8.0],
-  [CATEGORIES.VIDEO]:     [0, 2.0, 9.5],
+  [CATEGORIES.FULLSTACK]: [0, -12, 38],
+  [CATEGORIES.DATA]: [0, -10, 34],
+  [CATEGORIES.DESIGN]: [0, -6, 32],
+  [CATEGORIES.VIDEO]: [0, -6, 32],
+  all: [0, 0, 55],
 };
 
 export function getCameraPreset(category) {
-  return CAMERA_PRESETS[category] || [0, 2.5, 8.5];
+  return CAMERA_PRESETS[category] || [0, 0, 40];
 }

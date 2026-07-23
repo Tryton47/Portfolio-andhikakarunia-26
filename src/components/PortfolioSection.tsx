@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { ExternalLink, Code2, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ExternalLink, Code2, ChevronDown, ChevronUp, Award, Download, Maximize2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useScrollReveal }     from '../hooks/useScrollReveal';
@@ -25,17 +26,6 @@ const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
 const CategoryFilter = dynamic(() => import('./Logo3D/CategoryFilter'), { ssr: false });
 const InfoPanel      = dynamic(() => import('./Logo3D/InfoPanel'),       { ssr: false });
 const KeyboardHelper = dynamic(() => import('./Logo3D/KeyboardHelper'),  { ssr: false });
-const Playground3D   = dynamic(() => import('./Portfolio3DPlayground/Playground3D'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[600px] flex items-center justify-center rounded-2xl" style={{ background: '#090A0F', border: '1px solid #1E293B' }}>
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-        <span className="text-text-dim text-xs font-mono tracking-widest">LOADING 3D PLAYGROUND...</span>
-      </div>
-    </div>
-  ),
-});
 
 
 /* ─── DATA ─── */
@@ -585,42 +575,122 @@ function CertModal({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[200] bg-obsidian/95 backdrop-blur-md flex items-start justify-center overflow-y-auto pt-6 pb-12 px-4">
-      <div className="w-full max-w-4xl glass-panel border border-border rounded-xl overflow-hidden">
+    <div className="fixed inset-0 z-[200] bg-obsidian/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-8">
+      <div
+        className="w-full max-w-5xl max-h-[95vh] overflow-hidden rounded-2xl"
+        style={{
+          background: 'linear-gradient(145deg, rgba(30,41,59,0.95), rgba(15,23,42,0.98))',
+          border: '1px solid rgba(99,102,241,0.2)',
+          boxShadow: '0 25px 80px rgba(0,0,0,0.6), 0 0 60px rgba(99,102,241,0.1)',
+        }}
+      >
         {/* Top Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-charcoal">
+        <div
+          className="flex items-center justify-between px-6 py-4"
+          style={{
+            borderBottom: '1px solid rgba(99,102,241,0.15)',
+            background: 'rgba(15,23,42,0.5)',
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(99,102,241,0.2)' }}
+            >
+              <Award size={16} className="text-primary" />
+            </div>
+            <span className="text-system text-primary text-xs">Certificate</span>
+          </div>
           <button
             onClick={onClose}
-            className="text-system text-primary hover:text-text-primary transition-colors flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors"
+            style={{ color: '#94A3B8' }}
           >
-            ← Back
+            Close
           </button>
-          <span className="text-system text-text-dim">Certificate</span>
         </div>
 
         {/* Body */}
-        <div className="flex flex-col">
-          {/* Info strip */}
-          <div className="px-8 pt-6 pb-4 flex flex-col gap-1">
-            <h3 className="text-heading text-xl text-text-primary">{cert.title}</h3>
-            <p className="text-system text-secondary text-xs">{cert.issuer} · {cert.date}</p>
-            <p className="text-text-body text-sm leading-relaxed mt-2 text-text-muted max-w-2xl">{cert.desc}</p>
+        <div className="flex flex-col lg:flex-row overflow-hidden" style={{ maxHeight: 'calc(95vh - 80px)' }}>
+          {/* Left: Info */}
+          <div className="w-full lg:w-1/3 p-6 lg:p-8 overflow-y-auto" style={{ borderRight: '1px solid rgba(99,102,241,0.1)' }}>
+            {/* Accent line */}
+            <div
+              className="w-12 h-1 rounded-full mb-6"
+              style={{
+                background: cert.orientation === 'landscape'
+                  ? 'linear-gradient(90deg, #06B6D4, #8B5CF6)'
+                  : 'linear-gradient(90deg, #EC4899, #F59E0B)',
+              }}
+            />
+
+            <h3 className="text-xl md:text-2xl font-bold text-text-primary mb-4 leading-tight">
+              {cert.title}
+            </h3>
+
+            <div className="flex flex-wrap gap-2 mb-6">
+              <span
+                className="px-3 py-1 rounded-full text-xs font-mono"
+                style={{
+                  background: 'rgba(99,102,241,0.15)',
+                  color: '#818CF8',
+                  border: '1px solid rgba(99,102,241,0.2)',
+                }}
+              >
+                {cert.issuer}
+              </span>
+              <span
+                className="px-3 py-1 rounded-full text-xs font-mono"
+                style={{
+                  background: 'rgba(6,182,212,0.1)',
+                  color: '#06B6D4',
+                  border: '1px solid rgba(6,182,212,0.2)',
+                }}
+              >
+                {cert.date}
+              </span>
+            </div>
+
+            <p className="text-sm leading-relaxed mb-6" style={{ color: '#94A3B8' }}>
+              {cert.desc}
+            </p>
+
+            {/* Download button */}
+            {cert.file && (
+              <a
+                href={cert.file}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300"
+                style={{
+                  background: 'linear-gradient(135deg, #6366F1, #818CF8)',
+                  color: '#fff',
+                  boxShadow: '0 4px 15px rgba(99,102,241,0.3)',
+                }}
+              >
+                <Download size={16} />
+                Download PDF
+              </a>
+            )}
           </div>
 
-          {/* PDF Viewer — responsive aspect ratio based on orientation */}
-          <div className="px-6 pb-6">
+          {/* Right: PDF Viewer */}
+          <div className="w-full lg:w-2/3 p-6 bg-black/20 flex items-center justify-center">
             <div
-              className="w-full relative rounded-lg overflow-hidden border border-border bg-white"
-              style={{ aspectRatio: cert.orientation === 'portrait' ? '210/297' : '297/210' }}
+              className="w-full max-w-2xl relative rounded-xl overflow-hidden"
+              style={{
+                aspectRatio: cert.orientation === 'portrait' ? '210/297' : '297/160',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              }}
             >
               {cert.file ? (
                 <iframe
-                  src={`${cert.file}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                  src={`${cert.file}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1`}
                   className="absolute inset-0 w-full h-full border-0"
                   title={cert.title}
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#1E293B' }}>
                   <span className="text-system text-text-dim">No File Available</span>
                 </div>
               )}
@@ -666,13 +736,13 @@ export default function PortfolioSection() {
     }
     
     return (
-      <div 
+      <div
         key={subFilter}
-        className="absolute top-0 left-0 w-full h-[700px] pointer-events-none opacity-40 mix-blend-screen"
-        style={{ 
-          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)', 
-          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)',
-          animation: 'fadeIn 1s ease-out forwards'
+        className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 mix-blend-screen"
+        style={{
+          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)',
+          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)',
+          animation: 'fadeIn 0.8s ease-out forwards'
         }}
       >
         {CanvasComp}
@@ -684,8 +754,9 @@ export default function PortfolioSection() {
     <section
       ref={sectionRef}
       id="portfolio"
-      className="relative w-full py-20 md:py-28 px-6 md:px-12 bg-charcoal overflow-hidden transition-all duration-1000"
+      className="relative w-full py-20 md:py-28 px-6 md:px-12 overflow-hidden transition-all duration-1000"
       style={{
+        background: '#0F172A',
         opacity:   isSectionVisible ? 1 : 0,
         transform: isSectionVisible ? 'translateY(0)' : 'translateY(40px)',
       }}
@@ -834,49 +905,100 @@ export default function PortfolioSection() {
 
         {/* ═══ CERTIFICATES TAB ═══ */}
         {rootTab === 'certificates' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {certificates.map((cert, idx) => (
-              <div
+              <motion.div
                 key={idx}
                 onClick={() => setSelectedCert(cert)}
-                className="group relative bg-obsidian/40 backdrop-blur-md border border-white/5 rounded-xl p-6 transition-all duration-500 cursor-pointer overflow-hidden hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(0,0,0,0.6)] hover:border-white/20 hover:bg-obsidian/60"
-                style={{ animation: `fadeInUp 0.5s ease-out ${idx * 0.08}s both` }}
+                className="group relative cursor-pointer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05, duration: 0.4 }}
+                whileHover={{ y: -5 }}
               >
-                {/* Layer 1: Elegant Soft Glow on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-0" />
+                {/* Card */}
+                <div
+                  className="relative bg-gradient-to-br from-card to-obsidian rounded-xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300"
+                  style={{
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                  }}
+                >
+                  {/* Top accent bar */}
+                  <div
+                    className="h-1 w-full"
+                    style={{
+                      background: cert.orientation === 'landscape'
+                        ? 'linear-gradient(90deg, #06B6D4, #8B5CF6)'
+                        : 'linear-gradient(180deg, #EC4899, #F59E0B)',
+                    }}
+                  />
 
-                <div className="relative z-10 flex items-start justify-between mb-4">
-                  <h3 className="text-text-primary text-sm font-semibold group-hover:text-white transition-colors tracking-wide">{cert.title}</h3>
-                  <span className="text-[10px] tracking-[0.2em] text-white/50 bg-white/5 px-2 py-1 rounded-sm border border-white/10 backdrop-blur-md">VERIFIED</span>
-                </div>
-                <p className="relative z-10 text-text-muted text-xs group-hover:text-white/80 transition-colors">{cert.issuer}</p>
+                  {/* Content */}
+                  <div className="p-5">
+                    {/* Icon */}
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ background: 'rgba(99,102,241,0.15)' }}>
+                      <Award size={20} className="text-primary" />
+                    </div>
 
-                {/* Layer 2: The Document (PDF) Preview - Clean, Monochrome */}
-                {cert.file && (
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-15 pointer-events-none transition-all duration-700 z-0 overflow-hidden scale-95 group-hover:scale-100">
-                    <iframe src={`${cert.file}#view=FitH&toolbar=0&navpanes=0`} className="w-[300%] h-[300%] origin-top-left scale-[0.33] pointer-events-none grayscale" tabIndex={-1} />
-                    {/* Fade overlay so the PDF doesn't look too sharp/messy */}
-                    <div className="absolute inset-0 bg-obsidian/30 backdrop-blur-[2px] z-10" />
+                    {/* Title */}
+                    <h3 className="text-text-primary text-sm font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {cert.title}
+                    </h3>
+
+                    {/* Issuer & Date */}
+                    <p className="text-text-dim text-xs mb-3">{cert.issuer}</p>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-text-dim px-2 py-1 rounded bg-card">
+                        {cert.date}
+                      </span>
+                      <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                        View <Maximize2 size={12} />
+                      </span>
+                    </div>
                   </div>
-                )}
-                
-                {/* Subtle border glowing line at bottom */}
-                <div className="absolute bottom-0 left-0 h-[1px] w-0 bg-white/40 group-hover:w-full transition-all duration-700 ease-out z-10" />
-              </div>
+
+                  {/* Hover glow */}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{
+                      background: 'radial-gradient(circle at 50% 0%, rgba(99,102,241,0.1), transparent 70%)',
+                    }}
+                  />
+                </div>
+              </motion.div>
             ))}
           </div>
         )}
 
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
-          <div className="space-y-6">
-            {/* Header */}
-            <div className="text-center">
-              <p className="text-system text-primary mb-2">Interactive 3D Playground</p>
-              <p className="text-text-muted text-sm">Explore all 25+ tools in my stack — click to learn more, drag to play around</p>
+          <div className="relative w-full h-[90vh] bg-[#010203] overflow-hidden">
+            {/* Dark gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#010203] via-[#020408] to-[#010305] pointer-events-none z-0" />
+
+            {/* Category Navigation overlayed at the top */}
+            <div className="absolute top-8 left-0 w-full z-30 flex flex-col items-center justify-center pointer-events-none">
+              <div className="pointer-events-auto">
+                <CategoryFilter />
+              </div>
             </div>
-            {/* 3D Scene */}
-            <Playground3D />
+
+            {/* 3D Canvas Scene */}
+            <div className="absolute inset-0 z-10">
+              <Logo3DCanvas />
+            </div>
+
+            {/* InfoPanel positioned absolutely on the right */}
+            <div className="absolute top-0 right-10 bottom-0 flex items-center pointer-events-none z-40">
+              <InfoPanel />
+            </div>
+
+            {/* Keyboard Helper positioned bottom left */}
+            <div className="absolute bottom-8 left-8 z-30 pointer-events-none opacity-50">
+              <KeyboardHelper />
+            </div>
           </div>
         )}
       </div>
