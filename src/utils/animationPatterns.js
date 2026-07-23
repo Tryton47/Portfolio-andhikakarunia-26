@@ -1,6 +1,5 @@
 import { CATEGORIES } from '../config/categories';
 
-// Grid layout for category views (no floating)
 function grid(i, total, cols, spacing) {
   cols = cols || 4;
   spacing = spacing || 5;
@@ -11,14 +10,13 @@ function grid(i, total, cols, spacing) {
   return [col * spacing - offsetX, -row * spacing, 0];
 }
 
-// Constellation layout for "all" view
 function constellation(i, total) {
   if (total === 0) return [0, 0, 0];
   const goldenAngle = Math.PI * (3 - Math.sqrt(5));
   const t = i / Math.max(total - 1, 1);
   const angle = i * goldenAngle;
-  const radius = 14 + t * 16;
-  const y = (i - (total - 1) / 2) * 1.5;
+  const radius = 12 + t * 14;
+  const y = (i - (total - 1) / 2) * 1.2;
   return [Math.cos(angle) * radius, y, Math.sin(angle) * radius];
 }
 

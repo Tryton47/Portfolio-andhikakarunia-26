@@ -11,34 +11,31 @@ import { CATEGORIES } from '../../config/categories';
 import { useLogoState } from '../../hooks/useLogoState';
 import { getArrangement } from '../../utils/animationPatterns';
 
-// ─── LIGHTING ───────────────────────────────────────────────────────
 function Lighting({ color }) {
   return (
     <>
-      <ambientLight intensity={0.7} />
+      <ambientLight intensity={0.8} />
       <directionalLight position={[20, 25, 20]} intensity={1.2} />
-      <directionalLight position={[-20, 10, -15]} intensity={0.6} color={color} />
-      <pointLight position={[0, 10, 15]} intensity={0.5} color={color} />
+      <directionalLight position={[-20, 10, -15]} intensity={0.5} color={color} />
+      <pointLight position={[0, 10, 15]} intensity={0.4} color={color} />
     </>
   );
 }
 
-// ─── GROUND SHADOW ──────────────────────────────────────────────────
 function GroundShadow() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -15, 0]}>
       <planeGeometry args={[100, 100]} />
-      <meshBasicMaterial color="#0a0f1a" transparent opacity={0.5} />
+      <meshBasicMaterial color="#0a0f1a" transparent opacity={0.4} />
     </mesh>
   );
 }
 
-// ─── CONNECTION LINES ────────────────────────────────────────────────
 function ConnectionLines({ activeLogo, positions, color }) {
   const linesData = useRef([]);
 
   useFrame(() => {
-    if (!activeLogo?.related?.length) {
+    if (!activeLogo || !activeLogo.related || activeLogo.related.length === 0) {
       linesData.current = [];
       return;
     }
@@ -70,22 +67,24 @@ function ConnectionLines({ activeLogo, positions, color }) {
           end={line.end}
           mid={line.mid}
           color={color}
-          lineWidth={2.5}
+          lineWidth={2}
           transparent
-          opacity={0.6}
+          opacity={0.5}
         />
       ))}
     </group>
   );
 }
 
-// ─── SCENE ─────────────────────────────────────────────────────────
 function Scene({ logos, color, category, isAllView, hoveredId, setHoveredId, selectLogo, positionsRef }) {
   const { selectedLogoId } = useLogoState();
 
   const handleHover = useCallback((id, isHovered) => {
-    if (isHovered) setHoveredId(id);
-    else if (hoveredId === id) setHoveredId(null);
+    if (isHovered) {
+      setHoveredId(id);
+    } else if (hoveredId === id) {
+      setHoveredId(null);
+    }
   }, [hoveredId, setHoveredId]);
 
   const activeLogo = useMemo(() => {
@@ -102,9 +101,9 @@ function Scene({ logos, color, category, isAllView, hoveredId, setHoveredId, sel
 
   const floatOffsets = useMemo(() => {
     return logos.map((_, i) => ({
-      x: Math.sin(i * 1.3) * 2.5,
-      y: Math.cos(i * 0.9) * 1.8,
-      z: Math.sin(i * 0.7) * 1.5,
+      x: Math.sin(i * 1.3) * 2,
+      y: Math.cos(i * 0.9) * 1.5,
+      z: Math.sin(i * 0.7) * 1.2,
       phaseX: i * 0.4,
       phaseY: i * 0.3,
       speed: 0.3 + (i % 3) * 0.1,
@@ -143,7 +142,6 @@ function Scene({ logos, color, category, isAllView, hoveredId, setHoveredId, sel
   );
 }
 
-// ─── MAIN CANVAS ───────────────────────────────────────────────────
 export default function Logo3DCanvas() {
   const activeCategory = useLogoState((s) => s.activeCategory);
   const selectLogo = useLogoState((s) => s.selectLogo);
@@ -158,10 +156,10 @@ export default function Logo3DCanvas() {
     : '#6366F1';
 
   const cameraPos = isAllView
-    ? [0, 0, 55]
-    : activeCategory === CATEGORIES.FULLSTACK ? [0, -12, 40]
-    : activeCategory === CATEGORIES.DATA ? [0, -10, 36]
-    : [0, -8, 34];
+    ? [0, 0, 50]
+    : activeCategory === CATEGORIES.FULLSTACK ? [0, -10, 38]
+    : activeCategory === CATEGORIES.DATA ? [0, -8, 34]
+    : [0, -6, 30];
 
   const categoryKey = isAllView ? 'all' : activeCategory;
 
