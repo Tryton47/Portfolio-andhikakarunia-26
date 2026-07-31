@@ -144,7 +144,7 @@ function DangerParticles({ active }: { active: boolean }) {
 // ─── CHIBI MECHA (BLACK & SILVER) ───
 type RobotPhase = "idle" | "parsing" | "running" | "results" | "warning";
 
-function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; y: number }; colors: { primary: string; secondary: string }; onClick: () => void }) {
+function CoolChibiMecha({ colors, onClick }: { colors: { primary: string; secondary: string }; onClick: () => void }) {
   const groupRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
   const leftArmRef = useRef<THREE.Group>(null);
@@ -184,7 +184,7 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
     // Head looks at cursor (Restricted and smooth)
     if (headRef.current) {
-      target.set(mousePos.x * 2.5, mousePos.y * 1.5 + 1.2, 6);
+      target.set(state.mouse.x * 2.5, state.mouse.y * 1.5 + 1.2, 6);
       const dummy = new THREE.Object3D();
       dummy.position.copy(headRef.current.position);
       dummy.lookAt(target);
@@ -506,18 +506,6 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
 // ─── MAIN COMPONENT ───
 export default function RobotScene() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: -(e.clientY / window.innerHeight) * 2 + 1,
-      });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   const [colors, setColors] = useState({ primary: "#6366F1", secondary: "#06B6D4" });
 
@@ -549,7 +537,7 @@ export default function RobotScene() {
         <pointLight position={[3, -1, 4]} intensity={2} color={colors.primary} />
 
         <Float speed={2} rotationIntensity={0.05} floatIntensity={0.2}>
-          <CoolChibiMecha mousePos={mousePos} colors={colors} onClick={() => {}} />
+          <CoolChibiMecha colors={colors} onClick={() => {}} />
         </Float>
 
         <ContactShadows position={[0, -1.8, 0]} opacity={0.8} scale={6} blur={2.5} far={4} color="#000000" />
