@@ -47,7 +47,8 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    /* Lenis takes over smooth scroll — native smooth-scroll would conflict */
+    scroll-behavior: auto;
   }
 
   body {
@@ -188,4 +189,28 @@
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-8px) blur(4px); }
   to   { opacity: 1; transform: translateY(0) blur(0); }
+}
+
+@keyframes scrollDot {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(12px);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3), 0 0 40px rgba(99, 102, 241, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5), 0 0 60px rgba(99, 102, 241, 0.2);
+  }
 }

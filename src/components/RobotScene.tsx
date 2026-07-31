@@ -271,27 +271,29 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
     triggerWarning();
   };
 
-  // Materials: Dominant Black and Silver Glossy
-  const blackMetal = new THREE.MeshPhysicalMaterial({
-    color: "#0a0a0a",
-    metalness: 0.8,
-    roughness: 0.15,
-    clearcoat: 0.8,
-  });
-  const silverMetal = new THREE.MeshPhysicalMaterial({
-    color: "#d0d0d0",
-    metalness: 1.0,
-    roughness: 0.1,
-    clearcoat: 1.0,
-  });
-  const darkGlass = new THREE.MeshPhysicalMaterial({
-    color: "#000000",
-    metalness: 0.9,
-    roughness: 0.02,
-    clearcoat: 1.0,
-  });
-  const secondaryGlow = new THREE.MeshBasicMaterial({ color: colors.secondary });
-  const eyeMaterial = new THREE.MeshBasicMaterial({ color: colors.primary });
+  // Memoized materials for performance
+  const materials = useMemo(() => ({
+    blackMetal: new THREE.MeshPhysicalMaterial({
+      color: "#0a0a0a",
+      metalness: 0.8,
+      roughness: 0.15,
+      clearcoat: 0.8,
+    }),
+    silverMetal: new THREE.MeshPhysicalMaterial({
+      color: "#d0d0d0",
+      metalness: 1.0,
+      roughness: 0.1,
+      clearcoat: 1.0,
+    }),
+    darkGlass: new THREE.MeshPhysicalMaterial({
+      color: "#000000",
+      metalness: 0.9,
+      roughness: 0.02,
+      clearcoat: 1.0,
+    }),
+    secondaryGlow: new THREE.MeshBasicMaterial({ color: colors.secondary }),
+    eyeMaterial: new THREE.MeshBasicMaterial({ color: colors.primary }),
+  }), [colors]);
 
   const isWarning = phase === "warning" || phaseTimer.current > 0;
 
@@ -308,56 +310,56 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
     >
       {/* ─── BODY ─── */}
       <group position={[0, 0.6, 0]}>
-        <RoundedBox args={[1.0, 0.9, 0.7]} radius={0.15} material={blackMetal} castShadow />
-        <RoundedBox args={[0.8, 0.7, 0.75]} radius={0.1} position={[0, 0.05, 0]} material={silverMetal} />
+        <RoundedBox args={[1.0, 0.9, 0.7]} radius={0.15} material={materials.blackMetal} castShadow />
+        <RoundedBox args={[0.8, 0.7, 0.75]} radius={0.1} position={[0, 0.05, 0]} material={materials.silverMetal} />
         {/* Center Core Reactor */}
-        <mesh position={[0, 0.1, 0.38]} material={secondaryGlow}>
+        <mesh position={[0, 0.1, 0.38]} material={materials.secondaryGlow}>
           <circleGeometry args={[0.15, 32]} />
         </mesh>
         <mesh position={[0, 0.1, 0.385]} material={new THREE.MeshBasicMaterial({ color: "#ffffff" })}>
           <circleGeometry args={[0.08, 32]} />
         </mesh>
         {/* Thruster Skirt (Lower Body) */}
-        <mesh position={[0, -0.45, 0]} material={blackMetal}>
+        <mesh position={[0, -0.45, 0]} material={materials.blackMetal}>
           <cylinderGeometry args={[0.4, 0.6, 0.3, 16]} />
         </mesh>
       </group>
 
       {/* ─── HEAD ─── */}
       <group ref={headRef} position={[0, 1.4, 0]}>
-        <mesh position={[0, -0.25, 0]} material={silverMetal}>
+        <mesh position={[0, -0.25, 0]} material={materials.silverMetal}>
           <cylinderGeometry args={[0.1, 0.1, 0.2]} />
         </mesh>
 
-        <RoundedBox args={[1.1, 0.9, 1.0]} radius={0.15} material={blackMetal} castShadow />
+        <RoundedBox args={[1.1, 0.9, 1.0]} radius={0.15} material={materials.blackMetal} castShadow />
 
-        <mesh position={[0, -0.05, 0.45]} material={silverMetal}>
+        <mesh position={[0, -0.05, 0.45]} material={materials.silverMetal}>
           <boxGeometry args={[0.9, 0.5, 0.15]} />
         </mesh>
 
-        <mesh position={[0, -0.05, 0.51]} material={darkGlass}>
+        <mesh position={[0, -0.05, 0.51]} material={materials.darkGlass}>
           <boxGeometry args={[0.8, 0.4, 0.05]} />
         </mesh>
 
         {/* Eyes Group */}
         <group position={[0, -0.05, 0.54]}>
-          <mesh ref={eyeLeftRef} position={[-0.2, 0, 0]} material={eyeMaterial.clone()}>
+          <mesh ref={eyeLeftRef} position={[-0.2, 0, 0]} material={materials.eyeMaterial.clone()}>
             <boxGeometry args={[0.25, 0.12, 0.02]} />
           </mesh>
-          <mesh ref={eyeRightRef} position={[0.2, 0, 0]} material={eyeMaterial.clone()}>
+          <mesh ref={eyeRightRef} position={[0.2, 0, 0]} material={materials.eyeMaterial.clone()}>
             <boxGeometry args={[0.25, 0.12, 0.02]} />
           </mesh>
         </group>
 
         {/* V-Fin (Gundam Antenna) - Scaled down slightly to prevent clipping */}
         <group position={[0, 0.35, 0.52]} scale={[0.8, 0.8, 0.8]}>
-          <mesh position={[-0.2, 0.2, 0]} rotation={[0, 0, -0.6]} material={secondaryGlow}>
+          <mesh position={[-0.2, 0.2, 0]} rotation={[0, 0, -0.6]} material={materials.secondaryGlow}>
             <boxGeometry args={[0.05, 0.5, 0.05]} />
           </mesh>
-          <mesh position={[0.2, 0.2, 0]} rotation={[0, 0, 0.6]} material={secondaryGlow}>
+          <mesh position={[0.2, 0.2, 0]} rotation={[0, 0, 0.6]} material={materials.secondaryGlow}>
             <boxGeometry args={[0.05, 0.5, 0.05]} />
           </mesh>
-          <mesh position={[0, 0, 0]} material={eyeMaterial}>
+          <mesh position={[0, 0, 0]} material={materials.eyeMaterial}>
             <boxGeometry args={[0.15, 0.15, 0.1]} />
           </mesh>
         </group>
@@ -365,22 +367,22 @@ function CoolChibiMecha({ mousePos, colors, onClick }: { mousePos: { x: number; 
 
       {/* ─── ARMS ─── */}
       <group position={[-0.7, 0.9, 0]}>
-        <mesh material={silverMetal}>
+        <mesh material={materials.silverMetal}>
           <sphereGeometry args={[0.2, 16, 16]} />
         </mesh>
         <group ref={leftArmRef} position={[0, -0.1, 0]} rotation={[-Math.PI / 4, 0, 0]}>
-          <mesh position={[0, -0.3, 0]} material={blackMetal}>
+          <mesh position={[0, -0.3, 0]} material={materials.blackMetal}>
             <boxGeometry args={[0.2, 0.6, 0.2]} />
           </mesh>
         </group>
       </group>
 
       <group position={[0.7, 0.9, 0]}>
-        <mesh material={silverMetal}>
+        <mesh material={materials.silverMetal}>
           <sphereGeometry args={[0.2, 16, 16]} />
         </mesh>
         <group ref={rightArmRef} position={[0, -0.1, 0]} rotation={[-Math.PI / 4, 0, 0]}>
-          <mesh position={[0, -0.3, 0]} material={blackMetal}>
+          <mesh position={[0, -0.3, 0]} material={materials.blackMetal}>
             <boxGeometry args={[0.2, 0.6, 0.2]} />
           </mesh>
         </group>
@@ -538,9 +540,11 @@ export default function RobotScene() {
 
   return (
     <div className="relative w-full h-full min-h-[350px]">
-      <Canvas camera={{ position: [0, 1.2, 7.5], fov: 42 }} shadows>
+      <Canvas
+        camera={{ position: [0, 1.2, 7.5], fov: 42 }}
+      >
         <ambientLight intensity={1.5} />
-        <spotLight position={[5, 10, 5]} angle={0.3} penumbra={1} intensity={3} castShadow shadow-mapSize={1024} />
+        <spotLight position={[5, 10, 5]} angle={0.3} penumbra={1} intensity={3} />
         <pointLight position={[-3, 2, 4]} intensity={2} color={colors.secondary} />
         <pointLight position={[3, -1, 4]} intensity={2} color={colors.primary} />
 

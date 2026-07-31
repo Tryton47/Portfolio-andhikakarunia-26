@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import HeroSection from '@/components/HeroSection';
 import ConsoleWidget from '@/components/ConsoleWidget';
 import AboutSection from '@/components/AboutSection';
@@ -9,40 +9,55 @@ import ContactSection from '@/components/Contact/ContactSection';
 import LoadingScreen3D from '@/components/LoadingScreen3D';
 
 export default function Home() {
-  const [loaded, setLoaded] = useState(false);
+  // loading = still showing loading screen, exiting = fading out, done = fully removed
+  const [loadingState, setLoadingState] = useState<'loading' | 'exiting' | 'done'>('loading');
   const [showContent, setShowContent] = useState(false);
+  const savedScrollY = useRef(0);
 
+  // Scroll lock: prevent user from scrolling down during loading
   useEffect(() => {
-    if (!loaded) {
+    if (loadingState === 'loading') {
+      savedScrollY.current = window.scrollY;
+      document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${savedScrollY.current}px`;
+      document.body.style.width = '100%';
+    } else if (loadingState === 'exiting') {
+      // Keep locked during exit fade
     } else {
-      const timer = setTimeout(() => {
-        document.body.style.overflow = '';
-        setShowContent(true);
-      }, 500);
-      return () => clearTimeout(timer);
+      // Restore scroll
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      setShowContent(true);
     }
-  }, [loaded]);
+  }, [loadingState]);
 
   const handleLoadingDone = () => {
-    setLoaded(true);
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // LoadingScreen3D already fades itself out internally (0.7s)
+    // We wait that duration before removing it from DOM
+    setLoadingState('exiting');
+    setTimeout(() => {
+      setLoadingState('done');
+    }, 750);
   };
 
   return (
     <>
-      {!loaded && (
-        <LoadingScreen3D onDone={handleLoadingDone} minDuration={3000} />
+      {loadingState !== 'done' && (
+        <LoadingScreen3D onDone={handleLoadingDone} minDuration={3200} />
       )}
 
       <div
-        className={`transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          loaded && showContent
-            ? 'opacity-100 translate-y-0 scale-100 blur-0'
-            : loaded
-              ? 'opacity-100 translate-y-0 scale-100 blur-0 pointer-events-none'
-              : 'opacity-0 pointer-events-none'
-        }`}
+        style={{
+          opacity: showContent ? 1 : 0,
+          transition: 'opacity 0.8s cubic-bezier(0.22,1,0.36,1)',
+          pointerEvents: showContent ? 'auto' : 'none',
+        }}
       >
         <HeroSection />
         <ConsoleWidget />

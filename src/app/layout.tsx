@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+import LenisProvider from "@/providers/LenisProvider";
+import Navbar from "@/components/Navbar";
+import { CursorTrail, CustomCursor, FloatingParticles, ScrollIndicator } from "@/components/InteractiveEffects";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -27,13 +29,6 @@ export const metadata: Metadata = {
     "Multi-Disciplinary Professional — Web Developer, Data Analyst, Graphic Designer & Videographer",
 };
 
-const navItems = [
-  { label: "Home", href: "#hero" },
-  { label: "About", href: "#about" },
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Contact", href: "#contact" },
-];
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,50 +41,15 @@ export default function RootLayout({
       >
         <body className="min-h-full flex flex-col bg-charcoal text-text-muted overflow-x-hidden w-full">
         <ThemeProvider>
-          {/* STICKY GLASSMORPHIC NAVBAR */}
-          <header className="fixed top-0 left-0 w-full z-[100] backdrop-blur-xl bg-obsidian/60 border-b border-border/80 transition-all duration-300">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 py-4 flex justify-between items-center">
-              {/* Logo / Name */}
-              <a
-                href="#hero"
-                className="text-heading text-sm md:text-base text-text-primary hover:text-primary transition-colors tracking-[0.1em] truncate mr-2"
-              >
-                <span className="hidden sm:inline">Andhika Karunia Rizqi</span>
-                <span className="sm:hidden">Andhika K.R.</span>
-              </a>
+          <LenisProvider>
+          {/* INTERACTIVE EFFECTS */}
+          <CursorTrail />
+          <CustomCursor />
+          <FloatingParticles count={30} />
+          <ScrollIndicator />
 
-              {/* Desktop Nav */}
-              <nav className="hidden md:flex items-center gap-8">
-                {navItems.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    className="text-system text-text-muted hover:text-primary transition-colors relative group"
-                  >
-                    {item.label}
-                    {/* Underline uses inline style so it reacts to theme var */}
-                    <span
-                      className="absolute -bottom-1 left-0 w-0 h-[1px] transition-all duration-300 group-hover:w-full"
-                      style={{ background: 'var(--theme-primary-hex)' }}
-                    />
-                  </a>
-                ))}
-              </nav>
-
-              <button
-                className="md:hidden flex flex-col gap-1.5 group p-2 -mr-2"
-                aria-label="Menu"
-                id="mobile-menu-toggle"
-              >
-                <span className="w-6 h-[2px] bg-text-primary transition-all group-hover:bg-primary" />
-                <span className="w-4 h-[2px] bg-text-muted group-hover:bg-primary transition-colors" />
-                <span className="w-6 h-[2px] bg-text-primary transition-all group-hover:bg-primary" />
-              </button>
-            </div>
-          </header>
-
-          {/* FLOATING THEME SWITCHER */}
-          <ThemeSwitcher />
+          {/* GSAP SMART NAVBAR */}
+          <Navbar />
 
           {/* MAIN CONTENT */}
           <main className="relative w-full flex-grow">{children}</main>
@@ -128,6 +88,7 @@ export default function RootLayout({
               </div>
             </div>
           </footer>
+        </LenisProvider>
         </ThemeProvider>
       </body>
     </html>

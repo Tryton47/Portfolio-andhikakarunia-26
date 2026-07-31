@@ -8,6 +8,7 @@ interface GlassButtonProps {
   className?: string;
   activeColor?: string;
   href?: string;
+  style?: React.CSSProperties;
 }
 
 export default function GlassButton({
@@ -16,7 +17,8 @@ export default function GlassButton({
   onClick,
   className = '',
   activeColor = 'var(--theme-primary-hex)',
-  href
+  href,
+  style: externalStyle,
 }: GlassButtonProps) {
   const btnRef = useRef<any>(null);
   const [coords, setCoords] = useState({ x: -100, y: -100 });
@@ -59,6 +61,7 @@ export default function GlassButton({
           ? `0 8px 32px 0 rgba(0,0,0,0.3), inset 0 0 20px rgba(var(--theme-primary), 0.4)` 
           : '0 4px 20px rgba(0,0,0,0.1)',
         textShadow: isActive ? '0 2px 10px rgba(0,0,0,0.3)' : 'none',
+        ...externalStyle,
       }}
     >
       {/* Interactive Cursor Highlight Layer */}

@@ -4,11 +4,14 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Code2, ChevronDown, ChevronUp, Award, Download, Maximize2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { gsap } from '@/lib/gsap';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useScrollReveal }     from '../hooks/useScrollReveal';
+import { useStaggerReveal } from '../hooks/useGSAPReveal';
 import ScrollReveal from './Shared/ScrollReveal';
 import GlassButton from './Shared/GlassButton';
 import { useTheme } from '@/context/ThemeContext';
+import { ProximityGlow } from './InteractiveEffects';
 
 // ─── Dynamic imports to avoid SSR issues with Three.js canvas ───
 const Logo3DCanvas = dynamic(() => import('./Logo3D/Logo3DCanvas'), {
@@ -36,7 +39,7 @@ const projects = [
     tech: ['React', 'Next.js', 'Tailwind'],
     category: 'Web Dev',
     link: 'https://cinevix-works.vercel.app/',
-    github: '',
+    github: 'https://github.com/JustFarzz',
   },
   {
     id: 2,
@@ -46,7 +49,7 @@ const projects = [
     tech: ['Python', 'FastAPI', 'React', 'TypeScript', 'scikit-learn'],
     category: 'Data Analysis',
     link: 'https://e-commerce-recommendation-engine.vercel.app/',
-    github: '',
+    github: 'https://github.com/JustFarzz',
   },
   {
     id: 3,
@@ -56,7 +59,7 @@ const projects = [
     tech: ['PHP', 'MySQL', 'JavaScript', 'HTML', 'CSS'],
     category: 'Web Dev',
     link: 'https://sales-marketing-web-u5e1.vercel.app/',
-    github: '',
+    github: 'https://github.com/JustFarzz',
   },
   {
     id: 4,
@@ -66,7 +69,7 @@ const projects = [
     tech: ['React', 'Next.js', 'Node.js'],
     category: 'Web Dev',
     link: 'https://event-ease-mauve.vercel.app/',
-    github: '',
+    github: 'https://github.com/JustFarzz',
   },
   {
     id: 5,
@@ -76,7 +79,7 @@ const projects = [
     tech: ['Next.js', 'Tailwind', 'Prisma'],
     category: 'Web Dev',
     link: 'https://organik-pandanrejo.vercel.app/',
-    github: '',
+    github: 'https://github.com/JustFarzz',
   },
   {
     id: 6,
@@ -86,7 +89,7 @@ const projects = [
     tech: ['Python', 'Flask', 'React'],
     category: 'Data Analysis',
     link: 'https://hoaks-detector.vercel.app/',
-    github: '',
+    github: 'https://github.com/JustFarzz',
   },
   {
     id: 7,
@@ -97,7 +100,7 @@ const projects = [
     category: 'Web Dev',
     link: '',
     github: 'https://github.com/JustFarzz/wargaverse',
-    isMaintenance: true,
+    isMaintenance: false,
   },
   {
     id: 8,
@@ -107,8 +110,143 @@ const projects = [
     tech: ['Premiere Pro', 'DaVinci Resolve'],
     category: 'Video Editing',
     link: '',
+    github: 'https://github.com/JustFarzz',
+  },
+  {
+    id: 9,
+    title: 'DPM 25 Promotional Design',
+    desc: 'Desain visual & materi promosi untuk kegiatan Dewan Perwakilan Mahasiswa (DPM 25).',
+    features: ['Poster Design', 'Visual Identity', 'Social Media Kit', 'Event Branding'],
+    tech: ['Photoshop', 'Canva', 'Illustrator'],
+    category: 'Graphic Design',
+    imageUrl: '/showcase/graphic-design/DPM_25.jpeg',
+    link: '/showcase/graphic-design/DPM_25.jpeg',
     github: '',
-    isMaintenance: true,
+  },
+  {
+    id: 10,
+    title: 'KKN 4 Pandanrejo Branding',
+    desc: 'Desain identitas visual & publikasi program kerja KKN 4 di Desa Pandanrejo.',
+    features: ['Branding', 'Banner Design', 'Village Program Kit', 'Documentation'],
+    tech: ['Photoshop', 'Canva', 'Figma'],
+    category: 'Graphic Design',
+    imageUrl: '/showcase/graphic-design/KKN_4_Pandan_rejo.jpeg',
+    link: '/showcase/graphic-design/KKN_4_Pandan_rejo.jpeg',
+    github: '',
+  },
+  {
+    id: 11,
+    title: 'Portfolio Excel & Data Analytics',
+    desc: 'Kumpulan analisis data, pivot table, formula kompleks, dan dashboard Excel.',
+    features: ['Excel Dashboards', 'Pivot Tables', 'Advanced Formulas', 'VLOOKUP & Index Match'],
+    tech: ['Microsoft Excel', 'Data Cleaning', 'Data Visualization'],
+    category: 'Data Analysis',
+    link: '/showcase/porto-data/PORTO_EXCEL_ANDHIKA.pdf',
+    github: '',
+  },
+  {
+    id: 12,
+    title: 'Portfolio Data Analyst Batch 6',
+    desc: 'Portofolio lengkap dan komprehensif program intensif Data Analyst Batch 6.',
+    features: ['Python Analysis', 'SQL Queries', 'Power BI Dashboard', 'Business Insights'],
+    tech: ['Python', 'SQL', 'Power BI', 'Excel'],
+    category: 'Data Analysis',
+    link: '/showcase/porto-data/Portofolio_Data_Analyst_Batch_6.pdf',
+    github: '',
+  },
+  {
+    id: 13,
+    title: 'Data Analysis Task 7 (Workbook)',
+    desc: 'Workbook pengolahan dan analisis data lanjutan menggunakan Microsoft Excel.',
+    features: ['Statistical Modeling', 'Excel Formulas', 'Data Preparation'],
+    tech: ['Excel', 'Statistics'],
+    category: 'Data Analysis',
+    link: '/showcase/porto-data/Data_2_DT1_Andhika_Karunia_TUGAS_7.xlsx',
+    github: '',
+  },
+  {
+    id: 14,
+    title: 'UAS Data Visualization Study',
+    desc: 'Laporan akhir & hasil studi visualisasi data interaktif.',
+    features: ['Data Storytelling', 'Chart Customization', 'Visual Analytics'],
+    tech: ['Tableau', 'Excel', 'Data Viz'],
+    category: 'Data Analysis',
+    link: '/showcase/porto-data/UAS_Data_Visualization_ANDHIKA_KARUNIA_093.docx',
+    github: '',
+  },
+  {
+    id: 15,
+    title: 'Tugas 5 Data Cleaning & Analysis',
+    desc: 'Laporan analisis dan pembersihan dataset raw.',
+    features: ['Data Scrubbing', 'Outlier Detection', 'Data Wrangling'],
+    tech: ['Python', 'Excel', 'Data Cleaning'],
+    category: 'Data Analysis',
+    link: '/showcase/porto-data/TUGAS_5_Andhika_Karunia_Rizqi_093.docx',
+    github: '',
+  },
+  {
+    id: 16,
+    title: 'Tugas 7 Advanced Data Analytics',
+    desc: 'Laporan interpretasi data & analisis statistik lanjutan.',
+    features: ['Hypothesis Testing', 'Trend Analysis', 'Statistical Insights'],
+    tech: ['Statistics', 'Excel', 'Python'],
+    category: 'Data Analysis',
+    link: '/showcase/porto-data/TUGAS_7_Andhika_Karunia_Rizqi_Setyawan.docx',
+    github: '',
+  },
+  {
+    id: 17,
+    title: 'Tugas 8 Data Insights & Reporting',
+    desc: 'Laporan temuan bisnis & rekomendasi berbasis data.',
+    features: ['Business Intelligence', 'Executive Reporting', 'Strategic Recommendations'],
+    tech: ['Data Analytics', 'Reporting', 'Excel'],
+    category: 'Data Analysis',
+    link: '/showcase/porto-data/TUGAS_8_ANDHIKA_KARUNIA_RIZQI_093.docx',
+    github: '',
+  },
+];
+
+// ─── SHOWCASE GRAPHIC DESIGN ───
+const showcaseGraphicDesign = [
+  {
+    id: 'gd-1',
+    title: 'DPM FTI 25',
+    desc: 'Mengelola sosial media DPM (TikTok & Instagram). Desain banner, feeds, poster perayaan, editing video acara, twibon, frame acara, editing video konten, foto struktural, dan berbagai desain media sosial lainnya.',
+    services: [
+      '📱 Manajemen Sosmed TikTok & Instagram',
+      '🎨 Desain Banner & Feeds',
+      '📋 Desain Poster & Perayaan',
+      '🎬 Editing Video Konten & Acara',
+      '🖼️ Twibon & Frame Acara',
+      '📸 Foto Struktural',
+    ],
+    images: [
+      '/showcase/dpm-fti/01-sosmed-dpm.png',
+      '/showcase/dpm-fti/02-banner-poster.png',
+    ],
+    icon: '🎨',
+    year: '2025',
+  },
+  {
+    id: 'gd-2',
+    title: 'KKN 4 Pandanrejo',
+    desc: 'Mengelola sosial media KKN (TikTok & Instagram). Desain banner, lanyard, ID card, feeds, poster perayaan, editing video acara, twibon, frame acara, editing video konten, foto struktural, dan berbagai desain media sosial lainnya.',
+    services: [
+      '📱 Manajemen Sosmed TikTok & Instagram',
+      '🎨 Desain Banner, Lanyard & ID Card',
+      '📋 Desain Feeds & Poster',
+      '🎬 Editing Video Konten & Acara',
+      '🖼️ Twibon & Frame Acara',
+      '📸 Foto Struktural & Dokumentasi',
+    ],
+    images: [
+      '/showcase/kkn-pandanrejo/01-banner-feeds.png',
+      '/showcase/kkn-pandanrejo/02-poster-acara.png',
+      '/showcase/kkn-pandanrejo/03-twibon-twit.png',
+      '/showcase/kkn-pandanrejo/04-video-konten.png',
+    ],
+    icon: '🌿',
+    year: '2024',
   },
 ];
 
@@ -549,8 +687,12 @@ function ProjectModal({
 
           {/* Right: Mockup Preview */}
           <div className="w-full lg:w-1/2 bg-charcoal flex items-center justify-center p-8 min-h-[300px]">
-            <div className="w-full h-full min-h-[250px] rounded-lg border border-border bg-obsidian flex items-center justify-center">
-              <span className="text-system text-text-dim">{project.title} — Preview</span>
+            <div className="w-full h-full min-h-[250px] rounded-lg border border-border bg-obsidian flex items-center justify-center overflow-hidden">
+              {project.imageUrl ? (
+                <img src={project.imageUrl} alt={project.title} className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-system text-text-dim">{project.title} — Preview</span>
+              )}
             </div>
           </div>
         </div>
@@ -702,11 +844,15 @@ function CertModal({
 
 /* ─── PORTFOLIO SECTION ─── */
 export default function PortfolioSection() {
-  const [rootTab, setRootTab] = useState<'projects' | 'certificates' | 'techstack'>('projects');
+  const [rootTab, setRootTab] = useState<'projects' | 'certificates' | 'showcase' | 'techstack'>('projects');
   const [subFilter, setSubFilter] = useState('Web Dev');
   const [showMore, setShowMore] = useState(false);
   const [selectedProject, setSelectedProject] = useState<(typeof projects)[0] | null>(null);
   const [selectedCert, setSelectedCert] = useState<(typeof certificates)[0] | null>(null);
+
+  // Showcase Gallery State
+  const [selectedGallery, setSelectedGallery] = useState<typeof showcaseGraphicDesign[0] | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // ─── Keyboard Shortcuts (D/F/C/V = category, Space = autoplay) ───
   // Only active when the techstack tab is open to avoid conflicting with other tabs
@@ -714,8 +860,48 @@ export default function PortfolioSection() {
     onShowHelp: () => setRootTab('techstack'),
   });
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
   // ─── Scroll Reveal for section entrance ───
-  const { ref: sectionRef, isVisible: isSectionVisible } = useScrollReveal({ threshold: 0.1 });
+  const { ref: scrollRevealRef, isVisible: isSectionVisible } = useScrollReveal({ threshold: 0.1 });
+
+  // ─── GSAP: section header + tabs entrance ───
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        headerRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+          scrollTrigger: { trigger: headerRef.current, start: 'top 85%', once: true },
+        }
+      );
+      gsap.fromTo(
+        tabsRef.current,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1, y: 0, duration: 0.7, ease: 'power2.out',
+          scrollTrigger: { trigger: tabsRef.current, start: 'top 85%', once: true },
+        }
+      );
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
+  // ─── GSAP Stagger Reveals for Project and Certificate Cards ───
+  useStaggerReveal('.project-grid-container', '.project-card-reveal', {
+    y: 50,
+    stagger: 0.1,
+    duration: 0.8,
+  });
+
+  useStaggerReveal('.cert-grid-container', '.cert-card-reveal', {
+    y: 40,
+    stagger: 0.1,
+    duration: 0.8,
+  });
 
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => p.category === subFilter);
@@ -750,14 +936,10 @@ export default function PortfolioSection() {
 
   return (
     <section
-      ref={sectionRef}
+      ref={sectionRef as React.RefObject<HTMLElement>}
       id="portfolio"
-      className="relative w-full py-20 md:py-28 px-6 md:px-12 overflow-hidden transition-all duration-1000"
-      style={{
-        background: '#0F172A',
-        opacity:   isSectionVisible ? 1 : 0,
-        transform: isSectionVisible ? 'translateY(0)' : 'translateY(40px)',
-      }}
+      className="relative w-full py-20 md:py-28 px-6 md:px-12 overflow-hidden"
+      style={{ background: '#0F172A' }}
     >
 
       {/* Ambient Background */}
@@ -765,32 +947,28 @@ export default function PortfolioSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
-        <ScrollReveal variant="fade-up" duration={700}>
-          <div className="text-center mb-12">
-            <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
-              Portfolio <span style={{ color: 'var(--theme-primary-hex)' }}>Showcase</span>
-            </h2>
-            <p className="text-system text-text-dim">
-              Explore my journey across disciplines
-            </p>
-          </div>
-        </ScrollReveal>
+        <div ref={headerRef} className="text-center mb-12" style={{ opacity: 0 }}>
+          <h2 className="text-heading text-3xl md:text-4xl text-text-primary mb-3">
+            Portfolio <span style={{ color: 'var(--theme-primary-hex)' }}>Showcase</span>
+          </h2>
+          <p className="text-system text-text-dim">
+            Explore my journey across disciplines
+          </p>
+        </div>
 
         {/* Root Tabs */}
-        <ScrollReveal variant="fade-up" duration={700} delay={150}>
-          <div className="flex justify-center flex-wrap gap-4 mb-10 p-2">
-            {(['projects', 'certificates', 'techstack'] as const).map((tab) => (
-              <GlassButton
-                key={tab}
-                isActive={rootTab === tab}
-                onClick={() => setRootTab(tab)}
-                className="px-4 md:px-8 py-2 md:py-3.5 font-bold tracking-wide text-xs md:text-sm"
-              >
-                {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </GlassButton>
-            ))}
-          </div>
-        </ScrollReveal>
+        <div ref={tabsRef} className="flex justify-center flex-wrap gap-4 mb-10 p-2" style={{ opacity: 0 }}>
+          {(['projects', 'certificates', 'techstack'] as const).map((tab) => (
+            <GlassButton
+              key={tab}
+              isActive={rootTab === tab}
+              onClick={() => setRootTab(tab)}
+              className="px-4 md:px-8 py-2 md:py-3.5 font-bold tracking-wide text-xs md:text-sm"
+            >
+              {tab === 'techstack' ? 'Tech Stack' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </GlassButton>
+          ))}
+        </div>
 
         {/* ═══ PROJECTS TAB ═══ */}
         {rootTab === 'projects' && (
@@ -810,78 +988,115 @@ export default function PortfolioSection() {
             </div>
 
             {/* Project Grid */}
-            <div key={subFilter} className="animate-[fadeIn_0.4s_ease-out]">
+            <div key={subFilter} className="project-grid-container">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {visibleProjects.map((project, idx) => (
-                  <div
-                    key={project.id}
-                    className="glass-panel border border-border rounded-xl overflow-hidden group hover:border-primary/40 transition-all duration-300"
-                    style={{
-                      animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`,
-                    }}
-                  >
-                  {/* Card Image Area */}
-                  <div className="w-full h-44 bg-obsidian flex items-center justify-center relative overflow-hidden">
-                    <span className="text-system text-text-dim">{project.category}</span>
-                    
-                    {/* Maintenance Overlay */}
-                    {project.isMaintenance && (
-                      <div className="absolute inset-0 bg-obsidian/60 flex items-center justify-center backdrop-blur-sm z-10">
-                        <span className="text-system text-primary border border-primary px-3 py-1 rounded bg-obsidian/80">
-                          Maintenance
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-obsidian/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4 z-20">
-                      {(project.link || project.github) && !project.isMaintenance && (
-                        <a
-                          href={project.link || project.github || '#'}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-4 py-2 bg-primary text-white text-system rounded-md hover:bg-primary/90 transition-colors flex items-center gap-1"
-                        >
-                          <ExternalLink size={12} /> View App
-                        </a>
-                      )}
-                      <button
-                        onClick={() => setSelectedProject(project)}
-                        className="px-4 py-2 border border-primary/40 text-primary text-system rounded-md hover:bg-primary-dim transition-colors"
+                {visibleProjects.map((project) => (
+                  <div key={project.id} className="project-card-reveal" style={{ opacity: 0 }}>
+                    <ProximityGlow radius={180} className="group h-full">
+                      <div
+                        className="glass-panel border border-border rounded-xl overflow-hidden group-hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 h-full flex flex-col"
+                        style={{ transform: 'translateZ(0)' }}
                       >
-                        Details ↗
-                      </button>
-                    </div>
-                  </div>
+                        {/* Card Image Area */}
+                        <div className={`w-full ${project.category === 'Graphic Design' ? 'h-80 md:h-[420px]' : 'h-56'} bg-obsidian flex items-center justify-center relative overflow-hidden group/img`}>
+                          {project.imageUrl ? (
+                            <>
+                              <img
+                                src={project.imageUrl}
+                                alt={project.title}
+                                className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700 ease-out"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-black/20 z-[1]" />
+                              {/* Category Tag */}
+                              <span className="absolute top-3 left-3 z-[3] text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-obsidian/80 backdrop-blur-md text-primary border border-primary/30 shadow-lg">
+                                {project.category.toUpperCase()}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-system text-text-dim">{project.category}</span>
+                          )}
 
-                  {/* Card Content */}
-                  <div className="p-5">
-                    <h3 className="text-text-primary text-sm font-bold mb-2 group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-text-muted text-xs leading-relaxed mb-4 line-clamp-2">
-                      {project.desc}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tech.slice(0, 3).map((t, i) => (
-                        <span
-                          key={i}
-                          className="text-[10px] font-mono px-2 py-1 border border-border rounded text-text-dim"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                      {project.tech.length > 3 && (
-                        <span className="text-[10px] font-mono px-2 py-1 text-text-dim">
-                          +{project.tech.length - 3}
-                        </span>
-                      )}
-                    </div>
+                          {/* Maintenance Overlay */}
+                          {project.isMaintenance && (
+                            <div className="absolute inset-0 bg-obsidian/60 flex items-center justify-center backdrop-blur-sm z-10">
+                              <span className="text-system text-primary border border-primary px-3 py-1 rounded bg-obsidian/80">
+                                Maintenance
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-obsidian/85 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-wrap items-center justify-center gap-2 p-3 z-20">
+                            {project.link?.startsWith('http') && (
+                              <a
+                                href={project.link}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90 transition-all flex items-center gap-1 shadow-lg shadow-primary/30"
+                              >
+                                <ExternalLink size={12} /> Live Web
+                              </a>
+                            )}
+                            {project.link?.startsWith('/showcase') && (
+                              <a
+                                href={project.link}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90 transition-all flex items-center gap-1 shadow-lg shadow-primary/30"
+                              >
+                                <ExternalLink size={12} /> View File
+                              </a>
+                            )}
+                            {project.github && (
+                              <a
+                                href={project.github}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-3 py-1.5 bg-obsidian/90 text-text-primary border border-border hover:border-primary/50 text-xs font-semibold rounded-lg transition-all flex items-center gap-1"
+                              >
+                                <Code2 size={12} /> GitHub
+                              </a>
+                            )}
+                            <button
+                              onClick={() => setSelectedProject(project)}
+                              className="px-3 py-1.5 border border-primary/40 text-primary text-xs font-semibold rounded-lg hover:bg-primary/20 transition-all"
+                            >
+                              Details ↗
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Card Content */}
+                        <div className="p-5 flex-1 flex flex-col">
+                          <h3 className="text-text-primary text-sm font-bold mb-2 group-hover:text-primary transition-colors">
+                            {project.title}
+                          </h3>
+                          <p className="text-text-muted text-xs leading-relaxed mb-4 line-clamp-2 flex-1">
+                            {project.desc}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {project.tech.slice(0, 3).map((t, i) => (
+                              <span
+                                key={i}
+                                className="text-[10px] font-mono px-2 py-1 border border-border rounded text-text-dim"
+                              >
+                                {t}
+                              </span>
+                            ))}
+                            {project.tech.length > 3 && (
+                              <span className="text-[10px] font-mono px-2 py-1 text-text-dim">
+                                +{project.tech.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </ProximityGlow>
                   </div>
-                </div>
-              ))}
+                ))}
               </div>
             </div>
+
 
             {/* See More / Less */}
             {filteredProjects.length > 3 && (
@@ -903,72 +1118,224 @@ export default function PortfolioSection() {
 
         {/* ═══ CERTIFICATES TAB ═══ */}
         {rootTab === 'certificates' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {certificates.map((cert, idx) => (
-              <motion.div
-                key={idx}
-                onClick={() => setSelectedCert(cert)}
-                className="group relative cursor-pointer"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05, duration: 0.4 }}
-                whileHover={{ y: -5 }}
-              >
-                {/* Card */}
-                <div
-                  className="relative bg-gradient-to-br from-card to-obsidian rounded-xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300"
-                  style={{
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-                  }}
+          <div className="cert-grid-container flex flex-col gap-4 max-w-4xl mx-auto w-full">
+            {certificates.map((cert) => (
+              <ProximityGlow key={cert.id} radius={200}>
+                <div 
+                  className="cert-card-reveal group cursor-pointer"
+                  onClick={() => setSelectedCert(cert)}
+                  style={{ opacity: 0 }}
                 >
-                  {/* Top accent bar */}
+                  {/* Horizontal Card */}
                   <div
-                    className="h-1 w-full"
+                    className="relative flex overflow-hidden rounded-2xl border border-border hover:border-primary/40 transition-all duration-300"
                     style={{
-                      background: cert.orientation === 'landscape'
-                        ? 'linear-gradient(90deg, #06B6D4, #8B5CF6)'
-                        : 'linear-gradient(180deg, #EC4899, #F59E0B)',
+                      background: 'linear-gradient(135deg, rgba(17,20,34,0.95) 0%, rgba(9,10,15,0.98) 100%)',
+                      boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
                     }}
-                  />
+                  >
+                    {/* LEFT: PDF thumbnail (slightly cropped/visible) */}
+                    <div
+                      className="relative flex-shrink-0 overflow-hidden"
+                      style={{
+                        width: cert.orientation === 'landscape' ? '160px' : '110px',
+                        minHeight: '100px',
+                      }}
+                    >
+                      {cert.file ? (
+                        <iframe
+                          src={`${cert.file}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1`}
+                          className="absolute inset-0 border-0 pointer-events-none"
+                          title={cert.title}
+                          style={{
+                            width: cert.orientation === 'landscape' ? '340px' : '220px',
+                            height: cert.orientation === 'landscape' ? '240px' : '310px',
+                            transformOrigin: 'top left',
+                            transform: cert.orientation === 'landscape'
+                              ? 'scale(0.47)'
+                              : 'scale(0.50)',
+                          }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-card">
+                          <Award size={32} className="text-primary/30" />
+                        </div>
+                      )}
 
-                  {/* Content */}
-                  <div className="p-5">
-                    {/* Icon */}
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ background: 'rgba(99,102,241,0.15)' }}>
-                      <Award size={20} className="text-primary" />
+                      {/* Left edge accent line */}
+                      <div
+                        className="absolute left-0 top-0 bottom-0 w-[3px]"
+                        style={{
+                          background: cert.orientation === 'landscape'
+                            ? 'linear-gradient(180deg, #06B6D4, #8B5CF6)'
+                            : 'linear-gradient(180deg, #EC4899, #F59E0B)',
+                        }}
+                      />
                     </div>
 
-                    {/* Title */}
-                    <h3 className="text-text-primary text-sm font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                      {cert.title}
-                    </h3>
+                    {/* MIDDLE: Gradient fade overlay */}
+                    <div
+                      className="absolute flex-shrink-0"
+                      style={{
+                        left: cert.orientation === 'landscape' ? '130px' : '84px',
+                        top: 0,
+                        bottom: 0,
+                        width: '80px',
+                        background: 'linear-gradient(90deg, rgba(9,10,15,0) 0%, rgba(9,10,15,0.92) 60%, rgba(9,10,15,1) 100%)',
+                        pointerEvents: 'none',
+                        zIndex: 2,
+                      }}
+                    />
 
-                    {/* Issuer & Date */}
-                    <p className="text-text-dim text-xs mb-3">{cert.issuer}</p>
+                    {/* RIGHT: Info */}
+                    <div className="flex flex-col justify-center gap-1.5 px-5 py-4 flex-1 min-w-0 z-10">
+                      {/* Badges row */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className="text-[10px] font-mono px-2 py-0.5 rounded-full"
+                          style={{
+                            background: 'rgba(99,102,241,0.15)',
+                            color: '#818CF8',
+                            border: '1px solid rgba(99,102,241,0.25)',
+                          }}
+                        >
+                          {cert.issuer}
+                        </span>
+                        <span
+                          className="text-[10px] font-mono px-2 py-0.5 rounded-full"
+                          style={{
+                            background: 'rgba(6,182,212,0.1)',
+                            color: '#06B6D4',
+                            border: '1px solid rgba(6,182,212,0.2)',
+                          }}
+                        >
+                          {cert.date}
+                        </span>
+                      </div>
 
-                    {/* Footer */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-text-dim px-2 py-1 rounded bg-card">
-                        {cert.date}
-                      </span>
-                      <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                        View <Maximize2 size={12} />
-                      </span>
+                      {/* Title */}
+                      <h3 className="text-text-primary font-bold text-sm md:text-base leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                        {cert.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-text-dim text-xs leading-relaxed line-clamp-2 max-w-lg">
+                        {cert.desc}
+                      </p>
+
+                      {/* View hint */}
+                      <div className="flex items-center gap-1 mt-1">
+                        <span
+                          className="text-[10px] font-mono tracking-wider opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1.5"
+                          style={{ color: '#818CF8' }}
+                        >
+                          <Maximize2 size={11} /> Lihat Sertifikat
+                        </span>
+                      </div>
                     </div>
+
+                    {/* Hover glow overlay */}
+                    <div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+                      style={{
+                        background: 'radial-gradient(ellipse at 80% 50%, rgba(99,102,241,0.06), transparent 70%)',
+                      }}
+                    />
                   </div>
-
-                  {/* Hover glow */}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{
-                      background: 'radial-gradient(circle at 50% 0%, rgba(99,102,241,0.1), transparent 70%)',
-                    }}
-                  />
                 </div>
-              </motion.div>
+              </ProximityGlow>
             ))}
           </div>
         )}
+
+        {/* ═══ SHOWCASE TAB ═══ */}
+        {rootTab === 'showcase' && (
+          <div className="animate-[fadeIn_0.4s_ease-out]">
+            {/* Showcase Intro */}
+            <div className="text-center mb-12">
+              <h3 className="text-text-primary text-xl md:text-2xl font-bold mb-2">
+                Project & Dokumentasi
+              </h3>
+              <p className="text-text-dim text-sm">
+                Koleksi lengkap karya graphic design dan dokumentasi project
+              </p>
+            </div>
+
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {showcaseGraphicDesign.map((project, idx) => (
+                <ProximityGlow key={project.id} radius={200}>
+                  <motion.div
+                    onClick={() => {
+                      setSelectedGallery(project);
+                      setCurrentImageIndex(0);
+                    }}
+                    className="group relative cursor-pointer rounded-2xl overflow-hidden"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.15, duration: 0.5 }}
+                    whileHover={{ y: -8 }}
+                  >
+                    {/* Main Image Preview */}
+                    <div className="relative aspect-[4/3] overflow-hidden bg-obsidian">
+                      <img
+                        src={project.images[0]}
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/30 to-transparent" />
+
+                      {/* Image Count Badge */}
+                      <div className="absolute top-4 right-4 bg-obsidian/80 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2 border border-border">
+                        <span className="text-primary font-semibold text-sm">{project.images.length}</span>
+                        <span className="text-text-dim text-xs">foto</span>
+                      </div>
+
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <div className="bg-obsidian/90 backdrop-blur-sm px-6 py-3 rounded-xl border border-primary/30">
+                          <span className="text-primary font-semibold flex items-center gap-2">
+                            <Maximize2 size={18} /> Lihat Gallery
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Project Info */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{project.icon}</span>
+                          <div>
+                            <h3 className="text-white text-lg font-bold">{project.title}</h3>
+                            <span className="text-white/50 text-xs">{project.year}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Services Tags */}
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {project.services.slice(0, 3).map((service, i) => (
+                          <span key={i} className="text-[10px] px-2 py-1 bg-white/10 rounded-full text-white/80">
+                            {service}
+                          </span>
+                        ))}
+                        {project.services.length > 3 && (
+                          <span className="text-[10px] px-2 py-1 bg-white/10 rounded-full text-white/60">
+                            +{project.services.length - 3} lainnya
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                </ProximityGlow>
+              ))}
+            </div>
+          </div>
+        )}
+
 
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
@@ -1001,6 +1368,157 @@ export default function PortfolioSection() {
           cert={selectedCert}
           onClose={() => setSelectedCert(null)}
         />
+      )}
+
+      {/* ═══ GALLERY SLIDESHOW MODAL ═══ */}
+      {selectedGallery && (
+        <div
+          className="fixed inset-0 z-[200] bg-obsidian/98 backdrop-blur-xl flex flex-col"
+          onClick={() => setSelectedGallery(null)}
+        >
+          {/* Header */}
+          <div
+            className="flex items-center justify-between px-6 py-4 border-b border-border/50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-4">
+              <span className="text-3xl">{selectedGallery.icon}</span>
+              <div>
+                <h2 className="text-white text-xl font-bold">{selectedGallery.title}</h2>
+                <p className="text-white/50 text-sm">{selectedGallery.year}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setSelectedGallery(null)}
+              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Main Content */}
+          <div
+            className="flex-1 flex flex-col lg:flex-row overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Image Slideshow Area */}
+            <div className="flex-1 relative flex items-center justify-center p-4 lg:p-8 bg-black/30">
+              {/* Main Image */}
+              <motion.div
+                key={currentImageIndex}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="relative max-w-full max-h-full"
+              >
+                <img
+                  src={selectedGallery.images[currentImageIndex]}
+                  alt={`${selectedGallery.title} - Image ${currentImageIndex + 1}`}
+                  className="max-w-full max-h-[70vh] lg:max-h-[75vh] object-contain rounded-xl shadow-2xl"
+                  style={{ maxHeight: '75vh' }}
+                />
+              </motion.div>
+
+              {/* Navigation Arrows */}
+              {selectedGallery.images.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex((prev) =>
+                        prev === 0 ? selectedGallery.images.length - 1 : prev - 1
+                      );
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white transition-all"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex((prev) =>
+                        prev === selectedGallery.images.length - 1 ? 0 : prev + 1
+                      );
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white transition-all"
+                  >
+                    ›
+                  </button>
+                </>
+              )}
+
+              {/* Image Counter */}
+              {selectedGallery.images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm flex items-center gap-2">
+                  {selectedGallery.images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentImageIndex(idx);
+                      }}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        idx === currentImageIndex
+                          ? 'bg-primary w-6'
+                          : 'bg-white/40 hover:bg-white/60'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Info Sidebar */}
+            <div className="w-full lg:w-96 border-t lg:border-t-0 lg:border-l border-border/50 overflow-y-auto">
+              {/* Description */}
+              <div className="p-6 border-b border-border/50">
+                <h3 className="text-white font-semibold mb-3">Deskripsi</h3>
+                <p className="text-white/70 text-sm leading-relaxed">
+                  {selectedGallery.desc}
+                </p>
+              </div>
+
+              {/* Services List */}
+              <div className="p-6">
+                <h3 className="text-white font-semibold mb-4">Layanan & Jasa</h3>
+                <ul className="space-y-3">
+                  {selectedGallery.services.map((service, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <span className="text-primary mt-0.5">✦</span>
+                      <span className="text-white/70 text-sm">{service}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Thumbnail Strip */}
+              {selectedGallery.images.length > 1 && (
+                <div className="p-4 border-t border-border/50">
+                  <p className="text-white/50 text-xs mb-3">Gallery Preview</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {selectedGallery.images.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentImageIndex(idx)}
+                        className={`flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all ${
+                          idx === currentImageIndex
+                            ? 'border-primary scale-105'
+                            : 'border-transparent hover:border-white/30'
+                        }`}
+                      >
+                        <img
+                          src={img}
+                          alt={`Thumbnail ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );

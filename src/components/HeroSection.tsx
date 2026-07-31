@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import RobotScene from './RobotScene';
 import GlassButton from './Shared/GlassButton';
-import ScrollReveal from '@/components/Shared/ScrollReveal';
+import { gsap } from '@/lib/gsap';
 
 /* ─── SVG Social Icons ─── */
 function IconGithub({ size = 20 }: { size?: number }) {
@@ -54,7 +54,18 @@ const socialLinks = [
 /* ─── HERO SECTION ─── */
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const hudRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const socialsRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const robot3DRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [smoothMouse, setSmoothMouse] = useState({ x: 0, y: 0 });
+  const [isInHero, setIsInHero] = useState(false);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -67,10 +78,151 @@ export default function HeroSection() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [handleMouseMove]);
 
+  // Smooth mouse interpolation
+  useEffect(() => {
+    let animationId: number;
+    const animate = () => {
+      setSmoothMouse(prev => ({
+        x: prev.x + (mousePos.x - prev.x) * 0.08,
+        y: prev.y + (mousePos.y - prev.y) * 0.08,
+      }));
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(animationId);
+  }, [mousePos]);
+
+  // ── GSAP Cinematic Entrance ──
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+      // HUD slides down
+      tl.fromTo(
+        hudRef.current,
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 0.6 },
+        0.1
+      );
+
+      // Title: split into words, reveal with stagger
+      if (titleRef.current) {
+        const words = titleRef.current.querySelectorAll('.hero-word');
+        tl.fromTo(
+          words,
+          { opacity: 0, y: 60, rotateX: -90, transformOrigin: '50% 50% -30px' },
+          {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            duration: 0.7,
+            stagger: 0.06,
+            ease: 'back.out(1.4)',
+          },
+          0.2
+        );
+      }
+
+      // Subtitle fades in
+      tl.fromTo(
+        subtitleRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.7 },
+        '-=0.3'
+      );
+
+      // Social icons pop in
+      if (socialsRef.current) {
+        const icons = socialsRef.current.querySelectorAll('a');
+        tl.fromTo(
+          icons,
+          { opacity: 0, scale: 0.5, y: 10 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'back.out(2)' },
+          '-=0.4'
+        );
+      }
+
+      // CTA buttons slide up
+      if (ctaRef.current) {
+        const btns = ctaRef.current.querySelectorAll('a, button');
+        tl.fromTo(
+          btns,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 },
+          '-=0.3'
+        );
+      }
+
+      // 3D Robot clips in from right
+      tl.fromTo(
+        robot3DRef.current,
+        { opacity: 0, x: 60, scale: 0.9 },
+        { opacity: 1, x: 0, scale: 1, duration: 1, ease: 'power2.out' },
+        0.1
+      );
+
+      // Stats row fades up
+      tl.fromTo(
+        statsRef.current,
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        '-=0.5'
+      );
+
+      // Bottom panel
+      tl.fromTo(
+        bottomRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.4 },
+        '-=0.3'
+      );
+
+      // Parallax on scroll (robot + text layers)
+      gsap.to(robot3DRef.current, {
+        yPercent: -18,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.5,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="hero" ref={sectionRef} className="relative min-h-[100dvh] w-full flex flex-col justify-between overflow-hidden bg-grid">
+    <section
+      id="hero"
+      ref={sectionRef}
+      className="relative min-h-[100dvh] w-full flex flex-col justify-between overflow-hidden bg-grid"
+      onMouseEnter={() => setIsInHero(true)}
+      onMouseLeave={() => setIsInHero(false)}
+    >
+      {/* DYNAMIC BACKGROUND GRADIENT - Follows cursor */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+        style={{
+          background: `radial-gradient(circle 600px at ${50 + smoothMouse.x * 30}% ${50 + smoothMouse.y * 30}%, rgba(99, 102, 241, 0.08) 0%, transparent 70%)`,
+          opacity: isInHero ? 1 : 0,
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-700"
+        style={{
+          background: `radial-gradient(circle 400px at ${50 - smoothMouse.x * 20}% ${70 - smoothMouse.y * 20}%, rgba(6, 182, 212, 0.06) 0%, transparent 70%)`,
+          opacity: isInHero ? 1 : 0,
+        }}
+      />
+
       {/* TOP HUD STATUS */}
-      <ScrollReveal variant="fade-down" duration={600} delay={300} className="relative z-10 flex justify-between items-start px-6 md:px-12 pt-20 md:pt-28">
+      <div
+        ref={hudRef}
+        className="relative z-10 flex justify-between items-start px-6 md:px-12 pt-20 md:pt-28"
+        style={{ opacity: 0 }}
+      >
         <div className="flex flex-col gap-1">
           <span className="text-system text-primary">System Ready</span>
           <span className="text-system text-text-dim">Portfolio 2026</span>
@@ -79,32 +231,57 @@ export default function HeroSection() {
         <div className="flex items-center gap-3">
           <span className="text-system text-text-dim">Core UI</span>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span
+              className="w-1.5 h-1.5 animate-pulse"
+              style={{
+                background: 'var(--theme-primary-hex)',
+                clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+              }}
+            />
             <span className="text-system text-primary">Online</span>
           </div>
         </div>
-      </ScrollReveal>
+      </div>
 
       {/* MAIN HERO CONTENT */}
       <div className="relative z-10 flex-grow flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-12 md:py-0 gap-6 md:gap-12">
         {/* Left: Text */}
         <div
           className="w-full md:w-[55%] flex flex-col"
-          style={{ transform: `translate(${mousePos.x * -8}px, ${mousePos.y * -5}px)`, transition: 'transform 0.3s ease-out' }}
+          style={{
+            transform: `translate(${smoothMouse.x * -10}px, ${smoothMouse.y * -6}px)`,
+            transition: 'transform 0.1s ease-out',
+          }}
         >
-          <ScrollReveal variant="fade-left" duration={800} delay={100}>
-            <h1 className="text-heading text-[2.2rem] sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-4 md:mb-6 uppercase">
-              Building Modern Digital Experiences through Data, Code, and Visual Design.
-            </h1>
-          </ScrollReveal>
-          <ScrollReveal variant="fade-left" duration={800} delay={300}>
-            <p className="text-text-body font-body text-sm md:text-base leading-relaxed max-w-xl mb-6">
-              Bridging the gap between data insights, creative design, and robust development to deliver reliable and fast web applications.
-            </p>
-          </ScrollReveal>
+          {/* Title with split words for GSAP stagger */}
+          <h1
+            ref={titleRef}
+            className="text-heading text-[2.2rem] sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-4 md:mb-6 uppercase"
+            style={{ perspective: '800px', opacity: 0 }}
+          >
+            {'Building Modern Digital Experiences through Data, Code, and Visual Design.'
+              .split(' ')
+              .map((word, i) => (
+                <span
+                  key={i}
+                  className="hero-word inline-block mr-[0.3em]"
+                  style={{ display: 'inline-block' }}
+                >
+                  {word}
+                </span>
+              ))}
+          </h1>
+
+          <p
+            ref={subtitleRef}
+            className="text-text-body font-body text-sm md:text-base leading-relaxed max-w-xl mb-6"
+            style={{ opacity: 0 }}
+          >
+            Bridging the gap between data insights, creative design, and robust development to deliver reliable and fast web applications.
+          </p>
 
           {/* Social Icons */}
-          <ScrollReveal variant="fade-up" duration={600} delay={500} className="flex items-center gap-3 mb-10">
+          <div ref={socialsRef} className="flex items-center gap-3 mb-10">
             {socialLinks.map((s) => (
               <a
                 key={s.label}
@@ -113,41 +290,42 @@ export default function HeroSection() {
                 rel="noreferrer"
                 aria-label={s.label}
                 className={`w-10 h-10 rounded-lg bg-white/5 backdrop-blur-sm border border-border flex items-center justify-center text-text-muted transition-all duration-300 ${s.color} hover:-translate-y-1`}
+                style={{ opacity: 0 }}
               >
                 {s.icon}
               </a>
             ))}
-          </ScrollReveal>
+          </div>
 
           {/* CTA Buttons */}
-          <ScrollReveal variant="fade-up" duration={600} delay={600} className="flex flex-wrap gap-4 mt-2">
-            <GlassButton
-              href="#portfolio"
-              isActive={true}
-              className="px-8 py-3.5"
-            >
+          <div ref={ctaRef} className="flex flex-wrap gap-4 mt-2">
+            <GlassButton href="#portfolio" isActive={true} className="px-8 py-3.5" style={{ opacity: 0 }}>
               Projects ↗
             </GlassButton>
-            <GlassButton
-              href="#contact"
-              isActive={false}
-              className="px-8 py-3.5"
-            >
+            <GlassButton href="#contact" isActive={false} className="px-8 py-3.5" style={{ opacity: 0 }}>
               Contact Me
             </GlassButton>
-          </ScrollReveal>
+          </div>
         </div>
 
         {/* Right: 3D Robot Scene */}
         <div
+          ref={robot3DRef}
           className="w-full md:w-[40%] flex flex-col items-center gap-4 md:gap-6"
-          style={{ transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 8}px)`, transition: 'transform 0.3s ease-out' }}
+          style={{
+            transform: `translate(${smoothMouse.x * 15}px, ${smoothMouse.y * 10}px)`,
+            transition: 'transform 0.1s ease-out',
+            opacity: 0,
+          }}
         >
-          {/* Container size optimized for Chibi Mecha - taller to prevent clipping */}
           <div className="w-full max-w-[400px] h-[350px] md:h-[550px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
             <RobotScene />
           </div>
-          <div className="flex justify-around w-full max-w-[400px] mt-2 border-t border-border/30 pt-4">
+          <div
+            ref={statsRef}
+            className="flex justify-around w-full max-w-[400px] mt-2 border-t border-border/30 pt-4"
+            style={{ opacity: 0 }}
+          >
             <div className="flex flex-col items-center">
               <span className="text-system text-text-dim font-mono text-xs">MODULES</span>
               <span className="text-system text-secondary font-bold">06 Loaded</span>
@@ -161,7 +339,11 @@ export default function HeroSection() {
       </div>
 
       {/* BOTTOM ACTION PANEL */}
-      <div className="relative z-10 flex items-center gap-4 px-6 md:px-12 pb-8">
+      <div
+        ref={bottomRef}
+        className="relative z-10 flex items-center gap-4 px-6 md:px-12 pb-8"
+        style={{ opacity: 0 }}
+      >
         <a
           href="#about"
           className="px-4 py-2 border border-border rounded text-system text-text-muted hover:border-primary/50 hover:text-primary transition-colors"
