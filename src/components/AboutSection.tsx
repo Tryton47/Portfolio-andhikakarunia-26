@@ -48,38 +48,26 @@ function StatCard({
 }
 
 function TiltPortrait() {
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const [glareX, setGlareX] = useState(50);
-  const [glareY, setGlareY] = useState(50);
-  const [isHovered, setIsHovered] = useState(false);
-  const [sweepAngle, setSweepAngle] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const glareRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSweepAngle((prev) => (prev + 1) % 360);
-    }, 30);
-    return () => clearInterval(interval);
-  }, []);
-
-  // GSAP clip-path reveal
+  // GSAP 3D entry reveal
   useEffect(() => {
     if (!containerRef.current) return;
     const ctx = gsap.context(() => {
       gsap.fromTo(
         containerRef.current,
-        { clipPath: 'inset(0 100% 0 0)', opacity: 0 },
+        { opacity: 0, y: 50, rotateX: 25, rotateY: -15, scale: 0.9 },
         {
-          clipPath: 'inset(0 0% 0 0)',
           opacity: 1,
+          y: 0,
+          rotateX: 0,
+          rotateY: 0,
+          scale: 1,
           duration: 1.4,
-          ease: 'power4.inOut',
-          onComplete: () => {
-            if (containerRef.current) {
-              containerRef.current.style.clipPath = 'none';
-            }
-          },
+          ease: 'power4.out',
           scrollTrigger: {
             trigger: containerRef.current,
             start: 'top 80%',
@@ -91,18 +79,67 @@ function TiltPortrait() {
     return () => ctx.revert();
   }, []);
 
+  // Sweeping glow loop
+  useEffect(() => {
+    if (!glowRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.to(glowRef.current, {
+        rotation: 360,
+        duration: 8,
+        repeat: -1,
+        ease: 'none',
+      });
+    }, glowRef);
+    return () => ctx.revert();
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isHovered) return;
+    if (!cardRef.current || !glareRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const maxTilt = 20;
-    setRotateX(-((y - centerY) / centerY) * maxTilt);
-    setRotateY(((x - centerX) / centerX) * maxTilt);
-    setGlareX((x / rect.width) * 100);
-    setGlareY((y / rect.height) * 100);
+    const maxTilt = 15;
+    
+    const rotateX = -((y - centerY) / centerY) * maxTilt;
+    const rotateY = ((x - centerX) / centerX) * maxTilt;
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+
+    gsap.to(cardRef.current, {
+      rotateX,
+      rotateY,
+      scale: 1.04,
+      duration: 0.3,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    });
+
+    gsap.to(glareRef.current, {
+      opacity: 1,
+      background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.3) 0%, transparent 65%)`,
+      duration: 0.2,
+      overwrite: 'auto',
+    });
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current || !glareRef.current) return;
+    gsap.to(cardRef.current, {
+      rotateX: 0,
+      rotateY: 0,
+      scale: 1,
+      duration: 0.6,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    });
+
+    gsap.to(glareRef.current, {
+      opacity: 0,
+      duration: 0.4,
+      overwrite: 'auto',
+    });
   };
 
   return (
@@ -111,23 +148,21 @@ function TiltPortrait() {
       className="relative cursor-pointer"
       style={{ perspective: '1200px', opacity: 0 }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => { setIsHovered(false); setRotateX(0); setRotateY(0); }}
+      onMouseLeave={handleMouseLeave}
     >
       <div
-        className="relative transition-transform duration-200 ease-out z-10"
+        ref={cardRef}
+        className="relative transition-transform ease-out z-10"
         style={{
-          transform: isHovered
-            ? `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`
-            : 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
           transformStyle: 'preserve-3d',
         }}
       >
         {/* Sweeping Glow Ring */}
         <div
+          ref={glowRef}
           className="absolute inset-[-8px] rounded-2xl opacity-70"
           style={{
-            background: `conic-gradient(from ${sweepAngle}deg, transparent 0deg, var(--theme-primary-hex) 30deg, transparent 60deg, transparent 360deg)`,
+            background: 'conic-gradient(from 0deg, transparent 0deg, var(--theme-primary-hex) 30deg, transparent 60deg, transparent 360deg)',
             filter: 'blur(10px)',
             transform: 'translateZ(-20px)',
           }}
@@ -149,10 +184,9 @@ function TiltPortrait() {
 
           {/* Glare Effect */}
           <div
-            className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+            ref={glareRef}
+            className="absolute inset-0 pointer-events-none opacity-0"
             style={{
-              opacity: isHovered ? 1 : 0,
-              background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.4) 0%, transparent 60%)`,
               mixBlendMode: 'overlay',
               transform: 'translateZ(20px)',
             }}
@@ -162,6 +196,7 @@ function TiltPortrait() {
     </div>
   );
 }
+
 
 /* ─── ABOUT SECTION ─── */
 export default function AboutSection() {
