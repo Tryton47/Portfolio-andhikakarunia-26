@@ -27,8 +27,11 @@ export default function LoadingScreen3D({ onDone, minDuration = 3500 }) {
   const [lines, setLines] = useState([]);
   const [phase, setPhase] = useState('enter'); // enter | idle | exit
   const [showName, setShowName] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const startRef = useRef(Date.now());
   const rafRef = useRef(null);
+
+  useEffect(() => setMounted(true), []);
 
   // Phase 1: Cinematic entrance
   useEffect(() => {
@@ -123,7 +126,7 @@ export default function LoadingScreen3D({ onDone, minDuration = 3500 }) {
 
       {/* ─── Starfield BG ─── */}
       <div style={{ position:'absolute',inset:0,overflow:'hidden',pointerEvents:'none' }}>
-        {PARTICLES.map(p => (
+        {mounted && PARTICLES.map(p => (
           <div key={p.id} style={{
             position:'absolute',
             left:`${p.x}%`,
