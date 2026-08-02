@@ -1012,8 +1012,35 @@ export default function PortfolioSection() {
                                 {project.category.toUpperCase()}
                               </span>
                             </>
+                          ) : project.link?.endsWith('.pdf') ? (
+                            <>
+                              <iframe
+                                src={`${project.link}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1`}
+                                className="absolute inset-0 border-0 pointer-events-none w-full h-full scale-[1.3] transform-origin-top"
+                                title={project.title}
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-black/20 z-[1]" />
+                              <span className="absolute top-3 left-3 z-[3] text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-obsidian/80 backdrop-blur-md text-primary border border-primary/30 shadow-lg">
+                                {project.category.toUpperCase()}
+                              </span>
+                            </>
                           ) : (
-                            <span className="text-system text-text-dim">{project.category}</span>
+                            <div className="flex flex-col items-center justify-center gap-2 text-primary/70">
+                              {project.link?.endsWith('.xlsx') ? (
+                                <div className="w-16 h-16 rounded-xl bg-green-500/10 border border-green-500/30 flex items-center justify-center mb-2 shadow-lg shadow-green-500/10">
+                                  <span className="text-3xl">📊</span>
+                                </div>
+                              ) : project.link?.endsWith('.docx') ? (
+                                <div className="w-16 h-16 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-2 shadow-lg shadow-blue-500/10">
+                                  <span className="text-3xl">📝</span>
+                                </div>
+                              ) : (
+                                <span className="text-system text-text-dim">{project.category}</span>
+                              )}
+                              <span className="absolute top-3 left-3 z-[3] text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-obsidian/80 backdrop-blur-md text-primary border border-primary/30 shadow-lg">
+                                {project.category.toUpperCase()}
+                              </span>
+                            </div>
                           )}
 
                           {/* Maintenance Overlay */}
