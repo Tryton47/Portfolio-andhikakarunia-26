@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
-import * as animejs from 'animejs';
-const anime = animejs.default || animejs;
+import { animate } from 'animejs';
 
 type CountUpOptions = {
   duration?: number;
@@ -33,7 +32,7 @@ export function useAnimeCountUp(
           hasRun.current = true;
 
           const obj = { value: 0 };
-          anime({
+          animate({
             targets: obj,
             value: target,
             duration,
