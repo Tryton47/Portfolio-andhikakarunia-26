@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { animate } from 'animejs';
+import { gsap } from '@/lib/gsap';
 
 type CountUpOptions = {
   duration?: number;
@@ -9,7 +9,7 @@ type CountUpOptions = {
   decimals?: number;
 };
 
-// ── Anime.js powered count-up ──
+// ── GSAP powered count-up ──
 export function useAnimeCountUp(
   target: number,
   observerRef: React.RefObject<Element | null>,
@@ -17,7 +17,7 @@ export function useAnimeCountUp(
 ) {
   const {
     duration = 2000,
-    easing = 'easeOutExpo',
+    easing = 'power3.out',
     delay = 0,
     decimals = 0,
   } = options;
@@ -32,14 +32,12 @@ export function useAnimeCountUp(
           hasRun.current = true;
 
           const obj = { value: 0 };
-          animate({
-            targets: obj,
+          gsap.to(obj, {
             value: target,
-            duration,
-            easing,
-            delay,
-            round: decimals === 0 ? 1 : undefined,
-            update: () => {
+            duration: duration / 1000,
+            ease: easing,
+            delay: delay / 1000,
+            onUpdate: () => {
               if (displayRef.current) {
                 displayRef.current.textContent =
                   decimals > 0
@@ -60,7 +58,7 @@ export function useAnimeCountUp(
   return displayRef;
 }
 
-// ── Anime.js 3D card tilt on mouse move ──
+// ── GSAP 3D card tilt on mouse move ──
 export function useAnimeTilt(ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
     const el = ref.current;
@@ -76,25 +74,23 @@ export function useAnimeTilt(ref: React.RefObject<HTMLElement | null>) {
       const rotateX = ((y - centerY) / centerY) * -8;
       const rotateY = ((x - centerX) / centerX) * 8;
 
-      anime({
-        targets: el,
-        rotateX,
-        rotateY,
-        translateZ: 10,
-        duration: 300,
-        easing: 'easeOutQuart',
+      gsap.to(el, {
+        rotationX: rotateX,
+        rotationY: rotateY,
+        z: 10,
+        duration: 0.3,
+        ease: 'power2.out',
         transformOrigin: '50% 50% -50px',
       });
     };
 
     const onLeave = () => {
-      anime({
-        targets: el,
-        rotateX: 0,
-        rotateY: 0,
-        translateZ: 0,
-        duration: 600,
-        easing: 'easeOutElastic(1, 0.8)',
+      gsap.to(el, {
+        rotationX: 0,
+        rotationY: 0,
+        z: 0,
+        duration: 0.6,
+        ease: 'elastic.out(1, 0.8)',
         transformOrigin: '50% 50% -50px',
       });
     };
@@ -111,7 +107,7 @@ export function useAnimeTilt(ref: React.RefObject<HTMLElement | null>) {
   }, [ref]);
 }
 
-// ── Anime.js stagger grid reveal ──
+// ── GSAP stagger grid reveal ──
 export function useAnimeStaggerReveal(
   containerRef: React.RefObject<Element | null>,
   itemSelector: string,
@@ -127,14 +123,18 @@ export function useAnimeStaggerReveal(
       ([entry]) => {
         if (entry.isIntersecting) {
           const items = container.querySelectorAll(itemSelector);
-          anime({
-            targets: items,
-            opacity: [0, 1],
-            translateY: [30, 0],
-            duration,
-            delay: anime.stagger(60, { start: delay }),
-            easing: 'easeOutCubic',
-          });
+          gsap.fromTo(
+            items,
+            { opacity: 0, y: 30 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: duration / 1000,
+              delay: delay / 1000,
+              stagger: 0.06,
+              ease: 'power3.out',
+            }
+          );
           observer.disconnect();
         }
       },
@@ -146,22 +146,25 @@ export function useAnimeStaggerReveal(
   }, [containerRef, itemSelector, delay, duration]);
 }
 
-// ── Anime.js loading progress bar ──
+// ── GSAP loading progress bar ──
 export function animeProgressBar(
   el: HTMLElement,
   from: number,
   to: number,
   duration: number
 ) {
-  return anime({
-    targets: el,
-    width: [`${from}%`, `${to}%`],
-    duration,
-    easing: 'easeInOutQuart',
-  });
+  return gsap.fromTo(
+    el,
+    { width: `${from}%` },
+    {
+      width: `${to}%`,
+      duration: duration / 1000,
+      ease: 'power3.inOut',
+    }
+  );
 }
 
-// ── Anime.js typing effect ──
+// ── Typing effect ──
 export function useAnimeTypewriter(
   ref: React.RefObject<HTMLElement | null>,
   texts: string[],

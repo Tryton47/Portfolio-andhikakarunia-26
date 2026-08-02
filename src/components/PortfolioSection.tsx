@@ -1120,7 +1120,7 @@ export default function PortfolioSection() {
         {rootTab === 'certificates' && (
           <div className="cert-grid-container flex flex-col gap-4 max-w-4xl mx-auto w-full">
             {certificates.map((cert) => (
-              <ProximityGlow key={cert.id} radius={200}>
+              <ProximityGlow key={cert.title} radius={200}>
                 <div 
                   className="cert-card-reveal group cursor-pointer"
                   onClick={() => setSelectedCert(cert)}
