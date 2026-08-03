@@ -912,7 +912,18 @@ export default function PortfolioSection() {
     return projects.filter((p) => p.category === subFilter);
   }, [subFilter]);
 
-  const visibleProjects = showMore ? filteredProjects : filteredProjects.slice(0, 3);
+  const visibleProjects = useMemo(() => {
+    return showMore ? filteredProjects : filteredProjects.slice(0, 3);
+  }, [filteredProjects, showMore]);
+
+  const groupedTech = useMemo(() => {
+    const groups: Record<string, typeof techStack> = {};
+    techStack.forEach((t) => {
+      if (!groups[t.cat]) groups[t.cat] = [];
+      groups[t.cat].push(t);
+    });
+    return groups;
+  }, []);
 
   const AmbientBg = useMemo(() => {
     if (rootTab !== 'projects') return null;
@@ -1165,42 +1176,32 @@ export default function PortfolioSection() {
 
         {/* ═══ CERTIFICATES TAB ═══ */}
         {rootTab === 'certificates' && (
-          <div className="cert-grid-container flex flex-col gap-4 max-w-4xl mx-auto w-full">
+          <div className="cert-grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full">
             {certificates.map((cert) => (
-              <ProximityGlow key={cert.title} radius={200}>
+              <ProximityGlow key={cert.title} radius={200} className="h-full">
                 <div 
-                  className="cert-card-reveal group cursor-pointer"
+                  className="cert-card-reveal group cursor-pointer h-full"
                   onClick={() => setSelectedCert(cert)}
                   style={{ opacity: 0 }}
                 >
-                  {/* Horizontal Card */}
+                  {/* Vertical Card */}
                   <div
-                    className="relative flex overflow-hidden rounded-2xl border border-border hover:border-primary/40 transition-all duration-300"
+                    className="relative flex flex-col h-full overflow-hidden rounded-2xl border border-border hover:border-primary/40 transition-all duration-300"
                     style={{
                       background: 'linear-gradient(135deg, rgba(17,20,34,0.95) 0%, rgba(9,10,15,0.98) 100%)',
                       boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
                     }}
                   >
-                    {/* LEFT: PDF thumbnail (slightly cropped/visible) */}
-                    <div
-                      className="relative flex-shrink-0 overflow-hidden"
-                      style={{
-                        width: cert.orientation === 'landscape' ? '160px' : '110px',
-                        minHeight: '100px',
-                      }}
-                    >
+                    {/* TOP: PDF thumbnail */}
+                    <div className="relative w-full h-48 overflow-hidden bg-black/50">
                       {cert.file ? (
                         <iframe
                           src={`${cert.file}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1`}
-                          className="absolute inset-0 border-0 pointer-events-none"
+                          className="absolute inset-0 border-0 pointer-events-none w-full h-full transform origin-top"
                           title={cert.title}
                           style={{
-                            width: cert.orientation === 'landscape' ? '340px' : '220px',
-                            height: cert.orientation === 'landscape' ? '240px' : '310px',
-                            transformOrigin: 'top left',
-                            transform: cert.orientation === 'landscape'
-                              ? 'scale(0.47)'
-                              : 'scale(0.50)',
+                             transform: cert.orientation === 'landscape' ? 'scale(1.1)' : 'scale(1)',
+                             marginTop: cert.orientation === 'landscape' ? '-5%' : '-15%'
                           }}
                         />
                       ) : (
@@ -1208,84 +1209,39 @@ export default function PortfolioSection() {
                           <Award size={32} className="text-primary/30" />
                         </div>
                       )}
-
-                      {/* Left edge accent line */}
-                      <div
-                        className="absolute left-0 top-0 bottom-0 w-[3px]"
-                        style={{
-                          background: cert.orientation === 'landscape'
-                            ? 'linear-gradient(180deg, #06B6D4, #8B5CF6)'
-                            : 'linear-gradient(180deg, #EC4899, #F59E0B)',
-                        }}
-                      />
+                      
+                      {/* Fade Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#090a0f] via-transparent to-transparent z-[1]" />
                     </div>
 
-                    {/* MIDDLE: Gradient fade overlay */}
-                    <div
-                      className="absolute flex-shrink-0"
-                      style={{
-                        left: cert.orientation === 'landscape' ? '130px' : '84px',
-                        top: 0,
-                        bottom: 0,
-                        width: '80px',
-                        background: 'linear-gradient(90deg, rgba(9,10,15,0) 0%, rgba(9,10,15,0.92) 60%, rgba(9,10,15,1) 100%)',
-                        pointerEvents: 'none',
-                        zIndex: 2,
-                      }}
-                    />
-
-                    {/* RIGHT: Info */}
-                    <div className="flex flex-col justify-center gap-1.5 px-5 py-4 flex-1 min-w-0 z-10">
+                    {/* BOTTOM: Info */}
+                    <div className="flex flex-col flex-1 p-5 z-10 bg-[#090a0f]">
                       {/* Badges row */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span
-                          className="text-[10px] font-mono px-2 py-0.5 rounded-full"
-                          style={{
-                            background: 'rgba(99,102,241,0.15)',
-                            color: '#818CF8',
-                            border: '1px solid rgba(99,102,241,0.25)',
-                          }}
-                        >
+                      <div className="flex items-center gap-2 flex-wrap mb-3">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                           {cert.issuer}
                         </span>
-                        <span
-                          className="text-[10px] font-mono px-2 py-0.5 rounded-full"
-                          style={{
-                            background: 'rgba(6,182,212,0.1)',
-                            color: '#06B6D4',
-                            border: '1px solid rgba(6,182,212,0.2)',
-                          }}
-                        >
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                           {cert.date}
                         </span>
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-text-primary font-bold text-sm md:text-base leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                      <h3 className="text-text-primary font-bold text-sm md:text-base leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-2">
                         {cert.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-text-dim text-xs leading-relaxed line-clamp-2 max-w-lg">
+                      <p className="text-text-dim text-xs leading-relaxed line-clamp-2 mt-auto">
                         {cert.desc}
                       </p>
-
-                      {/* View hint */}
-                      <div className="flex items-center gap-1 mt-1">
-                        <span
-                          className="text-[10px] font-mono tracking-wider opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1.5"
-                          style={{ color: '#818CF8' }}
-                        >
-                          <Maximize2 size={11} /> Lihat Sertifikat
-                        </span>
-                      </div>
                     </div>
 
                     {/* Hover glow overlay */}
                     <div
                       className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
                       style={{
-                        background: 'radial-gradient(ellipse at 80% 50%, rgba(99,102,241,0.06), transparent 70%)',
+                        background: 'radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.1), transparent 70%)',
                       }}
                     />
                   </div>
@@ -1387,31 +1343,35 @@ export default function PortfolioSection() {
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
           <div className="relative w-full min-h-[60vh] py-12">
-            <div className="max-w-5xl mx-auto px-4">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 tech-grid-container">
-                {techStack.map((tech, idx) => (
-                  <div key={idx} className="tech-item-reveal opacity-0" style={{ transform: 'translateY(30px)' }}>
-                    <ProximityGlow radius={150} className="h-full">
-                      <div className="group relative w-full h-full p-6 rounded-2xl bg-obsidian border border-border/50 flex flex-col items-center justify-center gap-3 overflow-hidden transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 cursor-default">
-                        {/* Interactive Background */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        
-                        <div className="w-12 h-12 rounded-xl bg-charcoal border border-border flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-inner">
-                           <Code2 size={24} className="opacity-70 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        
-                        <h4 className="text-text-primary font-semibold text-sm md:text-base group-hover:text-primary transition-colors text-center">
-                          {tech.name}
-                        </h4>
-                        
-                        <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mt-auto">
-                          {tech.cat.toUpperCase()}
-                        </span>
+            <div className="max-w-5xl mx-auto px-4 space-y-12">
+              {Object.entries(groupedTech).map(([category, items]) => (
+                <div key={category}>
+                  <h3 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-4">
+                    <span className="w-12 h-[1px] bg-gradient-to-r from-primary to-transparent" />
+                    {category}
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 tech-grid-container">
+                    {items.map((tech, idx) => (
+                      <div key={tech.name} className="tech-item-reveal opacity-0" style={{ transform: 'translateY(30px)' }}>
+                        <ProximityGlow radius={150} className="h-full">
+                          <div className="group relative w-full h-full p-6 rounded-2xl bg-obsidian border border-border/50 flex flex-col items-center justify-center gap-3 overflow-hidden transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 cursor-default">
+                            {/* Interactive Background */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            
+                            <div className="w-12 h-12 rounded-xl bg-charcoal border border-border flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-inner">
+                               <Code2 size={24} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                            
+                            <h4 className="text-text-primary font-semibold text-sm md:text-base group-hover:text-primary transition-colors text-center">
+                              {tech.name}
+                            </h4>
+                          </div>
+                        </ProximityGlow>
                       </div>
-                    </ProximityGlow>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

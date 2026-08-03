@@ -52,6 +52,7 @@ function TiltPortrait() {
   const cardRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const glareRef = useRef<HTMLDivElement>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   // GSAP 3D entry reveal
   useEffect(() => {
@@ -117,10 +118,23 @@ function TiltPortrait() {
     });
 
     gsap.to(glareRef.current, {
-      opacity: 1,
-      background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.3) 0%, transparent 65%)`,
+      opacity: 0.8,
+      background: `
+        radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 50%),
+        linear-gradient(${rotateX * 4 + rotateY * 4}deg, rgba(255,0,128,0.15) 0%, rgba(0,255,255,0.15) 50%, rgba(255,255,0,0.15) 100%)
+      `,
       duration: 0.2,
       overwrite: 'auto',
+    });
+  };
+
+  const handleClick = () => {
+    if (!cardRef.current) return;
+    setIsFlipped(!isFlipped);
+    gsap.to(cardRef.current, {
+      rotationY: isFlipped ? "+=360" : "-=360",
+      duration: 1.2,
+      ease: 'back.out(1.2)',
     });
   };
 
@@ -149,6 +163,7 @@ function TiltPortrait() {
       style={{ perspective: '1200px', opacity: 0 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
     >
       <div
         ref={cardRef}
@@ -191,7 +206,7 @@ function TiltPortrait() {
             ref={glareRef}
             className="absolute inset-0 pointer-events-none opacity-0"
             style={{
-              mixBlendMode: 'overlay',
+              mixBlendMode: 'color-dodge',
               transform: 'translateZ(20px)',
             }}
           />
