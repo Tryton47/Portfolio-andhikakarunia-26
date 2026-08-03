@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Code2, ChevronDown, ChevronUp, Award, Download, Maximize2 } from 'lucide-react';
+import { ExternalLink, Code2, ChevronDown, ChevronUp, Award, Download, Maximize2, Globe, Database, Monitor } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { gsap } from '@/lib/gsap';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
@@ -1040,7 +1040,22 @@ export default function PortfolioSection() {
                                   <span className="text-3xl">📝</span>
                                 </div>
                               ) : (
-                                <span className="text-system text-text-dim">{project.category}</span>
+                                <div className="flex flex-col items-center justify-center gap-2 text-primary/70 h-full w-full bg-obsidian">
+                                  {project.category === 'Web Dev' ? (
+                                    <div className="w-16 h-16 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-2 shadow-lg shadow-blue-500/10">
+                                      <Globe size={32} />
+                                    </div>
+                                  ) : project.category === 'Data Analysis' ? (
+                                    <div className="w-16 h-16 rounded-xl bg-green-500/10 border border-green-500/30 flex items-center justify-center mb-2 shadow-lg shadow-green-500/10">
+                                      <Database size={32} />
+                                    </div>
+                                  ) : (
+                                    <div className="w-16 h-16 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center mb-2 shadow-lg shadow-purple-500/10">
+                                      <Monitor size={32} />
+                                    </div>
+                                  )}
+                                  <span className="text-system text-text-dim text-center px-4 mt-2 font-medium">{project.title}</span>
+                                </div>
                               )}
                               <span className="absolute top-3 left-3 z-[3] text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-obsidian/80 backdrop-blur-md text-primary border border-primary/30 shadow-lg">
                                 {project.category.toUpperCase()}

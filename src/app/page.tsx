@@ -14,6 +14,16 @@ export default function Home() {
   const [showContent, setShowContent] = useState(false);
   const savedScrollY = useRef(0);
 
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem('hasVisitedPortfolio');
+    if (hasVisited) {
+      setLoadingState('done');
+      setShowContent(true);
+    } else {
+      sessionStorage.setItem('hasVisitedPortfolio', 'true');
+    }
+  }, []);
+
   // Scroll lock: prevent user from scrolling down during loading
   useEffect(() => {
     if (loadingState === 'loading') {
@@ -49,7 +59,7 @@ export default function Home() {
   return (
     <>
       {loadingState !== 'done' && (
-        <LoadingScreen3D onDone={handleLoadingDone} minDuration={3200} />
+        <LoadingScreen3D onDone={handleLoadingDone} minDuration={2500} />
       )}
 
       <div

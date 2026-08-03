@@ -79,17 +79,15 @@ function TiltPortrait() {
     return () => ctx.revert();
   }, []);
 
-  // Pulsing glow loop
+  // Sweeping glow loop
   useEffect(() => {
     if (!glowRef.current) return;
     const ctx = gsap.context(() => {
       gsap.to(glowRef.current, {
-        opacity: 0.3,
-        scale: 1.05,
-        duration: 2,
-        yoyo: true,
+        rotation: 360,
+        duration: 8,
         repeat: -1,
-        ease: 'sine.inOut',
+        ease: 'none',
       });
     }, glowRef);
     return () => ctx.revert();
@@ -159,15 +157,20 @@ function TiltPortrait() {
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* Sweeping Glow Ring */}
-        <div
-          ref={glowRef}
-          className="absolute inset-0 rounded-2xl opacity-60 bg-primary/40 shadow-[0_0_40px_var(--theme-primary-hex)]"
-          style={{
-            filter: 'blur(20px)',
-            transform: 'translateZ(-20px)',
-          }}
-        />
+        {/* Sweeping Glow Ring (Clipped) */}
+        <div 
+          className="absolute inset-[-4px] rounded-[20px] overflow-hidden" 
+          style={{ transform: 'translateZ(-20px)' }}
+        >
+          <div
+            ref={glowRef}
+            className="absolute inset-[-50%] opacity-80"
+            style={{
+              background: 'conic-gradient(from 0deg, transparent 0deg, var(--theme-primary-hex) 30deg, transparent 60deg, transparent 360deg)',
+              filter: 'blur(12px)',
+            }}
+          />
+        </div>
 
         {/* 3D Card */}
         <div
