@@ -12,7 +12,8 @@ export function useStaggerReveal(
     delay?: number;
     ease?: string;
     start?: string;
-  } = {}
+  } = {},
+  dependencies: any[] = []
 ) {
   const {
     y = 40,
@@ -51,7 +52,7 @@ export function useStaggerReveal(
     });
 
     return () => ctx.revert();
-  }, [containerSelector, itemSelector, y, stagger, duration, delay, ease, start]);
+  }, [containerSelector, itemSelector, y, stagger, duration, delay, ease, start, ...dependencies]);
 }
 
 // ── Slide reveal from left or right ──

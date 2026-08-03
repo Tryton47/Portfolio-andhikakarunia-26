@@ -890,18 +890,23 @@ export default function PortfolioSection() {
     return () => ctx.revert();
   }, []);
 
-  // ─── GSAP Stagger Reveals for Project and Certificate Cards ───
   useStaggerReveal('.project-grid-container', '.project-card-reveal', {
     y: 50,
     stagger: 0.1,
     duration: 0.8,
-  });
+  }, [rootTab, subFilter, showMore]);
 
   useStaggerReveal('.cert-grid-container', '.cert-card-reveal', {
     y: 40,
     stagger: 0.1,
     duration: 0.8,
-  });
+  }, [rootTab]);
+
+  useStaggerReveal('.tech-grid-container', '.tech-item-reveal', {
+    y: 30,
+    stagger: 0.05,
+    duration: 0.6,
+  }, [rootTab]);
 
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => p.category === subFilter);
@@ -1366,17 +1371,33 @@ export default function PortfolioSection() {
 
         {/* ═══ TECH STACK TAB ═══ */}
         {rootTab === 'techstack' && (
-          <div className="relative w-full h-[85vh]" style={{ background: 'linear-gradient(180deg, #0a1628 0%, #0f172a 50%, #1e293b 100%)' }}>
-            {/* Blue tint overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-blue-900/10 via-transparent to-indigo-900/20 pointer-events-none" />
-
-            {/* Category filter */}
-            <div className="absolute top-6 left-0 right-0 z-20 flex justify-center">
-              <CategoryFilter />
+          <div className="relative w-full min-h-[60vh] py-12">
+            <div className="max-w-5xl mx-auto px-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 tech-grid-container">
+                {techStack.map((tech, idx) => (
+                  <div key={idx} className="tech-item-reveal opacity-0" style={{ transform: 'translateY(30px)' }}>
+                    <ProximityGlow radius={150} className="h-full">
+                      <div className="group relative w-full h-full p-6 rounded-2xl bg-obsidian border border-border/50 flex flex-col items-center justify-center gap-3 overflow-hidden transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 cursor-default">
+                        {/* Interactive Background */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        
+                        <div className="w-12 h-12 rounded-xl bg-charcoal border border-border flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-inner">
+                           <Code2 size={24} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        
+                        <h4 className="text-text-primary font-semibold text-sm md:text-base group-hover:text-primary transition-colors text-center">
+                          {tech.name}
+                        </h4>
+                        
+                        <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mt-auto">
+                          {tech.cat.toUpperCase()}
+                        </span>
+                      </div>
+                    </ProximityGlow>
+                  </div>
+                ))}
+              </div>
             </div>
-
-            {/* 3D Canvas */}
-            <Logo3DCanvas />
           </div>
         )}
       </div>

@@ -79,15 +79,17 @@ function TiltPortrait() {
     return () => ctx.revert();
   }, []);
 
-  // Sweeping glow loop
+  // Pulsing glow loop
   useEffect(() => {
     if (!glowRef.current) return;
     const ctx = gsap.context(() => {
       gsap.to(glowRef.current, {
-        rotation: 360,
-        duration: 8,
+        opacity: 0.3,
+        scale: 1.05,
+        duration: 2,
+        yoyo: true,
         repeat: -1,
-        ease: 'none',
+        ease: 'sine.inOut',
       });
     }, glowRef);
     return () => ctx.revert();
@@ -160,10 +162,9 @@ function TiltPortrait() {
         {/* Sweeping Glow Ring */}
         <div
           ref={glowRef}
-          className="absolute inset-[-8px] rounded-2xl opacity-70"
+          className="absolute inset-0 rounded-2xl opacity-60 bg-primary/40 shadow-[0_0_40px_var(--theme-primary-hex)]"
           style={{
-            background: 'conic-gradient(from 0deg, transparent 0deg, var(--theme-primary-hex) 30deg, transparent 60deg, transparent 360deg)',
-            filter: 'blur(10px)',
+            filter: 'blur(20px)',
             transform: 'translateZ(-20px)',
           }}
         />
