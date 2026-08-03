@@ -1039,6 +1039,18 @@ export default function PortfolioSection() {
                                 <div className="w-16 h-16 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-2 shadow-lg shadow-blue-500/10">
                                   <span className="text-3xl">📝</span>
                                 </div>
+                              ) : project.link?.startsWith('http') ? (
+                                <>
+                                  <iframe
+                                    src={project.link}
+                                    className="absolute inset-0 border-0 pointer-events-none w-[400%] h-[400%] origin-top-left scale-[0.25] object-cover"
+                                    title={project.title}
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-black/20 z-[1]" />
+                                  <span className="absolute top-3 left-3 z-[3] text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-obsidian/80 backdrop-blur-md text-primary border border-primary/30 shadow-lg">
+                                    {project.category.toUpperCase()}
+                                  </span>
+                                </>
                               ) : (
                                 <span className="text-system text-text-dim">{project.category}</span>
                               )}
