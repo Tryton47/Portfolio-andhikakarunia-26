@@ -38,6 +38,7 @@ const projects = [
     features: ['Responsive UI', 'Media Showcase', 'Modern Aesthetic'],
     tech: ['React', 'Next.js', 'Tailwind'],
     category: 'Web Dev',
+    imageUrl: '/showcase/web-dev/cinevix-works.png',
     link: 'https://cinevix-works.vercel.app/',
     github: 'https://github.com/JustFarzz',
   },
@@ -48,6 +49,7 @@ const projects = [
     features: ['Hybrid ML Algorithm', '240K+ Product Dataset', 'Real-time Inference', 'REST API Backend'],
     tech: ['Python', 'FastAPI', 'React', 'TypeScript', 'scikit-learn'],
     category: 'Data Analysis',
+    imageUrl: '/showcase/web-dev/ecommerce-recommendation.png',
     link: 'https://e-commerce-recommendation-engine.vercel.app/',
     github: 'https://github.com/JustFarzz',
   },
@@ -58,6 +60,7 @@ const projects = [
     features: ['CRUD Operations', 'Database Integration', 'Responsive Design', 'Admin Dashboard'],
     tech: ['PHP', 'MySQL', 'JavaScript', 'HTML', 'CSS'],
     category: 'Web Dev',
+    imageUrl: '/showcase/web-dev/sales-marketing-web.png',
     link: 'https://sales-marketing-web-u5e1.vercel.app/',
     github: 'https://github.com/JustFarzz',
   },
@@ -68,6 +71,7 @@ const projects = [
     features: ['Ticket Booking', 'Event Dashboard', 'Payment Gateway'],
     tech: ['React', 'Next.js', 'Node.js'],
     category: 'Web Dev',
+    imageUrl: '/showcase/web-dev/event-ease.png',
     link: 'https://event-ease-mauve.vercel.app/',
     github: 'https://github.com/JustFarzz',
   },
@@ -78,6 +82,7 @@ const projects = [
     features: ['Product Catalog', 'Article CMS', 'Shopping Cart'],
     tech: ['Next.js', 'Tailwind', 'Prisma'],
     category: 'Web Dev',
+    imageUrl: '/showcase/web-dev/organik-pandanrejo.png',
     link: 'https://organik-pandanrejo.vercel.app/',
     github: 'https://github.com/JustFarzz',
   },
@@ -88,6 +93,7 @@ const projects = [
     features: ['NLP Algorithm', 'Real-time Analysis', 'News Scraping'],
     tech: ['Python', 'Flask', 'React'],
     category: 'Data Analysis',
+    imageUrl: '/showcase/web-dev/hoaks-detector.png',
     link: 'https://hoaks-detector.vercel.app/',
     github: 'https://github.com/JustFarzz',
   },
@@ -272,30 +278,34 @@ const certificates = [
 ];
 
 const techStack = [
-  { name: 'JavaScript', cat: 'Web' },
-  { name: 'TypeScript', cat: 'Web' },
-  { name: 'React', cat: 'Web' },
-  { name: 'Next.js', cat: 'Web' },
-  { name: 'Node.js', cat: 'Web' },
-  { name: 'PHP', cat: 'Web' },
-  { name: 'Laravel', cat: 'Web' },
-  { name: 'Tailwind CSS', cat: 'Web' },
-  { name: 'Python', cat: 'Data' },
-  { name: 'SQL', cat: 'Data' },
-  { name: 'Pandas', cat: 'Data' },
-  { name: 'Scikit-learn', cat: 'Data' },
-  { name: 'Power BI', cat: 'Data' },
-  { name: 'Looker Studio', cat: 'Data' },
-  { name: 'Figma', cat: 'Design' },
-  { name: 'Canva', cat: 'Design' },
-  { name: 'Premiere Pro', cat: 'Video' },
-  { name: 'DaVinci Resolve', cat: 'Video' },
-  { name: 'CapCut', cat: 'Video' },
-  { name: 'MySQL', cat: 'Data' },
-  { name: 'PostgreSQL', cat: 'Data' },
-  { name: 'Prisma', cat: 'Web' },
-  { name: 'Git', cat: 'Web' },
-  { name: 'FastAPI', cat: 'Data' },
+  // ── Web Dev ──
+  { name: 'JavaScript', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', color: '#F7DF1E' },
+  { name: 'TypeScript', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg', color: '#3178C6' },
+  { name: 'React', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', color: '#61DAFB' },
+  { name: 'Next.js', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg', color: '#FFFFFF' },
+  { name: 'Node.js', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg', color: '#339933' },
+  { name: 'PHP', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg', color: '#777BB4' },
+  { name: 'Laravel', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg', color: '#FF2D20' },
+  { name: 'Tailwind CSS', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg', color: '#06B6D4' },
+  { name: 'Prisma', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg', color: '#5A67D8' },
+  { name: 'Git', cat: 'Web Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg', color: '#F05032' },
+  // ── Data ──
+  { name: 'Python', cat: 'Data & AI', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', color: '#3776AB' },
+  { name: 'MySQL', cat: 'Data & AI', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg', color: '#4479A1' },
+  { name: 'PostgreSQL', cat: 'Data & AI', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg', color: '#336791' },
+  { name: 'Pandas', cat: 'Data & AI', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg', color: '#150458' },
+  { name: 'Scikit-learn', cat: 'Data & AI', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg', color: '#F7931E' },
+  { name: 'FastAPI', cat: 'Data & AI', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg', color: '#009688' },
+  { name: 'Power BI', cat: 'Data & AI', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg', color: '#F2C811' },
+  { name: 'Looker Studio', cat: 'Data & AI', logo: 'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_data_studio.svg', color: '#4285F4' },
+  // ── Design ──
+  { name: 'Figma', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg', color: '#F24E1E' },
+  { name: 'Canva', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/canva/canva-original.svg', color: '#00C4CC' },
+  { name: 'Photoshop', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-original.svg', color: '#31A8FF' },
+  // ── Video ──
+  { name: 'Premiere Pro', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/premierepro/premierepro-original.svg', color: '#9999FF' },
+  { name: 'DaVinci Resolve', cat: 'Design & Media', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/90/DaVinci_Resolve_17_logo.svg', color: '#FF9900' },
+  { name: 'CapCut', cat: 'Design & Media', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/CapCut_logo.svg/800px-CapCut_logo.svg.png', color: '#FFFFFF' },
 ];
 
 const subCategories = ['Web Dev', 'Data Analysis', 'Graphic Design', 'Video Editing'];
@@ -1350,23 +1360,28 @@ export default function PortfolioSection() {
                     <span className="w-12 h-[1px] bg-gradient-to-r from-primary to-transparent" />
                     {category}
                   </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 tech-grid-container">
-                    {items.map((tech, idx) => (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 tech-grid-container">
+                    {items.map((tech) => (
                       <div key={tech.name} className="tech-item-reveal opacity-0" style={{ transform: 'translateY(30px)' }}>
-                        <ProximityGlow radius={150} className="h-full">
-                          <div className="group relative w-full h-full p-6 rounded-2xl bg-obsidian border border-border/50 flex flex-col items-center justify-center gap-3 overflow-hidden transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 cursor-default">
-                            {/* Interactive Background */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            
-                            <div className="w-12 h-12 rounded-xl bg-charcoal border border-border flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-inner">
-                               <Code2 size={24} className="opacity-70 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                            
-                            <h4 className="text-text-primary font-semibold text-sm md:text-base group-hover:text-primary transition-colors text-center">
-                              {tech.name}
-                            </h4>
+                        <div className="group flex flex-col items-center gap-2 p-4 rounded-2xl bg-obsidian/60 border border-border/40 hover:border-primary/40 hover:bg-obsidian transition-all duration-300 cursor-default hover:shadow-lg hover:shadow-primary/10">
+                          {/* Logo */}
+                          <div
+                            className="w-12 h-12 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 drop-shadow-lg"
+                            style={{ filter: 'drop-shadow(0 2px 8px var(--theme-primary-hex, #6366f1)22)' }}
+                          >
+                            <img
+                              src={tech.logo}
+                              alt={tech.name}
+                              className="w-10 h-10 object-contain"
+                              loading="lazy"
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                            />
                           </div>
-                        </ProximityGlow>
+                          {/* Name */}
+                          <span className="text-[11px] font-medium text-text-dim group-hover:text-text-primary transition-colors text-center leading-tight">
+                            {tech.name}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>
