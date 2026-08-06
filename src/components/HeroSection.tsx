@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import RobotScene from './RobotScene';
 import GlassButton from './Shared/GlassButton';
 import { gsap } from '@/lib/gsap';
@@ -63,34 +63,64 @@ export default function HeroSection() {
   const statsRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [smoothMouse, setSmoothMouse] = useState({ x: 0, y: 0 });
+  // ── All mouse tracking via refs only — ZERO setState in animation loop ──
+  const mousePosRef   = useRef({ x: 0, y: 0 });
+  const smoothRef     = useRef({ x: 0, y: 0 });
   const [isInHero, setIsInHero] = useState(false);
+  const isInHeroRef   = useRef(false);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 2;
-    const y = (e.clientY / window.innerHeight - 0.5) * 2;
-    setMousePos({ x, y });
-  }, []);
+  // DOM refs for parallax layers (updated directly, no React re-render)
+  const textLayerRef  = useRef<HTMLDivElement>(null);
+  const robotLayerRef = useRef<HTMLDivElement>(null);
+  const grad1Ref      = useRef<HTMLDivElement>(null);
+  const grad2Ref      = useRef<HTMLDivElement>(null);
 
+  // Single persistent rAF — empty deps, never restarts
   useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [handleMouseMove]);
-
-  // Smooth mouse interpolation
-  useEffect(() => {
-    let animationId: number;
-    const animate = () => {
-      setSmoothMouse(prev => ({
-        x: prev.x + (mousePos.x - prev.x) * 0.08,
-        y: prev.y + (mousePos.y - prev.y) * 0.08,
-      }));
-      animationId = requestAnimationFrame(animate);
+    const onMouseMove = (e: MouseEvent) => {
+      mousePosRef.current = {
+        x: (e.clientX / window.innerWidth  - 0.5) * 2,
+        y: (e.clientY / window.innerHeight - 0.5) * 2,
+      };
     };
-    animate();
-    return () => cancelAnimationFrame(animationId);
-  }, [mousePos]);
+    window.addEventListener('mousemove', onMouseMove);
+
+    let rafId: number;
+    const tick = () => {
+      const s = smoothRef.current;
+      const m = mousePosRef.current;
+      s.x += (m.x - s.x) * 0.08;
+      s.y += (m.y - s.y) * 0.08;
+
+      // Direct DOM updates — no setState
+      if (textLayerRef.current) {
+        textLayerRef.current.style.transform =
+          `translate(${s.x * -10}px, ${s.y * -6}px)`;
+      }
+      if (robotLayerRef.current && isInHeroRef.current) {
+        robotLayerRef.current.style.transform =
+          `translate(${s.x * 15}px, ${s.y * 10}px)`;
+      }
+      if (grad1Ref.current) {
+        grad1Ref.current.style.background =
+          `radial-gradient(circle 600px at ${50 + s.x * 30}% ${50 + s.y * 30}%,` +
+          ` rgba(99,102,241,0.08) 0%, transparent 70%)`;
+      }
+      if (grad2Ref.current) {
+        grad2Ref.current.style.background =
+          `radial-gradient(circle 400px at ${50 - s.x * 20}% ${70 - s.y * 20}%,` +
+          ` rgba(6,182,212,0.06) 0%, transparent 70%)`;
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+    tick();
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, []); // ← empty array: never re-runs
 
   // ── GSAP Cinematic Entrance ──
   useEffect(() => {
@@ -198,23 +228,19 @@ export default function HeroSection() {
       id="hero"
       ref={sectionRef}
       className="relative min-h-[100dvh] w-full flex flex-col justify-between overflow-hidden bg-grid"
-      onMouseEnter={() => setIsInHero(true)}
-      onMouseLeave={() => setIsInHero(false)}
+      onMouseEnter={() => { setIsInHero(true); isInHeroRef.current = true; }}
+      onMouseLeave={() => { setIsInHero(false); isInHeroRef.current = false; }}
     >
-      {/* DYNAMIC BACKGROUND GRADIENT - Follows cursor */}
+      {/* DYNAMIC BACKGROUND GRADIENT - ref-driven, no setState */}
       <div
+        ref={grad1Ref}
         className="absolute inset-0 pointer-events-none transition-opacity duration-500"
-        style={{
-          background: `radial-gradient(circle 600px at ${50 + smoothMouse.x * 30}% ${50 + smoothMouse.y * 30}%, rgba(99, 102, 241, 0.08) 0%, transparent 70%)`,
-          opacity: isInHero ? 1 : 0,
-        }}
+        style={{ opacity: isInHero ? 1 : 0 }}
       />
       <div
+        ref={grad2Ref}
         className="absolute inset-0 pointer-events-none transition-opacity duration-700"
-        style={{
-          background: `radial-gradient(circle 400px at ${50 - smoothMouse.x * 20}% ${70 - smoothMouse.y * 20}%, rgba(6, 182, 212, 0.06) 0%, transparent 70%)`,
-          opacity: isInHero ? 1 : 0,
-        }}
+        style={{ opacity: isInHero ? 1 : 0 }}
       />
 
       {/* TOP HUD STATUS */}
@@ -245,13 +271,11 @@ export default function HeroSection() {
 
       {/* MAIN HERO CONTENT */}
       <div className="relative z-10 flex-grow flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-12 md:py-0 gap-6 md:gap-12">
-        {/* Left: Text */}
+        {/* Left: Text — parallax via DOM ref */}
         <div
+          ref={textLayerRef}
           className="w-full md:w-[55%] flex flex-col"
-          style={{
-            transform: `translate(${smoothMouse.x * -10}px, ${smoothMouse.y * -6}px)`,
-            transition: 'transform 0.1s ease-out',
-          }}
+          style={{ willChange: 'transform' }}
         >
           {/* Title with split words for GSAP stagger */}
           <h1
@@ -308,15 +332,14 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Right: 3D Robot Scene */}
+        {/* Right: 3D Robot Scene — parallax via DOM ref */}
         <div
-          ref={robot3DRef}
-          className="w-full md:w-[40%] flex flex-col items-center gap-4 md:gap-6"
-          style={{
-            transform: `translate(${smoothMouse.x * 15}px, ${smoothMouse.y * 10}px)`,
-            transition: 'transform 0.1s ease-out',
-            opacity: 0,
+          ref={(el) => {
+            (robot3DRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+            (robotLayerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
           }}
+          className="w-full md:w-[40%] flex flex-col items-center gap-4 md:gap-6"
+          style={{ willChange: 'transform', opacity: 0 }}
         >
           <div className="w-full max-w-[400px] h-[350px] md:h-[550px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
             <RobotScene />

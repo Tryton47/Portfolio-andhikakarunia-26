@@ -22,7 +22,7 @@ const PARTICLES = Array.from({ length: 40 }, (_, i) => ({
   color: i % 3 === 0 ? '99,102,241' : i % 3 === 1 ? '6,182,212' : '139,92,246',
 }));
 
-export default function LoadingScreen3D({ onDone, minDuration = 3500 }) {
+export default function LoadingScreen3D({ onDone }) {
   const [progress, setProgress] = useState(0);
   const [lines, setLines] = useState([]);
   const [phase, setPhase] = useState('enter'); // enter | idle | exit
@@ -54,11 +54,10 @@ export default function LoadingScreen3D({ onDone, minDuration = 3500 }) {
 
   // Phase 3: Smooth eased progress
   useEffect(() => {
-    const total = minDuration;
+    const MAX_DURATION = 2500;
     const step = () => {
       const elapsed = Date.now() - startRef.current;
-      const linear = Math.min(elapsed / total, 1);
-      // easeOutCubic
+      const linear = Math.min(elapsed / MAX_DURATION, 1);
       const eased = 1 - Math.pow(1 - linear, 3);
       setProgress(eased * 100);
       if (eased < 0.999) {
@@ -69,18 +68,23 @@ export default function LoadingScreen3D({ onDone, minDuration = 3500 }) {
     };
     rafRef.current = requestAnimationFrame(step);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [minDuration]);
+  }, []);
 
   // Phase 4: Exit trigger
+  const hasDoneRef = { current: false };
   useEffect(() => {
+    const MAX_DURATION = 2500;
     const elapsed = Date.now() - startRef.current;
-    const remaining = Math.max(minDuration - elapsed, 0);
+    const remaining = Math.max(MAX_DURATION - elapsed, 0);
     const t = setTimeout(() => {
       setPhase('exit');
-      setTimeout(() => onDone?.(), 900);
+      if (!hasDoneRef.current) {
+        hasDoneRef.current = true;
+        setTimeout(() => onDone?.(), 900);
+      }
     }, remaining);
     return () => clearTimeout(t);
-  }, [minDuration, onDone]);
+  }, [onDone]);
 
   const isExiting = phase === 'exit';
 

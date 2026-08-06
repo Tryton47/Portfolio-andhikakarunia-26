@@ -59,7 +59,7 @@ export default function Home() {
   return (
     <>
       {loadingState !== 'done' && (
-        <LoadingScreen3D onDone={handleLoadingDone} minDuration={2500} />
+        <LoadingScreen3D onDone={handleLoadingDone} />
       )}
 
       <div

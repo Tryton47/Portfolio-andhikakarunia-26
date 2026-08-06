@@ -119,10 +119,22 @@
 
   /* Glass Panel */
   .glass-panel {
-    background: rgba(17, 20, 34, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
+  background: rgba(17, 20, 34, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Tech Grid Utilities */
+.tech-grid-container {
+  @apply gap-4;
+}
+.tech-item-reveal {
+  @apply opacity-0 translate-y-8 transition-opacity duration-500;
+}
+.tech-item-reveal[data-visible="true"] {
+  @apply opacity-100 translate-y-0;
+}
+
 
   /* Subtle Grid Background — uses theme primary */
   .bg-grid {
@@ -213,4 +225,24 @@
   50% {
     box-shadow: 0 0 30px rgba(99, 102, 241, 0.5), 0 0 60px rgba(99, 102, 241, 0.2);
   }
+}
+
+@keyframes foilShimmer {
+  0% {
+    background-position: -200% -200%;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    background-position: 200% 200%;
+    opacity: 0.3;
+  }
+}
+
+@keyframes foilSweep {
+  0% { transform: translateX(-100%) rotate(25deg); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateX(300%) rotate(25deg); opacity: 0; }
 }

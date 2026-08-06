@@ -305,8 +305,119 @@ const techStack = [
   // ── Video ──
   { name: 'Premiere Pro', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/premierepro/premierepro-original.svg', color: '#9999FF' },
   { name: 'DaVinci Resolve', cat: 'Design & Media', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/90/DaVinci_Resolve_17_logo.svg', color: '#FF9900' },
-  { name: 'CapCut', cat: 'Design & Media', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/CapCut_logo.svg/800px-CapCut_logo.svg.png', color: '#FFFFFF' },
+  { name: 'CapCut', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@develop/icons/capcut.svg', color: '#FFFFFF' },
+  { name: 'Adobe Lightroom', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/lightroom/lightroom-plain.svg', color: '#31A8FF' },
 ];
+
+/* ─── HOLOGRAPHIC CARD EFFECT ─── */
+function HolographicOverlay({ intensity = 1 }: { intensity?: number }) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stateRef = useRef({ active: false, x: 50, y: 50, angle: 0 });
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const overlay = overlayRef.current;
+    if (!container || !overlay) return;
+
+    let targetX = 50, targetY = 50, targetAngle = 0;
+    let currentX = 50, currentY = 50, currentAngle = 0;
+
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      // Only activate when mouse is over this card's image area
+      if (e.clientX < rect.left || e.clientX > rect.right ||
+          e.clientY < rect.top  || e.clientY > rect.bottom) {
+        if (stateRef.current.active) {
+          stateRef.current.active = false;
+          targetX = 50;
+          targetY = 50;
+        }
+        return;
+      }
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      const angle = Math.atan2(
+        e.clientY - (rect.top + rect.height / 2),
+        e.clientX - (rect.left + rect.width / 2)
+      ) * (180 / Math.PI);
+      targetX = x;
+      targetY = y;
+      targetAngle = angle;
+      stateRef.current.active = true;
+    };
+
+    const animate = () => {
+      const lerpFactor = 0.08;
+      currentX += (targetX - currentX) * lerpFactor;
+      currentY += (targetY - currentY) * lerpFactor;
+      currentAngle += (targetAngle - currentAngle) * lerpFactor;
+
+      const hue = (currentAngle + 180) % 360;
+      const opacity = stateRef.current.active ? 0.55 * intensity : Math.max(0, (overlay.style.opacity ? parseFloat(overlay.style.opacity) : 0) - 0.02);
+
+      overlay.style.opacity = String(Math.max(0, Math.min(1, opacity)));
+      overlay.style.background = [
+        `radial-gradient(ellipse 120% 80% at ${currentX}% ${currentY}%, hsla(${hue}, 100%, 75%, 0.5) 0%, transparent 60%)`,
+        `linear-gradient(${currentAngle + 90}deg,`,
+        `  hsla(${hue}, 100%, 65%, 0) 0%,`,
+        `  hsla(${(hue + 60) % 360}, 100%, 65%, 0.25) 20%,`,
+        `  hsla(${(hue + 120) % 360}, 100%, 65%, 0.35) 40%,`,
+        `  hsla(${(hue + 180) % 360}, 100%, 65%, 0.25) 60%,`,
+        `  hsla(${(hue + 240) % 360}, 100%, 65%, 0.15) 80%,`,
+        `  hsla(${(hue + 300) % 360}, 100%, 65%, 0) 100%)`,
+      ].join(',');
+
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    animate();
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [intensity]);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 z-[2] overflow-hidden rounded-[inherit]" style={{ pointerEvents: 'none' }}>
+      {/* Static foil shimmer base */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%)',
+          backgroundSize: '200% 200%',
+          animation: 'foilShimmer 4s linear infinite',
+        }}
+      />
+      {/* Dynamic interactive foil */}
+      <div
+        ref={overlayRef}
+        className="absolute inset-0"
+        style={{
+          opacity: 0,
+          mixBlendMode: 'color-dodge',
+        }}
+      />
+      {/* Edge specular highlights — two sides as requested */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to right, rgba(255,255,255,0.12) 0%, transparent 15%, transparent 85%, rgba(255,255,255,0.08) 100%)',
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, transparent 20%, transparent 80%, rgba(255,255,255,0.06) 100%)',
+        }}
+      />
+    </div>
+  );
+}
+
 
 const subCategories = ['Web Dev', 'Data Analysis', 'Graphic Design', 'Video Editing'];
 
@@ -1033,8 +1144,10 @@ export default function PortfolioSection() {
                                 className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700 ease-out"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-black/20 z-[1]" />
+                              {/* Holographic foil effect */}
+                              <HolographicOverlay />
                               {/* Category Tag */}
-                              <span className="absolute top-3 left-3 z-[3] text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-obsidian/80 backdrop-blur-md text-primary border border-primary/30 shadow-lg">
+                              <span className="absolute top-3 left-3 z-[5] text-[10px] font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-obsidian/80 backdrop-blur-md text-primary border border-primary/30 shadow-lg">
                                 {project.category.toUpperCase()}
                               </span>
                             </>
@@ -1372,7 +1485,7 @@ export default function PortfolioSection() {
                             <img
                               src={tech.logo}
                               alt={tech.name}
-                              className="w-10 h-10 object-contain"
+                              className="w-12 h-12 object-contain"
                               loading="lazy"
                               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                             />

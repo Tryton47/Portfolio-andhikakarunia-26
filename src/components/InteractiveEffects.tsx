@@ -240,55 +240,109 @@ interface ProximityGlowProps {
   className?: string;
 }
 
-export function ProximityGlow({ children, radius = 150, className = '' }: ProximityGlowProps) {
+export function ProximityGlow({ children, radius = 200, className = '' }: ProximityGlowProps) {
   const elementRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
+  const borderRef = useRef<HTMLDivElement>(null);
+  const borderRef2 = useRef<HTMLDivElement>(null);
+  const spotRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
   const primaryRGB = theme.vars.primary;
 
   useEffect(() => {
     const element = elementRef.current;
-    const glow = glowRef.current;
-    if (!element || !glow) return;
+    const border = borderRef.current;
+    const border2 = borderRef2.current;
+    const spot = spotRef.current;
+    if (!element || !border || !border2 || !spot) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = element.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      const distance = Math.sqrt(
-        Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
-      );
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const proximity = Math.max(0, 1 - distance / radius);
 
-      const near = distance < radius;
+      if (proximity > 0) {
+        const px = ((e.clientX - rect.left) / rect.width) * 100;
+        const py = ((e.clientY - rect.top) / rect.height) * 100;
+        // Opposite side (mirror) for second glow
+        const px2 = 100 - px;
+        const py2 = 100 - py;
+        const alpha = proximity * 0.95;
 
-      if (near) {
-        const percentX = ((e.clientX - rect.left) / rect.width) * 100;
-        const percentY = ((e.clientY - rect.top) / rect.height) * 100;
+        // Primary glow — near cursor side
+        border.style.opacity = String(alpha);
+        border.style.background = `radial-gradient(circle 160px at ${px}% ${py}%, ${rgbToRgba(primaryRGB, alpha)} 0%, ${rgbToRgba(primaryRGB, alpha * 0.3)} 50%, transparent 75%)`;
 
-        glow.style.background = `radial-gradient(circle at ${percentX}% ${percentY}%, ${rgbToRgba(primaryRGB, 0.25)} 0%, ${rgbToRgba(primaryRGB, 0.15)} 40%, transparent 70%)`;
-        glow.style.opacity = '1';
-        glow.style.transform = `scale(1.05)`;
+        // Secondary glow — opposite side (subtler)
+        border2.style.opacity = String(alpha * 0.45);
+        border2.style.background = `radial-gradient(circle 120px at ${px2}% ${py2}%, ${rgbToRgba(primaryRGB, alpha * 0.6)} 0%, transparent 70%)`;
+
+        // Inner spotlight
+        spot.style.opacity = String(proximity * 0.18);
+        spot.style.background = `radial-gradient(ellipse at ${px}% ${py}%, ${rgbToRgba(primaryRGB, 0.35)} 0%, transparent 55%)`;
       } else {
-        glow.style.opacity = '0';
-        glow.style.transform = `scale(1)`;
+        border.style.opacity = '0';
+        border2.style.opacity = '0';
+        spot.style.opacity = '0';
       }
     };
 
+    const handleMouseLeave = () => {
+      border.style.opacity = '0';
+      border2.style.opacity = '0';
+      spot.style.opacity = '0';
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    element.addEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      element.removeEventListener('mouseleave', handleMouseLeave);
+    };
   }, [radius, primaryRGB]);
 
   return (
     <div ref={elementRef} className={`relative ${className}`}>
       {children}
+      {/* Primary border glow — follows cursor */}
       <div
-        ref={glowRef}
-        className="absolute inset-0 rounded-xl pointer-events-none transition-all duration-300 ease-out z-[-1]"
-        style={{ opacity: 0 }}
+        ref={borderRef}
+        className="absolute inset-0 rounded-[inherit] pointer-events-none z-10"
+        style={{
+          opacity: 0,
+          transition: 'opacity 150ms ease',
+          WebkitMask: 'linear-gradient(white, white) content-box, linear-gradient(white, white)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+          padding: '1px',
+        }}
+      />
+      {/* Secondary border glow — opposite side */}
+      <div
+        ref={borderRef2}
+        className="absolute inset-0 rounded-[inherit] pointer-events-none z-10"
+        style={{
+          opacity: 0,
+          transition: 'opacity 200ms ease',
+          WebkitMask: 'linear-gradient(white, white) content-box, linear-gradient(white, white)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+          padding: '1px',
+        }}
+      />
+      {/* Inner spotlight */}
+      <div
+        ref={spotRef}
+        className="absolute inset-0 rounded-[inherit] pointer-events-none z-0"
+        style={{ opacity: 0, transition: 'opacity 150ms ease' }}
       />
     </div>
   );
 }
+
 
 /* ═══════════════════════════════════════════════════════════════
    MAGNETIC BUTTON - Tombol yang tertarik ke cursor

@@ -39,7 +39,7 @@ export default function RootLayout({
         lang="en"
         className={`${jakarta.variable} ${inter.variable} ${jetbrains.variable} h-full antialiased overflow-x-hidden w-full`}
       >
-        <body className="min-h-full flex flex-col bg-charcoal text-text-muted overflow-x-hidden w-full">
+        <body suppressHydrationWarning className="min-h-full flex flex-col bg-charcoal text-text-muted overflow-x-hidden w-full">
         <ThemeProvider>
           <LenisProvider>
           {/* INTERACTIVE EFFECTS */}
