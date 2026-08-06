@@ -15,33 +15,30 @@ export default function Home() {
   const savedScrollY = useRef(0);
 
   useEffect(() => {
-    const hasVisited = sessionStorage.getItem('hasVisitedPortfolio');
-    if (hasVisited) {
-      setLoadingState('done');
-      setShowContent(true);
-    } else {
-      sessionStorage.setItem('hasVisitedPortfolio', 'true');
-    }
+    // Reset scroll to top immediately
+    window.scrollTo(0, 0);
   }, []);
 
   // Scroll lock: prevent user from scrolling down during loading
   useEffect(() => {
-    if (loadingState === 'loading') {
-      savedScrollY.current = window.scrollY;
+    if (loadingState === 'loading' || loadingState === 'exiting') {
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollY.current}px`;
+      document.body.style.top = '0px';
+      document.body.style.left = '0px';
       document.body.style.width = '100%';
-    } else if (loadingState === 'exiting') {
-      // Keep locked during exit fade
+      document.body.style.height = '100vh';
+      window.scrollTo(0, 0);
     } else {
       // Restore scroll
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.top = '';
+      document.body.style.left = '';
       document.body.style.width = '';
+      document.body.style.height = '';
       window.scrollTo({ top: 0, behavior: 'instant' });
       setShowContent(true);
     }

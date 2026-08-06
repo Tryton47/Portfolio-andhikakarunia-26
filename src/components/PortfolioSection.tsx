@@ -305,8 +305,8 @@ const techStack = [
   // ── Video ──
   { name: 'Premiere Pro', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/premierepro/premierepro-original.svg', color: '#9999FF' },
   { name: 'DaVinci Resolve', cat: 'Design & Media', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/90/DaVinci_Resolve_17_logo.svg', color: '#FF9900' },
-  { name: 'CapCut', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@develop/icons/capcut.svg', color: '#FFFFFF' },
-  { name: 'Adobe Lightroom', cat: 'Design & Media', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/lightroom/lightroom-plain.svg', color: '#31A8FF' },
+  { name: 'CapCut', cat: 'Design & Media', logo: 'https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/capcut.svg', color: '#FFFFFF' },
+  { name: 'Lightroom', cat: 'Design & Media', logo: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/photoshop/photoshop-plain.svg', color: '#31A8FF' },
 ];
 
 /* ─── HOLOGRAPHIC CARD EFFECT ─── */
@@ -354,19 +354,12 @@ function HolographicOverlay({ intensity = 1 }: { intensity?: number }) {
       currentY += (targetY - currentY) * lerpFactor;
       currentAngle += (targetAngle - currentAngle) * lerpFactor;
 
-      const hue = (currentAngle + 180) % 360;
-      const opacity = stateRef.current.active ? 0.55 * intensity : Math.max(0, (overlay.style.opacity ? parseFloat(overlay.style.opacity) : 0) - 0.02);
+      const opacity = stateRef.current.active ? 0.4 * intensity : Math.max(0, (overlay.style.opacity ? parseFloat(overlay.style.opacity) : 0) - 0.02);
 
       overlay.style.opacity = String(Math.max(0, Math.min(1, opacity)));
       overlay.style.background = [
-        `radial-gradient(ellipse 120% 80% at ${currentX}% ${currentY}%, hsla(${hue}, 100%, 75%, 0.5) 0%, transparent 60%)`,
-        `linear-gradient(${currentAngle + 90}deg,`,
-        `  hsla(${hue}, 100%, 65%, 0) 0%,`,
-        `  hsla(${(hue + 60) % 360}, 100%, 65%, 0.25) 20%,`,
-        `  hsla(${(hue + 120) % 360}, 100%, 65%, 0.35) 40%,`,
-        `  hsla(${(hue + 180) % 360}, 100%, 65%, 0.25) 60%,`,
-        `  hsla(${(hue + 240) % 360}, 100%, 65%, 0.15) 80%,`,
-        `  hsla(${(hue + 300) % 360}, 100%, 65%, 0) 100%)`,
+        `radial-gradient(circle 140px at ${currentX}% ${currentY}%, rgba(99, 102, 241, 0.4) 0%, rgba(6, 182, 212, 0.2) 40%, transparent 70%)`,
+        `linear-gradient(${currentAngle + 45}deg, rgba(255, 255, 255, 0) 0%, rgba(99, 102, 241, 0.25) 30%, rgba(255, 255, 255, 0.4) 50%, rgba(6, 182, 212, 0.25) 70%, rgba(255, 255, 255, 0) 100%)`,
       ].join(',');
 
       rafRef.current = requestAnimationFrame(animate);
@@ -1482,13 +1475,29 @@ export default function PortfolioSection() {
                             className="w-12 h-12 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 drop-shadow-lg"
                             style={{ filter: 'drop-shadow(0 2px 8px var(--theme-primary-hex, #6366f1)22)' }}
                           >
-                            <img
-                              src={tech.logo}
-                              alt={tech.name}
-                              className="w-12 h-12 object-contain"
-                              loading="lazy"
-                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                            />
+                            {tech.name === 'CapCut' ? (
+                              <svg width="32" height="32" viewBox="0 0 24 24" fill="#FFFFFF">
+                                <path d="M16.5 6L12 10.5 7.5 6 6 7.5 10.5 12 6 16.5 7.5 18 12 13.5 16.5 18 18 16.5 13.5 12 18 7.5 16.5 6z"/>
+                                <path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/>
+                              </svg>
+                            ) : tech.name === 'Lightroom' || tech.name === 'Adobe Lightroom' ? (
+                              <div className="w-10 h-10 rounded-lg bg-[#001E36] border border-[#31A8FF]/40 flex items-center justify-center font-bold text-[#31A8FF] text-sm">
+                                Lr
+                              </div>
+                            ) : (
+                              <img
+                                src={tech.logo}
+                                alt={tech.name}
+                                className="w-12 h-12 object-contain"
+                                loading="lazy"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                  if (e.target && (e.target as HTMLElement).parentElement) {
+                                    (e.target as HTMLElement).parentElement!.innerHTML = `<div class="w-10 h-10 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center font-bold text-primary text-xs">${tech.name.substring(0,2)}</div>`;
+                                  }
+                                }}
+                              />
+                            )}
                           </div>
                           {/* Name */}
                           <span className="text-[11px] font-medium text-text-dim group-hover:text-text-primary transition-colors text-center leading-tight">

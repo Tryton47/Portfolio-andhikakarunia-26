@@ -281,7 +281,7 @@ export default function HeroSection() {
           <h1
             ref={titleRef}
             className="text-heading text-[2.2rem] sm:text-4xl md:text-5xl lg:text-6xl text-text-primary leading-[1.15] mb-4 md:mb-6 uppercase"
-            style={{ perspective: '800px', opacity: 0 }}
+            style={{ perspective: '800px' }}
           >
             {'Building Modern Digital Experiences through Data, Code, and Visual Design.'
               .split(' ')

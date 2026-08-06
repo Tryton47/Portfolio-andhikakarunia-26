@@ -102,32 +102,32 @@ export default function ContactSection() {
         <ScrollReveal variant="fade-up" duration={700}>
           <div className="text-center mb-16">
             <span
-              className="inline-block px-4 py-1.5 rounded-full text-xs font-mono tracking-widest uppercase mb-4"
+              className="inline-block px-3.5 py-1 rounded-full text-xs font-mono tracking-widest uppercase mb-3"
               style={{
-                background: 'rgba(99,102,241,0.1)',
-                border: '1px solid rgba(99,102,241,0.3)',
-                color: '#818CF8',
+                background: 'rgba(99, 102, 241, 0.08)',
+                border: '1px solid rgba(99, 102, 241, 0.25)',
+                color: 'var(--theme-primary-hex, #818CF8)',
               }}
             >
-              Get In Touch
+              Contact
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
-              Let's Work <span className="text-gradient">Together</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-3 uppercase tracking-tight">
+              Let's Work <span style={{ color: 'var(--theme-primary-hex, #6366f1)' }}>Together</span>
             </h2>
-            <p className="text-text-muted text-base max-w-lg mx-auto">
-              Have a project in mind or want to collaborate? I'd love to hear from you.
+            <p className="text-text-muted text-sm max-w-md mx-auto leading-relaxed">
+              Punya ide proyek, diskusi data & web dev, atau ingin berkolaborasi? Kirim pesan langsung melalui form di bawah ini.
             </p>
           </div>
         </ScrollReveal>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-          {/* LEFT: Smart Contact Form */}
+          {/* LEFT: Contact Form */}
           <ScrollReveal variant="slide-right" duration={800} delay={100} className="lg:col-span-3">
-            <div className="glass-panel border border-border rounded-2xl p-6 md:p-8">
+            <div className="glass-panel border border-border/60 rounded-2xl p-6 md:p-8 shadow-xl">
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-text-primary mb-1">Send a Message</h3>
-                <p className="text-sm text-text-dim">Chat with me directly — it's quick and easy.</p>
+                <h3 className="text-base font-bold text-text-primary mb-1">Kirim Pesan</h3>
+                <p className="text-xs text-text-dim">Pesan Anda akan tersampaikan dengan cepat.</p>
               </div>
               <SmartContactForm />
             </div>

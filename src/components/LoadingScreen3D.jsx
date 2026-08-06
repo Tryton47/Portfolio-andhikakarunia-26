@@ -54,7 +54,7 @@ export default function LoadingScreen3D({ onDone }) {
 
   // Phase 3: Smooth eased progress
   useEffect(() => {
-    const MAX_DURATION = 2500;
+    const MAX_DURATION = 3000;
     const step = () => {
       const elapsed = Date.now() - startRef.current;
       const linear = Math.min(elapsed / MAX_DURATION, 1);
@@ -73,7 +73,7 @@ export default function LoadingScreen3D({ onDone }) {
   // Phase 4: Exit trigger
   const hasDoneRef = { current: false };
   useEffect(() => {
-    const MAX_DURATION = 2500;
+    const MAX_DURATION = 3000;
     const elapsed = Date.now() - startRef.current;
     const remaining = Math.max(MAX_DURATION - elapsed, 0);
     const t = setTimeout(() => {
