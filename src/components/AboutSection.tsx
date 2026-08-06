@@ -118,11 +118,8 @@ function TiltPortrait() {
     });
 
     gsap.to(glareRef.current, {
-      opacity: 0.8,
-      background: `
-        radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 50%),
-        linear-gradient(${rotateX * 4 + rotateY * 4}deg, rgba(255,0,128,0.15) 0%, rgba(0,255,255,0.15) 50%, rgba(255,255,0,0.15) 100%)
-      `,
+      opacity: 0.5,
+      background: `radial-gradient(circle 180px at ${glareX}% ${glareY}%, rgba(255, 255, 255, 0.4) 0%, rgba(99, 102, 241, 0.15) 45%, transparent 70%)`,
       duration: 0.2,
       overwrite: 'auto',
     });
