@@ -66,7 +66,7 @@ export default function Home() {
           pointerEvents: showContent ? 'auto' : 'none',
         }}
       >
-        <HeroSection />
+        <HeroSection visible={showContent} />
         <ConsoleWidget />
         <AboutSection />
         <PortfolioSection />

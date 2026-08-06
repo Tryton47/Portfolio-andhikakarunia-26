@@ -52,7 +52,7 @@ const socialLinks = [
 ];
 
 /* ─── HERO SECTION ─── */
-export default function HeroSection() {
+export default function HeroSection({ visible = true }: { visible?: boolean }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const hudRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -122,92 +122,60 @@ export default function HeroSection() {
     };
   }, []); // ← empty array: never re-runs
 
-  // ── GSAP Cinematic Entrance ──
+  // ── GSAP Cinematic Entrance — runs once after content becomes visible ──
   useEffect(() => {
+    if (!visible) return; // Wait until content is shown
+
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      // First: set all animated elements to invisible
+      const words = titleRef.current?.querySelectorAll('.hero-word') ?? [];
+      const icons = socialsRef.current?.querySelectorAll('a') ?? [];
+      const btns  = ctaRef.current?.querySelectorAll('a, button') ?? [];
+      gsap.set([hudRef.current, subtitleRef.current, statsRef.current, bottomRef.current], { opacity: 0 });
+      gsap.set(words,  { opacity: 0, y: 60, rotateX: -90 });
+      gsap.set(icons,  { opacity: 0, scale: 0.5, y: 10 });
+      gsap.set(btns,   { opacity: 0, y: 30 });
+      gsap.set(robot3DRef.current, { opacity: 0, x: 60, scale: 0.9 });
+
+      // Now animate in with delay so page fade-in (0.8s) finishes first
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.5 });
 
       // HUD slides down
-      tl.fromTo(
-        hudRef.current,
-        { opacity: 0, y: -20 },
-        { opacity: 1, y: 0, duration: 0.6 },
-        0.1
-      );
+      tl.to(hudRef.current, { opacity: 1, y: 0, duration: 0.6 }, 0.0);
 
-      // Title: split into words, reveal with stagger
-      if (titleRef.current) {
-        const words = titleRef.current.querySelectorAll('.hero-word');
-        tl.fromTo(
-          words,
-          { opacity: 0, y: 60, rotateX: -90, transformOrigin: '50% 50% -30px' },
-          {
-            opacity: 1,
-            y: 0,
-            rotateX: 0,
-            duration: 0.7,
-            stagger: 0.06,
-            ease: 'back.out(1.4)',
-          },
-          0.2
-        );
+      // Title words tumble in
+      if (words.length) {
+        tl.to(words, {
+          opacity: 1, y: 0, rotateX: 0,
+          duration: 0.7, stagger: 0.05,
+          ease: 'back.out(1.4)',
+          transformOrigin: '50% 50% -30px',
+        }, 0.1);
       }
 
       // Subtitle fades in
-      tl.fromTo(
-        subtitleRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.7 },
-        '-=0.3'
-      );
+      tl.to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.6 }, '-=0.3');
 
       // Social icons pop in
-      if (socialsRef.current) {
-        const icons = socialsRef.current.querySelectorAll('a');
-        tl.fromTo(
-          icons,
-          { opacity: 0, scale: 0.5, y: 10 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'back.out(2)' },
-          '-=0.4'
-        );
+      if (icons.length) {
+        tl.to(icons, { opacity: 1, scale: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'back.out(2)' }, '-=0.4');
       }
 
-      // CTA buttons slide up
-      if (ctaRef.current) {
-        const btns = ctaRef.current.querySelectorAll('a, button');
-        tl.fromTo(
-          btns,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 },
-          '-=0.3'
-        );
+      // CTA buttons
+      if (btns.length) {
+        tl.to(btns, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }, '-=0.3');
       }
 
-      // 3D Robot clips in from right
-      tl.fromTo(
-        robot3DRef.current,
-        { opacity: 0, x: 60, scale: 0.9 },
-        { opacity: 1, x: 0, scale: 1, duration: 1, ease: 'power2.out' },
-        0.1
-      );
+      // 3D Robot
+      tl.to(robot3DRef.current, { opacity: 1, x: 0, scale: 1, duration: 1, ease: 'power2.out' }, 0.1);
 
-      // Stats row fades up
-      tl.fromTo(
-        statsRef.current,
-        { opacity: 0, y: 15 },
-        { opacity: 1, y: 0, duration: 0.5 },
-        '-=0.5'
-      );
+      // Stats row
+      tl.to(statsRef.current, { opacity: 1, y: 0, duration: 0.5 }, '-=0.5');
 
       // Bottom panel
-      tl.fromTo(
-        bottomRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.4 },
-        '-=0.3'
-      );
+      tl.to(bottomRef.current, { opacity: 1, duration: 0.4 }, '-=0.3');
 
-      // Parallax on scroll (robot + text layers)
+      // Parallax on scroll
       gsap.to(robot3DRef.current, {
         yPercent: -18,
         ease: 'none',
@@ -221,7 +189,7 @@ export default function HeroSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [visible]); // re-run when visible changes
 
   return (
     <section
@@ -247,7 +215,6 @@ export default function HeroSection() {
       <div
         ref={hudRef}
         className="relative z-10 flex justify-between items-start px-6 md:px-12 pt-20 md:pt-28"
-        style={{ opacity: 0 }}
       >
         <div className="flex flex-col gap-1">
           <span className="text-system text-primary">System Ready</span>
@@ -299,7 +266,6 @@ export default function HeroSection() {
           <p
             ref={subtitleRef}
             className="text-text-body font-body text-sm md:text-base leading-relaxed max-w-xl mb-6"
-            style={{ opacity: 0 }}
           >
             Bridging the gap between data insights, creative design, and robust development to deliver reliable and fast web applications.
           </p>
@@ -314,7 +280,6 @@ export default function HeroSection() {
                 rel="noreferrer"
                 aria-label={s.label}
                 className={`w-10 h-10 rounded-lg bg-white/5 backdrop-blur-sm border border-border flex items-center justify-center text-text-muted transition-all duration-300 ${s.color} hover:-translate-y-1`}
-                style={{ opacity: 0 }}
               >
                 {s.icon}
               </a>
@@ -323,10 +288,10 @@ export default function HeroSection() {
 
           {/* CTA Buttons */}
           <div ref={ctaRef} className="flex flex-wrap gap-4 mt-2">
-            <GlassButton href="#portfolio" isActive={true} className="px-8 py-3.5" style={{ opacity: 0 }}>
+            <GlassButton href="#portfolio" isActive={true} className="px-8 py-3.5">
               Projects ↗
             </GlassButton>
-            <GlassButton href="#contact" isActive={false} className="px-8 py-3.5" style={{ opacity: 0 }}>
+            <GlassButton href="#contact" isActive={false} className="px-8 py-3.5">
               Contact Me
             </GlassButton>
           </div>
@@ -339,7 +304,7 @@ export default function HeroSection() {
             (robotLayerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
           }}
           className="w-full md:w-[40%] flex flex-col items-center gap-4 md:gap-6"
-          style={{ willChange: 'transform', opacity: 0 }}
+          style={{ willChange: 'transform' }}
         >
           <div className="w-full max-w-[400px] h-[350px] md:h-[550px] flex items-center justify-center relative transition-transform duration-500 hover:scale-105">
             <RobotScene />
@@ -347,7 +312,6 @@ export default function HeroSection() {
           <div
             ref={statsRef}
             className="flex justify-around w-full max-w-[400px] mt-2 border-t border-border/30 pt-4"
-            style={{ opacity: 0 }}
           >
             <div className="flex flex-col items-center">
               <span className="text-system text-text-dim font-mono text-xs">MODULES</span>
@@ -365,7 +329,6 @@ export default function HeroSection() {
       <div
         ref={bottomRef}
         className="relative z-10 flex items-center gap-4 px-6 md:px-12 pb-8"
-        style={{ opacity: 0 }}
       >
         <a
           href="#about"
